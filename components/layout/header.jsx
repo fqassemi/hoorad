@@ -4,10 +4,9 @@ import Link from 'next/link';
 // Icons
 import { GiBlackBook } from 'react-icons/gi';
 import { LuUserCircle2 } from 'react-icons/lu';
-import { RiSearch2Line } from 'react-icons/ri';
 
 // Components
-import { Button } from '../ui/button';
+import HeaderSearch from './header-search';
 
 function Header() {
    return (
@@ -19,16 +18,7 @@ function Header() {
                   <GiBlackBook className="-scale-x-100 text-2xl text-customOrange" />
                </Link>
 
-               <form className="flex h-8 items-center border-b border-[#9D9D9D] pb-1">
-                  <Button className="text-[#555555]">
-                     <RiSearch2Line className="text-xl" />
-                  </Button>
-                  <input
-                     type="text"
-                     className="h-full bg-transparent px-2 text-sm outline-none sm:w-[200px]"
-                     placeholder="جستجو"
-                  />
-               </form>
+               <HeaderSearch />
             </div>
             <Link href="/login" className="flex items-center gap-1 transition-all duration-150 hover:text-customOrange">
                <LuUserCircle2 className="-scale-x-100 text-2xl text-customOrange" />
