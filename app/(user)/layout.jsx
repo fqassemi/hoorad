@@ -1,13 +1,11 @@
 // Components
-import Footer from '@/components/layout/footer';
 import Header from '@/components/layout/header';
 
 function layout({ children }) {
    return (
-      <div className="flex min-h-screen flex-col">
+      <div>
          <Header />
-         <div className="flex-1">{children}</div>
-         <Footer />
+         <div className="mb-20 mt-10 sm:mb-30 sm:mt-15">{children}</div>
       </div>
    );
 }

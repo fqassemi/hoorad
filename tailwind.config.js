@@ -19,6 +19,7 @@ module.exports = {
             1440: '1440px',
             4.5: '18px',
             5.5: '22px',
+            7.5: '30px',
          },
          transitionDuration: {
             400: '400ms',
@@ -35,6 +36,7 @@ module.exports = {
             customWhite1: '#FCFDFF',
             customBlack1: '#000A33',
             customGray1: '#B5B9C8',
+            customOrange: '#FF782D',
 
             background: 'hsl(var(--background))',
             foreground: 'hsl(var(--foreground))',
@@ -106,6 +108,12 @@ module.exports = {
          },
       },
    },
-   // eslint-disable-next-line global-require
-   plugins: [require('tailwindcss-animate')],
+   plugins: [
+      // eslint-disable-next-line global-require
+      require('tailwindcss-animate'),
+      ({ addVariant }) => {
+         addVariant('child', '& > *');
+         addVariant('child-hover', '& > *:hover');
+      },
+   ],
 };
