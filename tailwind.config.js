@@ -37,6 +37,7 @@ module.exports = {
             customBlack1: '#000A33',
             customGray1: '#B5B9C8',
             customOrange: '#FF782D',
+            errorRed: '#d32f2f',
 
             background: 'hsl(var(--background))',
             foreground: 'hsl(var(--foreground))',

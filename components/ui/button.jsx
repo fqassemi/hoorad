@@ -11,7 +11,7 @@ const buttonVariants = cva(
       variants: {
          variant: {
             default: '',
-            main: 'hover:bg-customBlue1 hover:text-customWhite1 active:bg-customBlack1 active:text-customWhite1 disabled:bg-customGray1 disabled:text-customWhite1',
+            main: 'disabled:bg-customGray1 disabled:text-customWhite1',
             outline:
                'border hover:border-customBlue1 hover:text-customBlue1 active:border-customBlack1 active:bg-gray-100 active:text-customBlack1 disabled:border-customGray1 disabled:text-customGray1',
             link: 'hover:text-customBlue1 active:text-customBlack1 disabled:text-customGray1',
@@ -23,6 +23,9 @@ const buttonVariants = cva(
             lg: 'h-11 rounded-md px-8',
             icon: 'size-10',
          },
+         color: {
+            orange: 'bg-customOrange text-white hover:bg-orange-400 active:bg-orange-700',
+         },
       },
       defaultVariants: {
          variant: 'default',
@@ -32,17 +35,21 @@ const buttonVariants = cva(
 );
 
 const Button = React.forwardRef(
-   ({ className, variant, size, asChild = false, loading, disabled, children, ...props }, ref) => {
+   (
+      { className, variant, size, color, type = 'button', asChild = false, loading, disabled, children, ...props },
+      ref
+   ) => {
       const Comp = asChild ? Slot : 'button';
       return (
          <Comp
-            className={cn(buttonVariants({ variant, size, className }))}
+            className={cn(buttonVariants({ variant, size, color, className }))}
             ref={ref}
+            type={type}
             {...props}
             disabled={loading || disabled}
          >
             <div
-               className={`absolute inset-0 flex items-center justify-center bg-customGray1 transition-all duration-100 ${
+               className={`absolute inset-0 flex items-center justify-center bg-customGray1 transition-all duration-200 ${
                   loading ? 'visible opacity-100' : 'invisible opacity-0'
                }`}
             >
