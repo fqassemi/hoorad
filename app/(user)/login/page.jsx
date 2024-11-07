@@ -31,11 +31,14 @@ function Login() {
                <Input
                   type="number"
                   wrapperClassName="mt-7.5"
-                  inputClassName="h-12 rounded-lg border focus:border-2 border-[#9D9D9D] px-4 focus:border-customOrange placeholder:text-[13px] placeholder:sm:text-sm"
+                  inputClassName="h-12 rounded-lg font-vazirDigit border focus:border-2 border-[#9D9D9D] px-4 focus:border-customOrange placeholder:text-[13px] placeholder:sm:text-sm"
                   placeholder="شماره تماس خود را وارد کنید"
                   {...register('phoneNumber', {
                      required: { value: true, message: 'این فیلد اجباری است' },
-                     pattern: { value: /^09\d{9}$/g, message: 'لطفا یک شماره تلفن معتبر وارد کنید' },
+                     pattern: {
+                        value: /^09\d{9}$/g,
+                        message: 'لطفا یک شماره تلفن ۱۱ رقمی که با ۰۹ شروع میشود را وارد کنید',
+                     },
                   })}
                   errorMessage={errors?.phoneNumber?.message}
                   error={!!errors?.phoneNumber}

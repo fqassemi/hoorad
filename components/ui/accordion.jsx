@@ -16,7 +16,7 @@ const AccordionTrigger = React.forwardRef(({ className, children, ...props }, re
    <AccordionPrimitive.Header className="flex">
       <AccordionPrimitive.Trigger
          ref={ref}
-         className={cn('transition-all [&[data-state=open]_#arrowSvg]:rotate-90', className)}
+         className={cn('transition-all [&[data-state=open]_#arrowSvg]:rotate-180', className)}
          {...props}
       >
          {children}

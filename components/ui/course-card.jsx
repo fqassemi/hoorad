@@ -31,7 +31,9 @@ function CourseCard() {
             </p>
             <div className="mt-4 flex items-center gap-5 text-xs">
                <p className="flex items-center gap-1">
-                  <RiCheckboxMultipleBlankFill className="text-sm text-customOrange" /> جلسه
+                  <RiCheckboxMultipleBlankFill className="text-xl text-customOrange" />
+                  <span className="font-vazirDigit">20</span>
+                  جلسه
                </p>
                <p className="flex items-center gap-1">
                   <IoTime className="text-sm text-customOrange" />
