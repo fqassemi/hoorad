@@ -1,52 +1,64 @@
 'use client';
 
-// React-hook-form
-import { useForm } from 'react-hook-form';
+// React
+import { useEffect, useState } from 'react';
+
+// Next
+import { useRouter, useSearchParams } from 'next/navigation';
 
 // Components
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import LoginForm from './components/login-form';
+import RegisterForm from './components/register-form';
 
 function Login() {
-   const {
-      register,
-      handleSubmit,
-      formState: { errors },
-   } = useForm({
-      defaultValues: {
-         phoneNumber: '',
-      },
-      mode: 'onSubmit',
-   });
+   const [formType, setFormType] = useState('login');
 
-   const formSubmit = data => {
-      console.log(data);
+   const { push } = useRouter();
+   const searchParams = useSearchParams();
+   const gottenFormType = searchParams.get('type');
+
+   const changeFormTypeHandler = type => {
+      if (type === 'login') {
+         setFormType('login');
+         push('/login');
+      } else if (type === 'register') {
+         setFormType('register');
+         push('/login?type=register');
+      }
    };
+
+   useEffect(() => {
+      if (!gottenFormType) {
+         setFormType('login');
+      } else if (gottenFormType === 'register') {
+         setFormType('register');
+      }
+   }, [searchParams]);
 
    return (
       <section className="mx-auto mt-10 max-w-1440 px-4 lg:px-[78px]">
          <div className="mx-auto max-w-[500px] rounded-[20px] border border-[#EAEAEA] p-5 sm:p-7.5">
-            <p className="text-2xl font-bold sm:text-3xl">ورود</p>
-            <form className="flex flex-col" onSubmit={handleSubmit(formSubmit)}>
-               <Input
-                  type="number"
-                  wrapperClassName="mt-7.5"
-                  inputClassName="h-12 rounded-lg font-vazirDigit border focus:border-2 border-[#9D9D9D] px-4 focus:border-customOrange placeholder:text-[13px] placeholder:sm:text-sm"
-                  placeholder="شماره تماس خود را وارد کنید"
-                  {...register('phoneNumber', {
-                     required: { value: true, message: 'این فیلد اجباری است' },
-                     pattern: {
-                        value: /^09\d{9}$/g,
-                        message: 'لطفا یک شماره تلفن ۱۱ رقمی که با ۰۹ شروع میشود را وارد کنید',
-                     },
-                  })}
-                  errorMessage={errors?.phoneNumber?.message}
-                  error={!!errors?.phoneNumber}
-               />
-               <Button className="mt-7 h-12 rounded-3xl" color="orange" variant="main" type="submit">
+            <div className="flex items-center rounded bg-gray-100 p-1.5 lg:p-3">
+               <Button
+                  className={`h-9 flex-1 max-lg:text-sm lg:h-12 ${formType === 'login' ? 'bg-customOrange text-white' : 'hover:bg-orange-50'}`}
+                  onClick={() => changeFormTypeHandler('login')}
+               >
                   ورود
                </Button>
-            </form>
+               <Button
+                  className={`h-9 flex-1 max-lg:text-sm lg:h-12 ${formType === 'register' ? 'bg-customOrange text-white' : 'hover:bg-orange-50'}`}
+                  onClick={() => changeFormTypeHandler('register')}
+               >
+                  ثبت نام
+               </Button>
+            </div>
+
+            {formType === 'register' || gottenFormType === 'register' ? (
+               <RegisterForm />
+            ) : formType === 'login' ? (
+               <LoginForm />
+            ) : null}
          </div>
       </section>
    );

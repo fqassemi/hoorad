@@ -22,7 +22,7 @@ function Header() {
             </div>
             <Link href="/login" className="flex items-center gap-1 transition-all duration-150 hover:text-customOrange">
                <LuUserCircle2 className="-scale-x-100 text-2xl text-customOrange" />
-               ورود
+               ورود / ثبت نام
             </Link>
          </div>
       </header>
