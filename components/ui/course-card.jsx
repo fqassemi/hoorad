@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { IoTime } from 'react-icons/io5';
 import { RiCheckboxMultipleBlankFill } from 'react-icons/ri';
 
-function CourseCard() {
+function CourseCard({ detail }) {
    return (
       <Link
          href="/course-detail/2"
