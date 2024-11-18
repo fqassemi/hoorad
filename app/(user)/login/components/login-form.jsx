@@ -1,3 +1,6 @@
+// Next
+import { useRouter } from 'next/navigation';
+
 // React
 import { useState } from 'react';
 
@@ -6,6 +9,9 @@ import { setCookie } from 'cookies-next';
 
 // React-hook-form
 import { Controller, useForm } from 'react-hook-form';
+
+// Context
+import { useAuth } from '@/context/AuthContext';
 
 // Components
 import { Button } from '@/components/ui/button';
@@ -20,6 +26,9 @@ const otpCounts = [1, 2, 3, 4, 5];
 
 function LoginForm() {
    const [loginStep, setLoginStep] = useState(1);
+
+   const { push } = useRouter();
+   const { setIsLogin } = useAuth();
 
    const { trigger: verificationCodeTrigger, isMutating: verificationCodeIsMutating } = useVerificationCode();
    const { trigger: loginTrigger, isMutating: loginIsMutating } = useLogin();
@@ -54,12 +63,12 @@ function LoginForm() {
          };
 
          loginTrigger(newData, {
-            onSuccess: loginData => {
-               console.log(loginData);
-
-               // setCookie('courses_accessToken', res?.data?.access, { maxAge: 60 * 60 * 24 * 365 });
-               // setCookie('courses_refreshToken', res?.data?.refresh, { maxAge: 60 * 60 * 24 * 365 });
+            onSuccess: async loginData => {
+               setCookie('courses_accessToken', loginData?.tokens?.access_token, { maxAge: 60 * 60 * 24 * 365 });
+               setCookie('courses_refreshToken', loginData?.tokens?.refresh_token, { maxAge: 60 * 60 * 24 * 365 });
                setCookie('courses_isLogin', true, { maxAge: 60 * 60 * 24 * 365 });
+               await setIsLogin(true);
+               push('/');
             },
          });
       }

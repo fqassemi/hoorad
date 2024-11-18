@@ -2,12 +2,26 @@
 
 import { createContext, useState, useContext, useMemo } from 'react';
 
+// Cookies
+import { getCookie } from 'cookies-next';
+
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-   const [userInfo, setUserInfo] = useState({});
+   const checkLoginToken = getCookie('courses_isLogin') || false;
 
-   const value = useMemo(() => ({ userInfo, setUserInfo }), [userInfo]);
+   const [userInfo, setUserInfo] = useState({});
+   const [isLogin, setIsLogin] = useState(checkLoginToken);
+
+   const value = useMemo(
+      () => ({
+         userInfo,
+         setUserInfo,
+         isLogin,
+         setIsLogin,
+      }),
+      [userInfo, isLogin]
+   );
 
    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

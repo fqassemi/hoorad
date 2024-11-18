@@ -3,6 +3,6 @@ import axiosInstance from '@/lib/axiosInstance';
 
 const fetcher = url => axiosInstance.get(url).then(res => res.data);
 
-const useGetSome = () => useSWR(`visit/history`, fetcher);
+const useGetUserInfo = userData => useSWR(userData ? `user` : null, fetcher);
 
-export default useGetSome;
+export default useGetUserInfo;
