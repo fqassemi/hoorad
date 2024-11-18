@@ -57,9 +57,9 @@ function LoginForm() {
             onSuccess: loginData => {
                console.log(loginData);
 
-               // setCookie('mahanClinic_accessToken', res?.data?.access, { maxAge: 60 * 60 * 24 * 365 });
-               // setCookie('mahanClinic_refreshToken', res?.data?.refresh, { maxAge: 60 * 60 * 24 * 365 });
-               // setCookie('mahanClinic_isLogin', true, { maxAge: 60 * 60 * 24 * 365 })
+               // setCookie('courses_accessToken', res?.data?.access, { maxAge: 60 * 60 * 24 * 365 });
+               // setCookie('courses_refreshToken', res?.data?.refresh, { maxAge: 60 * 60 * 24 * 365 });
+               setCookie('courses_isLogin', true, { maxAge: 60 * 60 * 24 * 365 });
             },
          });
       }

@@ -1,15 +1,20 @@
 'use client';
 
+// Next
+import { useRouter } from 'next/navigation';
+
 // React-hook-form
 import { useForm } from 'react-hook-form';
 
 // Icons
 import { RiSearch2Line } from 'react-icons/ri';
-import { Button } from '../ui/button';
 
 // Components
+import { Button } from '../ui/button';
 
 function HeaderSearch() {
+   const { push } = useRouter();
+
    const { register, handleSubmit } = useForm({
       defaultValues: {
          searchInput: '',
@@ -18,12 +23,12 @@ function HeaderSearch() {
    });
 
    const formSubmit = data => {
-      console.log(data);
+      push(`/search?query=${data?.searchInput}`);
    };
 
    return (
       <form className="flex h-8 items-center border-b border-[#9D9D9D] pb-1" onSubmit={handleSubmit(formSubmit)}>
-         <Button className="text-[#555555]">
+         <Button className="text-[#555555]" type="submit">
             <RiSearch2Line className="text-xl" />
          </Button>
          <input
