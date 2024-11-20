@@ -3,7 +3,6 @@ import CourseCard from '@/components/ui/course-card';
 
 async function Search({ searchParams }) {
    const { query } = await searchParams;
-   console.log(query);
 
    return (
       <section className="mx-auto max-w-1440 px-4 lg:px-[78px]">
