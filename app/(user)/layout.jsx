@@ -16,7 +16,7 @@ async function layout({ children }) {
 
    let userData = null;
    if (accessToken) {
-      userData = await fetchDataHandler('user', {}, true);
+      userData = await fetchDataHandler('user', { cache: 'no-store' }, true);
    }
 
    return (
