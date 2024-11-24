@@ -25,7 +25,7 @@ function CourseCardUnEnrollButton({ courseId }) {
    const { trigger: unEnrollTrigger, isMutating: unEnrollIsMutaiting } = useUnEnrollUser();
 
    const updateQueryParams = useUpdateQueryParams(
-      'unEnroll-modal',
+      `unEnroll-modal${courseId}`,
       () => setShowUnEnrollModal(true),
       () => setShowUnEnrollModal(false)
    );
@@ -50,12 +50,12 @@ function CourseCardUnEnrollButton({ courseId }) {
 
    const openEnrollModalHandler = () => {
       setShowUnEnrollModal(true);
-      updateQueryParams('unEnroll-modal', 'open');
+      updateQueryParams(`unEnroll-modal${courseId}`, 'open');
    };
 
    const closeEnrollModalHandler = () => {
       setShowUnEnrollModal(false);
-      updateQueryParams('unEnroll-modal');
+      updateQueryParams(`unEnroll-modal${courseId}`);
    };
 
    return (

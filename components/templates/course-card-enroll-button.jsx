@@ -32,7 +32,7 @@ function CourseCardEnrollButton({ courseId }) {
    const { trigger: enrollTrigger, isMutating: enrollIsMutaiting } = useEnrollUser();
 
    const updateQueryParams = useUpdateQueryParams(
-      'enroll-modal',
+      `enroll-modal${courseId}`,
       () => setShowEnrollModal(true),
       () => setShowEnrollModal(false)
    );
@@ -57,7 +57,7 @@ function CourseCardEnrollButton({ courseId }) {
    const showEnrollModalHandler = () => {
       if (isLogin) {
          setShowEnrollModal(true);
-         updateQueryParams('enroll-modal', 'open');
+         updateQueryParams(`enroll-modal${courseId}`, 'open');
       } else {
          toast.error('لطفا ابتدا وارد حساب کاربری خود شوید');
       }
@@ -65,7 +65,7 @@ function CourseCardEnrollButton({ courseId }) {
 
    const closeEnrollModalHandler = () => {
       setShowEnrollModal(false);
-      updateQueryParams('enroll-modal');
+      updateQueryParams(`enroll-modal${courseId}`);
    };
 
    return (
