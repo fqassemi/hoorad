@@ -11,7 +11,7 @@ import { Button } from '../ui/button';
 
 function ToastComponent() {
    return (
-      <Toaster position="top-right" toastOptions={{ duration: 5000 }}>
+      <Toaster position="top-left" toastOptions={{ duration: 5000 }}>
          {t => (
             <ToastBar toast={t}>
                {({ icon, message }) => (

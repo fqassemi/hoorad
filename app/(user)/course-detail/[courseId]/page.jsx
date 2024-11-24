@@ -8,6 +8,7 @@ import { RiCheckboxMultipleBlankFill } from 'react-icons/ri';
 import { MdOutlineKeyboardArrowDown } from 'react-icons/md';
 
 // Components
+import CourseCardEnrollButton from '@/components/templates/course-card-enroll-button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 // Libs
@@ -17,7 +18,7 @@ export const revalidate = 60;
 
 async function CourseDetail({ params }) {
    const { courseId } = await params;
-   const courseData = await fetchDataHandler(`courses/${courseId}`);
+   const courseData = await fetchDataHandler(`courses/${courseId}`, {}, true);
 
    return (
       <section className="mx-auto max-w-1440 px-4 lg:px-[78px]">
@@ -35,6 +36,14 @@ async function CourseDetail({ params }) {
                   <PiCurrencyDollarBold className="text-xl text-customOrange" />
                   قیمت : {courseData?.price}
                </p>
+
+               <div className="mt-7">
+                  {courseData?.is_enrolled ? (
+                     <p className="h-7 text-sm text-stone-400">دانشجوی دوره هستید</p>
+                  ) : (
+                     <CourseCardEnrollButton courseId={courseId} />
+                  )}
+               </div>
             </div>
          </div>
 
@@ -67,8 +76,8 @@ async function CourseDetail({ params }) {
                         <AccordionContent className="rounded-b-lg bg-white">
                            <div className="flex flex-col">
                               {item?.resources?.map((innerItem, innerIndex) => (
-                                 <Link
-                                    href={`/course-session/${innerItem?.id}`}
+                                 <div
+                                    // href={`/course-session/${innerItem?.id}`}
                                     className={`flex items-center justify-between p-5 text-xs transition-all duration-150 hover:bg-orange-100 sm:text-sm ${
                                        innerIndex + 1 === item?.resources?.length ? '' : 'border-b border-gray-300'
                                     }`}
@@ -79,7 +88,7 @@ async function CourseDetail({ params }) {
                                        {innerItem?.title}
                                     </div>
                                     <p className="font-vazirDigit font-light">{/* {innerItem?.time} */}</p>
-                                 </Link>
+                                 </div>
                               ))}
                            </div>
                         </AccordionContent>

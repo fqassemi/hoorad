@@ -18,6 +18,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 
+// Libs
+import revalidatePathHandler from '@/lib/revalidateHandler';
+
 // Apis
 import useVerificationCode from '@/hooks/api/login/useVerificationCode';
 import useLogin from '@/hooks/api/login/useLogin';
@@ -64,10 +67,11 @@ function LoginForm() {
 
          loginTrigger(newData, {
             onSuccess: async loginData => {
+               revalidatePathHandler('/', 'layout');
                setCookie('courses_accessToken', loginData?.tokens?.access_token, { maxAge: 60 * 60 * 24 * 365 });
                setCookie('courses_refreshToken', loginData?.tokens?.refresh_token, { maxAge: 60 * 60 * 24 * 365 });
                setCookie('courses_isLogin', true, { maxAge: 60 * 60 * 24 * 365 });
-               await setIsLogin(true);
+               setIsLogin(true);
                push('/');
             },
          });

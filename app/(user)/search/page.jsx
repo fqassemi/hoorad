@@ -1,5 +1,5 @@
 // Components
-import CourseCard from '@/components/ui/course-card';
+import CourseCard from '@/components/templates/course-card';
 
 async function Search({ searchParams }) {
    const { query } = await searchParams;

@@ -1,5 +1,5 @@
 // Components
-import CourseCard from '@/components/ui/course-card';
+import CourseCard from '@/components/templates/course-card';
 
 // Libs
 import fetchDataHandler from '@/lib/fetchDataHandler';
@@ -7,7 +7,7 @@ import fetchDataHandler from '@/lib/fetchDataHandler';
 export const revalidate = 60;
 
 export default async function Home() {
-   const coursesData = await fetchDataHandler('courses');
+   const coursesData = await fetchDataHandler('courses', {}, true);
 
    return (
       <section className="mx-auto max-w-1440 px-4 lg:px-[78px]">
@@ -15,7 +15,7 @@ export default async function Home() {
 
          <div className="mt-10 grid grid-cols-1 gap-7.5 sm:grid-cols-2 lg:grid-cols-3">
             {coursesData?.map(item => (
-               <CourseCard key={item} detail={item} />
+               <CourseCard key={item?.id} detail={item} />
             ))}
          </div>
       </section>

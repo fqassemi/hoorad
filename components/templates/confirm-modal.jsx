@@ -7,8 +7,8 @@ import { IoMdClose } from 'react-icons/io';
 import useOnClickOutside from '@/hooks/useOnclickOutside';
 
 // Components
-import { Modal, ModalContent } from './modal';
-import { Button } from './button';
+import { Modal, ModalContent } from '../ui/modal';
+import { Button } from '../ui/button';
 
 function ConfirmModal({ open, onClose = () => {}, title, onConfirmClick = () => {}, confirmIsLoading = false }) {
    const closeModalHandler = () => {
@@ -30,13 +30,19 @@ function ConfirmModal({ open, onClose = () => {}, title, onConfirmClick = () => 
 
                <div className="mt-6 flex items-center gap-2 child:py-1.5 child:text-sm child:text-white child:transition-all child:duration-200">
                   <Button
+                     variant="main"
                      className="flex-1 bg-green-500 hover:bg-green-700"
-                     loading={confirmIsLoading}
                      onClick={onConfirmClick}
+                     loading={confirmIsLoading}
                   >
                      تایید
                   </Button>
-                  <Button className="flex-1 bg-red-500 hover:bg-red-700" onClick={closeModalHandler}>
+                  <Button
+                     variant="main"
+                     className="flex-1 bg-red-500 hover:bg-red-700"
+                     onClick={closeModalHandler}
+                     disabled={confirmIsLoading}
+                  >
                      انصراف
                   </Button>
                </div>

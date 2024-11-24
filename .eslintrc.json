@@ -32,7 +32,8 @@
       "import/extensions": "off",
       "no-nested-ternary": "off",
       "react-refresh/only-export-components": "off",
-      "react/no-danger": "off"
+      "react/no-danger": "off",
+      "default-param-last": "off"
    },
 
    "overrides": [
