@@ -36,7 +36,7 @@ function CourseCard({ detail, isUserCard = false }) {
             {!isUserCard && <p className="mt-3 line-clamp-5 h-[100px] text-sm font-light">{detail?.description}</p>}
             <p className="mt-4 flex items-center gap-1 text-xs">
                <PiCurrencyDollarBold className="text-xl text-customOrange" />
-               قیمت : {detail?.Price}
+               قیمت : {detail?.price}
             </p>
             <div className="my-3 h-px w-full bg-[#EAEAEA] sm:my-4" />
             <div className="flex items-center justify-between">

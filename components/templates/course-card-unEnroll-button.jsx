@@ -30,6 +30,16 @@ function CourseCardUnEnrollButton({ courseId }) {
       () => setShowUnEnrollModal(false)
    );
 
+   const openEnrollModalHandler = () => {
+      setShowUnEnrollModal(true);
+      updateQueryParams(`unEnroll-modal${courseId}`, 'open');
+   };
+
+   const closeEnrollModalHandler = () => {
+      setShowUnEnrollModal(false);
+      updateQueryParams(`unEnroll-modal${courseId}`);
+   };
+
    const unEnrollHandler = () => {
       const accessToken = getCookie('courses_accessToken');
 
@@ -43,19 +53,9 @@ function CourseCardUnEnrollButton({ courseId }) {
             revalidatePathHandler('/user-courses', 'page');
             revalidatePathHandler('/(user)', 'page');
             revalidatePathHandler('/(user)/course-detail/[courseId]', 'page');
-            setShowUnEnrollModal(false);
+            closeEnrollModalHandler();
          },
       });
-   };
-
-   const openEnrollModalHandler = () => {
-      setShowUnEnrollModal(true);
-      updateQueryParams(`unEnroll-modal${courseId}`, 'open');
-   };
-
-   const closeEnrollModalHandler = () => {
-      setShowUnEnrollModal(false);
-      updateQueryParams(`unEnroll-modal${courseId}`);
    };
 
    return (

@@ -37,23 +37,6 @@ function CourseCardEnrollButton({ courseId }) {
       () => setShowEnrollModal(false)
    );
 
-   const enrollHandler = () => {
-      const accessToken = getCookie('courses_accessToken');
-
-      const newData = {
-         course_id: courseId,
-         access_token: accessToken,
-      };
-
-      enrollTrigger(newData, {
-         onSuccess: () => {
-            revalidatePathHandler('/(user)', 'page');
-            revalidatePathHandler('/(user)/course-detail/[courseId]', 'page');
-            setShowEnrollModal(false);
-         },
-      });
-   };
-
    const showEnrollModalHandler = () => {
       if (isLogin) {
          setShowEnrollModal(true);
@@ -66,6 +49,23 @@ function CourseCardEnrollButton({ courseId }) {
    const closeEnrollModalHandler = () => {
       setShowEnrollModal(false);
       updateQueryParams(`enroll-modal${courseId}`);
+   };
+
+   const enrollHandler = () => {
+      const accessToken = getCookie('courses_accessToken');
+
+      const newData = {
+         course_id: courseId,
+         access_token: accessToken,
+      };
+
+      enrollTrigger(newData, {
+         onSuccess: () => {
+            revalidatePathHandler('/(user)', 'page');
+            revalidatePathHandler('/(user)/course-detail/[courseId]', 'page');
+            closeEnrollModalHandler();
+         },
+      });
    };
 
    return (
