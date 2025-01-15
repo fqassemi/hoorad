@@ -1,0 +1,16 @@
+[
+    {
+        "id": 1,
+        "title": "Introduction to React",
+        "description": "Learn the basics of React",
+        "issuedDate": "2025-01-01",
+        "content": "This is the content of the blog."
+    },
+    {
+        "id": 2,
+        "title": "Understanding JavaScript Closures",
+        "description": "A deep dive into closures in JavaScript",
+        "issuedDate": "2025-01-05",
+        "content": "This is the content of the second blog."
+    }
+]

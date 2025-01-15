@@ -68,6 +68,7 @@ function LoginForm() {
          loginTrigger(newData, {
             onSuccess: async loginData => {
                revalidatePathHandler('/', 'layout');
+               setCookie('phoneNumber', newData?.phone_number, { maxAge: 60 * 60 * 24 * 365 }); 
                setCookie('courses_accessToken', loginData?.tokens?.access_token, { maxAge: 60 * 60 * 24 * 365 });
                setCookie('courses_refreshToken', loginData?.tokens?.refresh_token, { maxAge: 60 * 60 * 24 * 365 });
                setCookie('courses_isLogin', true, { maxAge: 60 * 60 * 24 * 365 });

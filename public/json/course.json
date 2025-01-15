@@ -1,0 +1,18 @@
+[
+    {
+        "id": 1,
+        "title": "React for Beginners",
+        "description": "A beginner course on ReactJS",
+        "price": 19.99,
+        "duration": "3 months",
+        "instructor": "John Doe"
+    },
+    {
+        "id": 2,
+        "title": "Advanced JavaScript",
+        "description": "In-depth JavaScript course for experts",
+        "price": 29.99,
+        "duration": "4 months",
+        "instructor": "Jane Smith"
+    }
+]

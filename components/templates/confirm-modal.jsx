@@ -19,7 +19,7 @@ function ConfirmModal({ open, onClose = () => {}, title, onConfirmClick = () => 
 
    return (
       <Modal open={open}>
-         <ModalContent ref={ref} className="rounded-lg bg-white px-5 py-3">
+         <ModalContent ref={ref} className="rounded-lg bg-white dark:bg-[#4e4d4d] px-5 py-3">
             <div>
                <div className="border-b border-gray-300">
                   <Button onClick={closeModalHandler} className="transition-all duration-200 hover:text-red-700">
