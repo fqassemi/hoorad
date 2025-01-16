@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import ConfirmModal from "@/components/templates/confirm-modal";
-import { FiEdit } from 'react-icons/fi';
-import { postCourse, getCourses } from '@/hooks/api/courseApi'; // Import the API functions
+import { FiEdit, FiX } from 'react-icons/fi';
+import { postCourse, getCourses, updateCourse, deleteCourse } from '@/hooks/api/courseApi'; // Import the API functions
 
 const Courses = () => {
   const [showForm, setShowForm] = useState(false);
@@ -25,8 +25,8 @@ const Courses = () => {
     course: null,
   });
 
+  // Fetch courses on initial load
   useEffect(() => {
-    // Fetch courses when the component mounts
     const fetchCourses = async () => {
       try {
         const fetchedCourses = await getCourses();
@@ -45,13 +45,13 @@ const Courses = () => {
         month: 'long',
         day: 'numeric',
       }).format(now);
-
       setDateTime(formattedDateTime);
     };
 
     updateDateTime();
   }, []);
 
+  // Set formData when dateTime changes
   useEffect(() => {
     if (dateTime) {
       setFormData((prevState) => ({
@@ -105,12 +105,16 @@ const Courses = () => {
     const { action, course } = modalState;
 
     try {
-      // Send course data to the API
-      const response = await postCourse(course);
+      let response;
+      if (action === 'add') {
+        response = await postCourse(course); // Create new course
+      } else if (action === 'edit') {
+        response = await updateCourse(course.id, course); // Update existing course
+      }
 
       if (response) {
         alert('Course successfully added/updated');
-        // You can add course to the state if the API response includes the updated list or new course
+
         if (action === 'add') {
           setCourses([...courses, response]);
         } else if (action === 'edit') {
@@ -140,20 +144,29 @@ const Courses = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const newCourse = { ...formData, issuedDate: dateTime }; // Ensure the date is included
+    const newCourse = { ...formData, issuedDate: dateTime };
     const action = editIndex !== null ? 'edit' : 'add';
 
-    // Open confirmation modal
     openConfirmModal(action, newCourse);
   };
 
   const handleEdit = (index) => {
     const courseToEdit = courses[index];
-    setFormData(courseToEdit); 
-    setEditIndex(index); 
-    setShowForm(true); 
+    setFormData(courseToEdit);
+    setEditIndex(index);
+    setShowForm(true);
   };
 
+  const handleDelete = async (courseId) => {
+    try {
+      await deleteCourse(courseId); // Delete the course
+      setCourses((prev) => prev.filter((course) => course.id !== courseId)); // Update the local state
+    } catch (error) {
+      console.error('Error deleting course:', error.message);
+    }
+  };
+
+  
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">مدیریت درس ها</h1>
@@ -266,12 +279,20 @@ const Courses = () => {
                   </div>
                 </div>
 
-                <button
-                  onClick={() => handleEdit(index)}
-                  className="mt-2 text-white py-1.5 px-2.5 rounded bg-orange-400 hover:bg-orange-500"
-                >
-                  <FiEdit className='w-4 h-4'/>
-                </button>
+                <div>
+                  <button
+                    onClick={() => handleEdit(index)}
+                    className="mt-2 text-white py-1.5 px-2 mx-1 rounded bg-orange-400 hover:bg-orange-500"
+                  >
+                    <FiEdit className='w-4 h-4' />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(course.id)}
+                    className="mt-2 text-white p-1.5 rounded bg-red-500 hover:bg-red-600"
+                  >
+                    <FiX className='w-4 h-4' />
+                  </button>
+                </div>
               </div>
             ))
           ) : (

@@ -1,77 +1,74 @@
-const API_BASE_URL = '/json/blog.json'; 
+import axios from 'axios';
 
+const API_BASE_URL = 'http://localhost:3001/blogs';
 
 export const getBlogs = async () => {
   try {
-    const response = await fetch(API_BASE_URL);
-    if (!response.ok) {
-      throw new Error('Error fetching blogs');
-    }
-    return await response.json();
+    const response = await axios.get(API_BASE_URL);
+    return response.data; // Assuming the API returns the blog list in `data`
   } catch (error) {
-    console.error('Error:', error);
-    return [];
+    console.error('Error fetching blogs:', error);
+    throw new Error('Failed to fetch blogs');
   }
 };
 
-
+// Create a new blog
 export const createBlog = async (blogData) => {
   try {
-    const response = await fetch(API_BASE_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(blogData),
+    const newBlog = {
+      title: blogData.title,
+      description: blogData.description,
+      previewImage: blogData.previewImage ? URL.createObjectURL(blogData.previewImage) : null,
+      subtitles: blogData.subtitles || [],
+      includeConclusion: blogData.includeConclusion || false,
+      issuedDate: blogData.issuedDate || new Date().toISOString(),
+      conclusion: blogData.includeConclusion ? blogData.conclusion : '',
+    };
+
+    const response = await axios.post(API_BASE_URL, newBlog, {
+      headers: { 'Content-Type': 'application/json' },
     });
 
-    if (!response.ok) {
-      throw new Error('Error creating blog');
-    }
-
-    return await response.json(); 
+    return response.data; // Return the created blog data
   } catch (error) {
-    console.error('Error:', error);
-    return null;
+    console.error('Error creating blog:', error.response?.data || error.message);
+    throw new Error('Failed to create blog');
   }
 };
 
 
-export const updateBlog = async (blogId, blogData) => {
+// Update an existing blog
+export const updateBlog = async (id, blogData) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/${blogId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(blogData),
+    const updatedBlog = {
+      title: blogData.title,
+      description: blogData.description,
+      previewImage: blogData.previewImage ? URL.createObjectURL(blogData.previewImage) : null,
+      subtitles: blogData.subtitles || [],
+      includeConclusion: blogData.includeConclusion || false,
+      issuedDate: blogData.issuedDate || new Date().toISOString(),
+      conclusion: blogData.includeConclusion ? blogData.conclusion : '',
+    };
+
+    const response = await axios.put(`${API_BASE_URL}/${id}`, updatedBlog, {
+      headers: { 'Content-Type': 'application/json' },
     });
 
-    if (!response.ok) {
-      throw new Error('Error updating blog');
-    }
-
-    return await response.json(); 
+    return response.data; // Return the updated blog data
   } catch (error) {
-    console.error('Error:', error);
-    return null;
+    console.error('Error updating blog:', error.response?.data || error.message);
+    throw new Error('Failed to update blog');
   }
 };
 
 
-// export const deleteBlog = async (blogId) => {
-//   try {
-//     const response = await fetch(`${API_BASE_URL}/${blogId}`, {
-//       method: 'DELETE',
-//     });
-
-//     if (!response.ok) {
-//       throw new Error('Error deleting blog');
-//     }
-
-//     return true; 
-//   } catch (error) {
-//     console.error('Error:', error);
-//     return false;
-//   }
-// };
+// Delete a blog (if needed in the future)
+export const deleteBlog = async (id) => {
+  try {
+    const response = await axios.delete(`${API_BASE_URL}/${id}`);
+    return response.data; // Assuming the API returns a success message
+  } catch (error) {
+    console.error('Error deleting blog:', error);
+    throw new Error('Failed to delete blog');
+  }
+};

@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import ConfirmModal from "@/components/templates/confirm-modal";
-import { FiEdit } from 'react-icons/fi';
-import { getBlogs, createBlog, updateBlog } from '@/hooks/api/blogApi'; 
+import { FiEdit, FiX } from 'react-icons/fi';
+import { getBlogs, createBlog, updateBlog, deleteBlog } from '@/hooks/api/blogApi'; 
 
 export default function Blogs() {
   const [showForm, setShowForm] = useState(false);
@@ -41,7 +41,7 @@ export default function Blogs() {
 
   useEffect(() => {
     if (dateTime) {
-      setFormData(prevState => ({
+      setFormData((prevState) => ({
         ...prevState,
         issuedDate: dateTime,
       }));
@@ -50,8 +50,12 @@ export default function Blogs() {
 
   useEffect(() => {
     const fetchBlogs = async () => {
-      const data = await getBlogs();
-      setBlogs(data);
+      try {
+        const data = await getBlogs();
+        setBlogs(data);
+      } catch (error) {
+        console.error(error.message);
+      }
     };
 
     fetchBlogs();
@@ -124,19 +128,24 @@ export default function Blogs() {
   const handleModalConfirm = async () => {
     const { action, blog } = modalState;
 
-    if (action === 'edit') {
-      const updatedBlog = await updateBlog(blog.id, blog);
-      if (updatedBlog) {
-        const updatedBlogs = blogs.map(b => (b.id === updatedBlog.id ? updatedBlog : b));
-        setBlogs(updatedBlogs);
+    try {
+      if (action === 'edit') {
+        const updatedBlog = await updateBlog(blog.id, blog);
+        setBlogs((prev) =>
+          prev.map((b) => (b.id === updatedBlog.id ? updatedBlog : b))
+        );
+      } else if (action === 'add') {
+        const createdBlog = await createBlog(blog);
+        setBlogs((prev) => [...prev, createdBlog]);
       }
-    } else if (action === 'add') {
-      const createdBlog = await createBlog(blog);
-      if (createdBlog) {
-        setBlogs([...blogs, createdBlog]);
-      }
+    } catch (error) {
+      console.error(error.message);
+    } finally {
+      resetForm();
     }
+  };
 
+  const resetForm = () => {
     setModalState({ isOpen: false, action: '', blog: null });
     setShowForm(false);
     setFormData({
@@ -148,22 +157,28 @@ export default function Blogs() {
       issuedDate: '',
       conclusion: '',
     });
+    setEditIndex(null);
   };
 
   const handleEdit = (index) => {
     const blogToEdit = blogs[index];
-    setFormData(blogToEdit);
+    setFormData({
+      ...blogToEdit,
+      previewImage: null, 
+    });
     setEditIndex(index);
     setShowForm(true);
   };
 
-  // const handleDelete = async (blogId) => {
-  //   const isDeleted = await deleteBlog(blogId);
-  //   if (isDeleted) {
-  //     const updatedBlogs = blogs.filter(blog => blog.id !== blogId);
-  //     setBlogs(updatedBlogs);
-  //   }
-  // };
+  const handleDelete = async (blogId) => {
+    try {
+      await deleteBlog(blogId); // Call the API to delete the blog
+      setBlogs((prev) => prev.filter((blog) => blog.id !== blogId)); // Update local state to remove the deleted blog
+    } catch (error) {
+      console.error(error.message); // Handle any errors
+    }
+  };
+  
 
   return (
     <div>
@@ -284,7 +299,7 @@ export default function Blogs() {
             )}
             <button
               type="submit"
-              className="w-full bg-blue-500 text-white px-6 py-3 rounded-lg shadow-md transition-transform duration-300 hover:scale-105 hover:bg-blue-600"
+              className="bg-blue-500 text-white px-6 py-3 rounded-lg shadow-md transition-transform duration-300 hover:scale-105 hover:bg-blue-600"
             >
               {editIndex !== null ? 'ویرایش بلاگ' : 'ایجاد بلاگ'}
             </button>
@@ -307,9 +322,15 @@ export default function Blogs() {
                 <div className="flex space-x-2">
                   <button
                     onClick={() => handleEdit(index)}
-                    className="text-orange-500 hover:text-orange-600"
+                    className="text-orange-500 hover:text-orange-600 mx-2"
                   >
                     <FiEdit className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(blog.id)}
+                    className="text-red-500 ring-1 ring-red-600 rounded hover:text-red-600"
+                  >
+                    <FiX className="w-4 h-4" />
                   </button>
                   
                 </div>
