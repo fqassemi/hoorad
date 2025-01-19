@@ -11,13 +11,28 @@ export function AuthProvider({ children }) {
    const checkLoginToken = getCookie('courses_isLogin') || false;
 
    const [isLogin, setIsLogin] = useState(checkLoginToken);
+   const [user, setUser] = useState(null); // { phone: "09102301234", isAdmin: true }
+
+   const login = (phone) => {
+      const isAdmin = phone === '09123456789';
+      setUser({ phone, isAdmin });
+      document.cookie = `token=${phone}; path=/;`; // Save as a cookie for middleware
+   };
+
+   const logout = () => {
+      setUser(null);
+      document.cookie = `token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
+   };
 
    const value = useMemo(
       () => ({
          isLogin,
          setIsLogin,
+         user,
+         login,
+         logout,
       }),
-      [isLogin]
+      [isLogin, user]
    );
 
    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

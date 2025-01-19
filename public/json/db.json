@@ -1,0 +1,38 @@
+{
+  "courses": [
+    {
+      "id": "1",
+      "title": "React for Beginners",
+      "description": "A beginner course on ReactJS",
+      "price": 19.99,
+      "img__URL": "images/coursePic.jpg",
+      "instructor": "John Doe"
+    },
+    {
+      "id": "2",
+      "title": "Advanced JavaScript",
+      "description": "In-depth JavaScript course for experts",
+      "price": 29.99,
+      "img__URL": "images/coursePic.jpg",
+      "instructor": "Jane Smith"
+    }
+  ],
+  "blogs": [
+    {
+      "id": "1",
+      "title": "Introduction to React",
+      "description": "Learn the basics of React",
+      "issuedDate": "2025-01-01",
+      "img__URL": "images/coursePic.jpg",
+      "content": "This is the content of the blog."
+    },
+    {
+      "id": "2",
+      "title": "Understanding JavaScript Closures",
+      "description": "A deep dive into closures in JavaScript",
+      "issuedDate": "2025-01-05",
+      "img__URL": "images/coursePic.jpg",
+      "content": "This is the content of the second blog."
+    }
+  ]
+}
