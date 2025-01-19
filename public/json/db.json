@@ -15,15 +15,6 @@
       "price": 29.99,
       "img__URL": "images/coursePic.jpg",
       "instructor": "Jane Smith"
-    },
-    {
-      "id": "add0",
-      "title": "php",
-      "description": "p",
-      "previewImage": null,
-      "price": "",
-      "files": null,
-      "issuedDate": "۲۷ دی ۱۴۰۳"
     }
   ],
   "blogs": [

@@ -9,6 +9,7 @@ export default function Blogs() {
   const [showForm, setShowForm] = useState(false);
   const [dateTime, setDateTime] = useState('');
   const [formData, setFormData] = useState({
+    id: '',
     title: '',
     description: '',
     previewImage: null,
@@ -30,7 +31,7 @@ export default function Blogs() {
       const now = new Date();
       const formattedDateTime = new Intl.DateTimeFormat('fa-IR', {
         year: 'numeric',
-        month: 'long',
+        month: 'numeric',
         day: 'numeric',
       }).format(now);
       setDateTime(formattedDateTime);
@@ -175,7 +176,7 @@ export default function Blogs() {
       await deleteBlog(blogId); // Call the API to delete the blog
       setBlogs((prev) => prev.filter((blog) => blog.id !== blogId)); // Update local state to remove the deleted blog
     } catch (error) {
-      console.error(error.message); // Handle any errors
+      console.error(error.message); 
     }
   };
   

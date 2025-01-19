@@ -16,6 +16,7 @@ export const getBlogs = async () => {
 export const createBlog = async (blogData) => {
   try {
     const newBlog = {
+      id : blogData.id,
       title: blogData.title,
       description: blogData.description,
       previewImage: blogData.previewImage ? URL.createObjectURL(blogData.previewImage) : null,
@@ -62,7 +63,7 @@ export const updateBlog = async (id, blogData) => {
 };
 
 
-// Delete a blog (if needed in the future)
+// Delete a blog
 export const deleteBlog = async (id) => {
   try {
     const response = await axios.delete(`${API_BASE_URL}/${id}`);
