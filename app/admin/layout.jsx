@@ -12,7 +12,7 @@ const AdminLayout = ({ children }) => {
       <AdminSidebar isOpen={isOpen} />  
       <div className="flex-1">
         <AdminHeader isOpen={isOpen} setOpen={setOpen} />  
-        <main className="p-4 m-0 sm:mr-52">{children}</main>
+        <main className="p-2 m-0 sm:mr-52 sm:p-4">{children}</main>
       </div>
     </div>
   );

@@ -9,7 +9,6 @@ export default function Blogs() {
   const [showForm, setShowForm] = useState(false);
   const [dateTime, setDateTime] = useState('');
   const [formData, setFormData] = useState({
-    id: '',
     title: '',
     description: '',
     previewImage: null,

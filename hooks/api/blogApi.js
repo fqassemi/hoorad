@@ -5,7 +5,7 @@ const API_BASE_URL = 'http://localhost:3001/blogs';
 export const getBlogs = async () => {
   try {
     const response = await axios.get(API_BASE_URL);
-    return response.data; // Assuming the API returns the blog list in `data`
+    return response.data; 
   } catch (error) {
     console.error('Error fetching blogs:', error);
     throw new Error('Failed to fetch blogs');
@@ -16,7 +16,6 @@ export const getBlogs = async () => {
 export const createBlog = async (blogData) => {
   try {
     const newBlog = {
-      id : blogData.id,
       title: blogData.title,
       description: blogData.description,
       previewImage: blogData.previewImage ? URL.createObjectURL(blogData.previewImage) : null,
@@ -30,7 +29,7 @@ export const createBlog = async (blogData) => {
       headers: { 'Content-Type': 'application/json' },
     });
 
-    return response.data; // Return the created blog data
+    return response.data; 
   } catch (error) {
     console.error('Error creating blog:', error.response?.data || error.message);
     throw new Error('Failed to create blog');

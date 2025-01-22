@@ -1,47 +1,40 @@
 {
   "courses": [
     {
-      "id": "1",
-      "title": "React for Beginners",
-      "description": "A beginner course on ReactJS",
-      "price": 19.99,
-      "img__URL": "images/coursePic.jpg",
-      "instructor": "John Doe"
-    },
-    {
-      "id": "2",
-      "title": "Advanced JavaScript",
-      "description": "In-depth JavaScript course for experts",
-      "price": 29.99,
-      "img__URL": "images/coursePic.jpg",
-      "instructor": "Jane Smith"
-    },
-    {
-      "id": "ab93",
-      "title": "php",
-      "description": "php is a programing language",
+      "title": "لورم ایپسوم ",
+      "description": "لورم ایپسوم یا طرح‌نما (به انگلیسی: Lorem ipsum) به متنی آزمایشی و بی‌معنی در صنعت چاپ، صفحه‌آرایی و طراحی گرافیک گفته می‌شود.",
       "previewImage": null,
-      "price": "10",
-      "files": null,
-      "issuedDate": "۳۰ دی ۱۴۰۳"
+      "sessions": [
+        {
+          "title": "لورم ایپسوم یا طرح‌نما (به انگلیسی: Lorem ipsum) ",
+          "videoFile": null,
+          "codeFile": null
+        }
+      ],
+      "price": "1000",
+      "issuedDate": "۱۴۰۳/۱۱/۲",
+      "id": "be2d"
     }
   ],
   "blogs": [
     {
-      "id": "1",
-      "title": "Introduction to React",
-      "description": "Learn the basics of React",
-      "issuedDate": "2025-01-01",
-      "img__URL": "images/coursePic.jpg",
-      "content": "This is the content of the blog."
-    },
-    {
-      "id": "2",
-      "title": "Understanding JavaScript Closures",
-      "description": "A deep dive into closures in JavaScript",
-      "issuedDate": "2025-01-05",
-      "img__URL": "images/coursePic.jpg",
-      "content": "This is the content of the second blog."
+      "id": "cc04",
+      "title": "لورم ایپسوم ",
+      "description": "لورم ایپسوم یا طرح‌نما (به انگلیسی: Lorem ipsum) به متنی آزمایشی و بی‌معنی در صنعت چاپ، صفحه‌آرایی و طراحی گرافیک گفته می‌شود.",
+      "previewImage": null,
+      "subtitles": [
+        {
+          "subtitle": "لورم ایپسوم ",
+          "explanation": "لورم ایپسوم یا طرح‌نما (به انگلیسی: Lorem ipsum) به متنی آزمایشی و بی‌معنی در صنعت چاپ، صفحه‌آرایی و طراحی گرافیک گفته می‌شود.\nلورم ایپسوم یا طرح‌نما (به انگلیسی: Lorem ipsum) به متنی آزمایشی و بی‌معنی در صنعت چاپ، صفحه‌آرایی و طراحی گرافیک گفته می‌شود."
+        },
+        {
+          "subtitle": "لورم ایپسوم ",
+          "explanation": "لورم ایپسوم یا طرح‌نما (به انگلیسی: Lorem ipsum) به متنی آزمایشی و بی‌معنی در صنعت چاپ، صفحه‌آرایی و طراحی گرافیک گفته می‌شود.\nلورم ایپسوم یا طرح‌نما (به انگلیسی: Lorem ipsum) به متنی آزمایشی و بی‌معنی در صنعت چاپ، صفحه‌آرایی و طراحی گرافیک گفته می‌شود.\nلورم ایپسوم یا طرح‌نما (به انگلیسی: Lorem ipsum) به متنی آزمایشی و بی‌معنی در صنعت چاپ، صفحه‌آرایی و طراحی گرافیک گفته می‌شود."
+        }
+      ],
+      "includeConclusion": true,
+      "issuedDate": "۱۴۰۳/۱۱/۲",
+      "conclusion": "لورم ایپسوم یا طرح‌نما (به انگلیسی: Lorem ipsum) به متنی آزمایشی و بی‌معنی در صنعت چاپ، صفحه‌آرایی و طراحی گرافیک گفته می‌شود."
     }
   ]
 }

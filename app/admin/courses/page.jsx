@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import ConfirmModal from "@/components/templates/confirm-modal";
-import { FiEdit, FiX } from 'react-icons/fi';
+import { FiEdit, FiX, FiPlus } from 'react-icons/fi';
 import { postCourse, getCourses, updateCourse, deleteCourse } from '@/hooks/api/courseApi'; // Import the API functions
 
 const Courses = () => {
@@ -13,7 +13,7 @@ const Courses = () => {
     description: '',
     price: '',
     isFree: false,
-    files: null,
+    sessions: [],
     previewImage: null,
     issuedDate: dateTime,
   });
@@ -23,9 +23,43 @@ const Courses = () => {
     isOpen: false,
     action: '',
     course: null,
+    sessionIndex: null,
   });
 
-  // Fetch courses on initial load
+  
+
+  const handleSessionTitleChange = (index, e) => {
+    const updatedSessions = [...formData.sessions];
+    updatedSessions[index].title = e.target.value;
+    setFormData({ ...formData, sessions: updatedSessions });
+  };
+  
+  const handleSessionVideoChange = (index, e) => {
+    const updatedSessions = [...formData.sessions];
+    updatedSessions[index].videoFile = e.target.files[0];
+    setFormData({ ...formData, sessions: updatedSessions });
+  };
+  
+  const handleSessionCodeChange = (index, e) => {
+    const updatedSessions = [...formData.sessions];
+    updatedSessions[index].codeFile = e.target.files[0];
+    setFormData({ ...formData, sessions: updatedSessions });
+  };
+
+
+  const addSession = () => {
+    setFormData({
+      ...formData,
+      sessions: [...formData.sessions, { title: '', videoFile: null, codeFile: null }],
+    });
+  };
+  
+  const handleRemoveSession = (index) => {
+    const updatedSessions = formData.sessions.filter((_, i) => i !== index);
+    setFormData({ ...formData, sessions: updatedSessions });
+  };
+
+
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -42,7 +76,7 @@ const Courses = () => {
       const now = new Date();
       const formattedDateTime = new Intl.DateTimeFormat('fa-IR', {
         year: 'numeric',
-        month: 'long',
+        month: 'numeric',
         day: 'numeric',
       }).format(now);
       setDateTime(formattedDateTime);
@@ -51,7 +85,6 @@ const Courses = () => {
     updateDateTime();
   }, []);
 
-  // Set formData when dateTime changes
   useEffect(() => {
     if (dateTime) {
       setFormData((prevState) => ({
@@ -60,6 +93,13 @@ const Courses = () => {
       }));
     }
   }, [dateTime]);
+
+  // useEffect(() => {
+  //   setFormData((prevState) => ({
+  //     ...prevState,
+  //     sessions: sessions,
+  //   }));
+  // }, [sessions]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -78,13 +118,6 @@ const Courses = () => {
     }
   };
 
-  const handleFileChange = (e) => {
-    setFormData({
-      ...formData,
-      files: e.target.files,
-    });
-  };
-
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setFormData({
@@ -93,80 +126,123 @@ const Courses = () => {
     });
   };
 
-  const openConfirmModal = (action, course) => {
+  const openConfirmModal = (action, course, sessionIndex = null) => {
     setModalState({
       isOpen: true,
       action,
       course,
+      sessionIndex,
     });
   };
 
   const handleModalConfirm = async () => {
-    const { action, course } = modalState;
+    const { action, course, sessionIndex } = modalState;
 
     try {
-      let response;
-      if (action === 'add') {
-        response = await postCourse(course); // Create new course
-      } else if (action === 'edit') {
-        response = await updateCourse(course.id, course); // Update existing course
-      }
-
-      if (response) {
-        alert('Course successfully added/updated');
-
+      if (action === 'removeSession' && sessionIndex !== null) {
+        handleRemoveSession(sessionIndex); 
+      } else {
+        let response;
         if (action === 'add') {
-          setCourses([...courses, response]);
+          response = await postCourse(course);
         } else if (action === 'edit') {
-          const updatedCourses = [...courses];
-          updatedCourses[editIndex] = response;
-          setCourses(updatedCourses);
+          response = await updateCourse(course.id, course);
+        }
+
+        if (response) {
+          if (action === 'add') {
+            setCourses([...courses, response]);
+          } else if (action === 'edit') {
+            const updatedCourses = [...courses];
+            updatedCourses[editIndex] = response;
+            setCourses(updatedCourses);
+          }
+
+          
+          setShowForm(false);
+          setFormData({
+            title: '',
+            description: '',
+            price: '',
+            isFree: false,
+            files: null,
+            previewImage: null,
+            issuedDate: dateTime,
+          });
         }
       }
+    } catch (error) {
+      console.error('Error handling action:', error);
+      alert('Failed to complete the action.');
+    } finally {
+      setModalState({ isOpen: false, action: '', course: null, sessionIndex: null });
+    }
+  };
 
-      setModalState({ isOpen: false, action: '', course: null });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const newCourse = {
+      ...formData,
+      // sessions,
+      issuedDate: dateTime,
+    };
+
+   
+    const action = editIndex !== null ? 'edit' : 'add';
+
+    try {
+      if (action === 'add') {
+        const response = await postCourse(newCourse);
+        setCourses((prev) => [...prev, response]);
+      } else {
+        const response = await updateCourse(courses[editIndex].id, newCourse);
+        const updatedCourses = [...courses];
+        updatedCourses[editIndex] = response;
+        setCourses(updatedCourses);
+      }
+
+
       setShowForm(false);
       setFormData({
         title: '',
         description: '',
         price: '',
         isFree: false,
-        files: null,
+        sessions: [],
         previewImage: null,
         issuedDate: dateTime,
       });
+      // setSessions([]);
+      setEditIndex(null);
     } catch (error) {
-      console.error('Failed to add/update course:', error);
-      alert('Failed to add/update course');
+      console.error('Failed to submit form:', error.message);
+      alert('خطا در ثبت یا به‌روزرسانی دوره');
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const newCourse = { ...formData, issuedDate: dateTime };
-    const action = editIndex !== null ? 'edit' : 'add';
-
-    openConfirmModal(action, newCourse);
-  };
 
   const handleEdit = (index) => {
     const courseToEdit = courses[index];
-    setFormData(courseToEdit);
+    setFormData({
+      ...courseToEdit,
+      sessions: courseToEdit.sessions || [],
+    });
     setEditIndex(index);
     setShowForm(true);
   };
+  
 
   const handleDelete = async (courseId) => {
     try {
-      await deleteCourse(courseId); // Delete the course
+      await deleteCourse(courseId);
       setCourses((prev) => prev.filter((course) => course.id !== courseId)); // Update the local state
     } catch (error) {
       console.error('Error deleting course:', error.message);
     }
   };
 
-  
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">مدیریت درس ها</h1>
@@ -178,10 +254,9 @@ const Courses = () => {
         {showForm ? 'بستن فرم' : 'ایجاد دوره جدید'}
       </button>
 
-      {/* Form to add or edit a course */}
+
       {showForm && (
         <form onSubmit={handleSubmit} className="mt-6 space-y-4 bg-[#f9f9f9] dark:bg-gray-800 p-6 rounded shadow-md">
-          {/* Form fields */}
           <div>
             <label className="block text-sm font-bold mb-1">عنوان دوره</label>
             <input
@@ -225,8 +300,10 @@ const Courses = () => {
             <label>دوره رایگان است</label>
           </div>
           <div>
-            <label className="block text-sm font-bold mb-1">عکس پیش نمایش:</label>
-            <input type="file" accept="image/*" onChange={handleImageChange} className="w-full px-4 py-2 border rounded" />
+
+            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">عکس پیش نمایش:</label>
+            <input type="file" accept="image/*" id='pic_input' onChange={handleImageChange} className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" />
+
             {formData.previewImage && (
               <div className="mt-3">
                 <p>پیش نمایش:</p>
@@ -235,14 +312,56 @@ const Courses = () => {
             )}
           </div>
           <div>
-            <label className="block text-sm font-bold mb-1">فایل‌های دوره</label>
-            <input
-              type="file"
-              multiple
-              onChange={handleFileChange}
-              className="w-full px-4 py-2 border rounded"
-            />
+            <button
+              type="button"
+              onClick={addSession}
+              className="flex items-center space-x-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              <FiPlus className="w-4 h-4" />
+              <span>افزودن جلسه جدید</span>
+            </button>
           </div>
+
+          {formData.sessions.map((session, index) => (
+            <div key={index} className="mt-4 p-4 border rounded space-y-3">
+              <button
+                type="button"
+                onClick={() => openConfirmModal('removeSession', null, index)}
+                className="mt-2 text-white p-1.5 rounded bg-red-500 hover:bg-red-600"
+              >
+                <FiX className="w-4 h-4" />
+              </button>
+              <div>
+                <label className="block text-sm font-bold mb-1">عنوان جلسه {index + 1}</label>
+                <input
+                  type="text"
+                  value={session.title}
+                  onChange={(e) => handleSessionTitleChange(index, e)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold mb-1">فایل ویدیو</label>
+                <input
+                  type="file"
+                  accept="video/*"
+                  onChange={(e) => handleSessionVideoChange(index, e)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold mb-1">فایل کد</label>
+                <input
+                  type="file"
+                  accept=".zip,.rar,.tar,.tar.gz"
+                  onChange={(e) => handleSessionCodeChange(index, e)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+
+            </div>
+          ))}
 
           <button
             type="submit"
@@ -303,8 +422,14 @@ const Courses = () => {
 
       <ConfirmModal
         open={modalState.isOpen}
-        onClose={() => setModalState({ isOpen: false, action: '', course: null })}
-        title={modalState.action === 'edit' ? 'آیا مطمئن هستید که می‌خواهید این دوره را ویرایش کنید؟' : 'آیا مطمئن هستید که می‌خواهید این دوره را اضافه کنید؟'}
+        onClose={() => setModalState({ isOpen: false, action: '', course: null, sessionIndex: null })}
+        title={
+          modalState.action === 'removeSession'
+            ? 'آیا مطمئن هستید که می‌خواهید این جلسه را حذف کنید؟'
+            : modalState.action === 'edit'
+              ? 'آیا مطمئن هستید که می‌خواهید این دوره را ویرایش کنید؟'
+              : 'آیا مطمئن هستید که می‌خواهید این دوره را اضافه کنید؟'
+        }
         onConfirmClick={handleModalConfirm}
       />
     </div>

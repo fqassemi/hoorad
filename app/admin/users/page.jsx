@@ -128,10 +128,10 @@ export default function Users() {
                 key={user.id}
                 className={`text-gray-800 dark:text-white ${index%2===0? 'bg-white':'bg-blue-200'} dark:${index%2===0? 'bg-gray-800':'bg-gray-500'}`}
               >
-                <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.id}</td>
-                <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.name}</td>
-                <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.username}</td>
-                <td style={{ border: '1px solid #ddd', padding: '8px' }}>{user.phone}</td>
+                <td style={{ border: '1px solid #ddd', padding: '8px' }} className='text-xs sm:text-base'>{user.id}</td>
+                <td style={{ border: '1px solid #ddd', padding: '8px' }} className='text-xs sm:text-base'>{user.name}</td>
+                <td style={{ border: '1px solid #ddd', padding: '8px' }} className='text-xs sm:text-base'>{user.username}</td>
+                <td style={{ border: '1px solid #ddd', padding: '8px' }} className='text-xs sm:text-base'>{user.phone}</td>
               </tr>
             ))}
           </tbody>
