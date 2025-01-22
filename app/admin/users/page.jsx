@@ -3,6 +3,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import CircularLoader from '@/components/ui/circular-loader';
 
 export default function Users() {
   const [users, setUsers] = useState([]);
@@ -18,7 +19,7 @@ export default function Users() {
         const data = await response.json();
         setUsers(data); // Store fetched users in state
         console.log(data);
-        
+
       } catch (err) {
         setError('Failed to fetch users');
         console.error('Error fetching users:', err);
@@ -39,7 +40,9 @@ export default function Users() {
   );
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className='flex justify-center items-center h-screen'>
+      <CircularLoader/>
+    </div>;
   }
 
   if (error) {
@@ -60,7 +63,7 @@ export default function Users() {
           <h2>لیست کاربران</h2>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="py-1 px-2 rounded ring-1 ring-blue-500 text-sm flex items-center"
+            className="py-1 px-2 rounded ring-1 ring-orange-500 text-sm flex items-center"
           >
             <span className="mr-1">{showFilters ? ' بستن فیلتر' : 'فیلتر'}</span>
             <svg
@@ -88,21 +91,21 @@ export default function Users() {
                 placeholder="نام"
                 value={filters.name}
                 onChange={(e) => setFilters({ ...filters, name: e.target.value })}
-                className="py-3 px-2 rounded rounded-l-none ring-1 ring-blue-500 outline-none text-sm dark:bg-gray-800"
+                className="py-3 px-2 rounded rounded-l-none ring-1 ring-orange-500 outline-none text-sm dark:bg-gray-800"
               />
               <input
                 type="text"
                 placeholder="نام خانوادگی"
                 value={filters.family}
                 onChange={(e) => setFilters({ ...filters, family: e.target.value })}
-                className="py-3 px-2 rounded rounded-s-none rounded-l-none ring-1 ring-blue-500 outline-none text-sm dark:bg-gray-800"
+                className="py-3 px-2 rounded rounded-s-none rounded-l-none ring-1 ring-orange-500 outline-none text-sm dark:bg-gray-800"
               />
               <input
                 type="text"
                 placeholder="شماره تلفن"
                 value={filters.phone__number}
                 onChange={(e) => setFilters({ ...filters, phone__number: e.target.value })}
-                className="py-3 px-2 rounded rounded-s-none ring-1 ring-blue-500 outline-none text-sm dark:bg-gray-800"
+                className="py-3 px-2 rounded rounded-s-none ring-1 ring-orange-500 outline-none text-sm dark:bg-gray-800"
               />
             </div>
             <p className="text-sm">
@@ -126,7 +129,10 @@ export default function Users() {
             {filteredUsers.map((user, index) => (
               <tr
                 key={user.id}
-                className={`text-gray-800 dark:text-white ${index%2===0? 'bg-white':'bg-blue-200'} dark:${index%2===0? 'bg-gray-800':'bg-gray-500'}`}
+                className={`text-gray-800 dark:text-white ${index % 2 === 0
+                    ? 'bg-white dark:bg-gray-800'
+                    : 'bg-gray-300 dark:bg-orange-500'
+                  }`}
               >
                 <td style={{ border: '1px solid #ddd', padding: '8px' }} className='text-xs sm:text-base'>{user.id}</td>
                 <td style={{ border: '1px solid #ddd', padding: '8px' }} className='text-xs sm:text-base'>{user.name}</td>

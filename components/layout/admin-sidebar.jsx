@@ -35,14 +35,14 @@ export default function AdminSidebar({ isOpen }) {
         } sm:right-0`}
     >
       <h2 className="text-xl font-bold mb-4 flex items-center">
-        <FiGrid className="h-6 w-6 mx-1 text-blue-600 dark:text-blue-400" />
+        <FiGrid className="h-6 w-6 mx-1 text-orange-500" />
         پنل ادمین
       </h2>
       <ul>
         <li>
           <Link href="/admin">
             <div
-              className={`block p-2 rounded transition-all ease-in-out ${isActive('/admin') ? 'text-blue-500 font-semibold' : 'hover:text-blue-700 dark:hover:text-blue-400'
+              className={`block p-2 rounded transition-all ease-in-out ${isActive('/admin') ? 'text-orange-500 font-semibold' : 'hover:text-orange-600'
                 }`}
             >
               <div className="flex items-center">
@@ -55,7 +55,7 @@ export default function AdminSidebar({ isOpen }) {
         <li>
           <Link href="/admin/courses">
             <div
-              className={`block p-2 rounded transition-all ease-in-out ${isActive('/admin/courses') ? 'text-blue-500 font-semibold' : 'hover:text-blue-700 dark:hover:text-blue-400'
+              className={`block p-2 rounded transition-all ease-in-out ${isActive('/admin/courses') ? 'text-orange-500 font-semibold' : 'hover:text-orange-600'
                 }`}
             >
               <div className="flex items-center">
@@ -68,7 +68,7 @@ export default function AdminSidebar({ isOpen }) {
         <li>
           <Link href="/admin/users">
             <div
-              className={`block p-2 rounded transition-all ease-in-out ${isActive('/admin/users') ? 'text-blue-500 font-semibold' : 'hover:text-blue-700 dark:hover:text-blue-400'
+              className={`block p-2 rounded transition-all ease-in-out ${isActive('/admin/users') ? 'text-orange-500 font-semibold' : 'hover:text-orange-600'
                 }`}
             >
               <div className="flex items-center">
@@ -81,7 +81,7 @@ export default function AdminSidebar({ isOpen }) {
         <li>
           <Link href="/admin/blogs">
             <div
-              className={`block p-2 rounded transition-all ease-in-out ${isActive('/admin/blogs') ? 'text-blue-500 font-semibold' : 'hover:text-blue-700 dark:hover:text-blue-400'
+              className={`block p-2 rounded transition-all ease-in-out ${isActive('/admin/blogs') ? 'text-orange-500 font-semibold' : 'hover:text-orange-600'
                 }`}
             >
               <div className="flex items-center">

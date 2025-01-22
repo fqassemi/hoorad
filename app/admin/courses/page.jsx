@@ -26,20 +26,20 @@ const Courses = () => {
     sessionIndex: null,
   });
 
-  
+
 
   const handleSessionTitleChange = (index, e) => {
     const updatedSessions = [...formData.sessions];
     updatedSessions[index].title = e.target.value;
     setFormData({ ...formData, sessions: updatedSessions });
   };
-  
+
   const handleSessionVideoChange = (index, e) => {
     const updatedSessions = [...formData.sessions];
     updatedSessions[index].videoFile = e.target.files[0];
     setFormData({ ...formData, sessions: updatedSessions });
   };
-  
+
   const handleSessionCodeChange = (index, e) => {
     const updatedSessions = [...formData.sessions];
     updatedSessions[index].codeFile = e.target.files[0];
@@ -53,7 +53,7 @@ const Courses = () => {
       sessions: [...formData.sessions, { title: '', videoFile: null, codeFile: null }],
     });
   };
-  
+
   const handleRemoveSession = (index) => {
     const updatedSessions = formData.sessions.filter((_, i) => i !== index);
     setFormData({ ...formData, sessions: updatedSessions });
@@ -140,7 +140,7 @@ const Courses = () => {
 
     try {
       if (action === 'removeSession' && sessionIndex !== null) {
-        handleRemoveSession(sessionIndex); 
+        handleRemoveSession(sessionIndex);
       } else {
         let response;
         if (action === 'add') {
@@ -158,7 +158,7 @@ const Courses = () => {
             setCourses(updatedCourses);
           }
 
-          
+
           setShowForm(false);
           setFormData({
             title: '',
@@ -188,7 +188,7 @@ const Courses = () => {
       issuedDate: dateTime,
     };
 
-   
+
     const action = editIndex !== null ? 'edit' : 'add';
 
     try {
@@ -231,7 +231,7 @@ const Courses = () => {
     setEditIndex(index);
     setShowForm(true);
   };
-  
+
 
   const handleDelete = async (courseId) => {
     try {
@@ -249,7 +249,7 @@ const Courses = () => {
 
       <button
         onClick={() => setShowForm(!showForm)}
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
       >
         {showForm ? 'بستن فرم' : 'ایجاد دوره جدید'}
       </button>
@@ -257,35 +257,44 @@ const Courses = () => {
 
       {showForm && (
         <form onSubmit={handleSubmit} className="mt-6 space-y-4 bg-[#f9f9f9] dark:bg-gray-800 p-6 rounded shadow-md">
-          <div>
-            <label className="block text-sm font-bold mb-1">عنوان دوره</label>
+          <div className='relative w-full'>
+            <label htmlFor='courseTitle'
+              className={`absolute text-sm font-semibold transition-all duration-200 
+                ${formData.title ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/2 right-4 translate-y-[-50%] text-gray-400 text-base'}`}>عنوان دوره</label>
             <input
+              id='courseTitle'
               type="text"
               name="title"
               value={formData.title}
               onChange={handleInputChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-800"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 text-gray-800"
               required
             />
           </div>
-          <div>
-            <label className="block text-sm font-bold mb-1">توضیحات دوره</label>
+          <div className='relative w-full'>
+            <label htmlFor='courseDescription'
+              className={`absolute text-sm font-semibold transition-all duration-200 
+                ${formData.description ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/4 right-4 translate-y-[-50%] text-gray-400 text-base'}`}>توضیحات دوره</label>
             <textarea
+              id='courseDescription'
               name="description"
               value={formData.description}
               onChange={handleInputChange}
-              className="text-gray-800 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="text-gray-800 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
               required
             ></textarea>
           </div>
-          <div>
-            <label className="block text-sm font-bold mb-1">قیمت دوره (تومان)</label>
+          <div className='relative w-full'>
+            <label htmlFor='coursePrice'
+              className={`absolute text-sm font-semibold transition-all duration-200 
+                ${formData.price ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/2 right-4 translate-y-[-50%] text-gray-400 text-base'}`}>قیمت دوره (تومان)</label>
             <input
+              id='coursePrice'
               type="text"
               name="price"
               value={formData.price}
               onChange={handleInputChange}
-              className="text-gray-800 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="text-gray-800 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
               disabled={formData.isFree}
             />
           </div>
@@ -315,7 +324,7 @@ const Courses = () => {
             <button
               type="button"
               onClick={addSession}
-              className="flex items-center space-x-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              className="flex items-center space-x-2 bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
             >
               <FiPlus className="w-4 h-4" />
               <span>افزودن جلسه جدید</span>
@@ -331,13 +340,16 @@ const Courses = () => {
               >
                 <FiX className="w-4 h-4" />
               </button>
-              <div>
-                <label className="block text-sm font-bold mb-1">عنوان جلسه {index + 1}</label>
+              <div className='relative w-full'>
+                <label htmlFor='courseSession'
+                  className={`absolute text-sm font-semibold transition-all duration-200 
+                ${session.title ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/2 right-4 translate-y-[-50%] text-gray-400 text-base'}`}>عنوان جلسه {index + 1}</label>
                 <input
+                  id='courseSession'
                   type="text"
                   value={session.title}
                   onChange={(e) => handleSessionTitleChange(index, e)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
                   required
                 />
               </div>

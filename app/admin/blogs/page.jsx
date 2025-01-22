@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import ConfirmModal from "@/components/templates/confirm-modal";
 import { FiEdit, FiX } from 'react-icons/fi';
-import { getBlogs, createBlog, updateBlog, deleteBlog } from '@/hooks/api/blogApi'; 
+import { getBlogs, createBlog, updateBlog, deleteBlog } from '@/hooks/api/blogApi';
 
 export default function Blogs() {
   const [showForm, setShowForm] = useState(false);
@@ -164,7 +164,7 @@ export default function Blogs() {
     const blogToEdit = blogs[index];
     setFormData({
       ...blogToEdit,
-      previewImage: null, 
+      previewImage: null,
     });
     setEditIndex(index);
     setShowForm(true);
@@ -175,10 +175,10 @@ export default function Blogs() {
       await deleteBlog(blogId); // Call the API to delete the blog
       setBlogs((prev) => prev.filter((blog) => blog.id !== blogId)); // Update local state to remove the deleted blog
     } catch (error) {
-      console.error(error.message); 
+      console.error(error.message);
     }
   };
-  
+
 
   return (
     <div>
@@ -186,7 +186,7 @@ export default function Blogs() {
         <h1 className="text-3xl font-bold mb-6 tracking-wide">مدیریت مقالات و بلاگ</h1>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="bg-blue-500 text-white px-6 py-2 rounded-lg shadow-md transition-transform duration-300 hover:scale-105 hover:bg-blue-600"
+          className="bg-orange-500 text-white px-6 py-2 rounded-lg shadow-md transition-transform duration-300 hover:scale-105 hover:bg-orange-600"
         >
           {showForm ? 'بستن فرم' : 'ایجاد بلاگ جدید'}
         </button>
@@ -196,24 +196,34 @@ export default function Blogs() {
             onSubmit={handleSubmit}
             className="mt-8 space-y-6 bg-white dark:bg-[#4e4d4d] text-gray-700 dark:text-gray-900 transition-all duration-300 p-8 rounded-xl shadow-xl animate-fade-in"
           >
-            <div>
-              <label className="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">عنوان اصلی بلاگ</label>
+            <div className="relative w-full">
+              <label
+                htmlFor="blogTitle"
+                className={`absolute text-sm font-semibold transition-all duration-200 
+                ${formData.title ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/2 right-4 translate-y-[-50%] text-gray-400 text-base'}`}
+              >
+                عنوان اصلی بلاگ
+              </label>
               <input
+                id='blogTitle'
                 type="text"
                 name="title"
                 value={formData.title}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full px-4 pt-3 pb-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
                 required
               />
             </div>
-            <div>
-              <label className="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">محتوای بلاگ</label>
+
+            <div className="relative w-full">
+              <label htmlFor='blogDescription' className={`absolute text-sm font-semibold transition-all duration-200 
+                ${formData.description ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/4 right-4 translate-y-[-50%] text-gray-400 text-base'}`}>محتوای بلاگ</label>
               <textarea
+                id='blogDescription'
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
                 required
               ></textarea>
             </div>
@@ -248,13 +258,13 @@ export default function Blogs() {
                     type="text"
                     value={subtitle.subtitle}
                     onChange={(e) => handleSubtitleChange(index, 'subtitle', e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
                     required
                   />
                   <textarea
                     value={subtitle.explanation}
                     onChange={(e) => handleSubtitleChange(index, 'explanation', e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
                     placeholder="توضیحات"
                     required
                   ></textarea>
@@ -270,7 +280,7 @@ export default function Blogs() {
               <button
                 type="button"
                 onClick={handleAddSubtitle}
-                className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md transition-transform duration-300 hover:scale-105 hover:bg-blue-600"
+                className="bg-orange-500 text-white px-4 py-2 rounded-lg shadow-md transition-transform duration-300 hover:scale-105 hover:bg-orange-600"
               >
                 افزودن زیرعنوان جدید
               </button>
@@ -287,19 +297,23 @@ export default function Blogs() {
               />
             </div>
             {formData.includeConclusion && (
-              <div>
-                <label className="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">نتیجه‌گیری</label>
+              <div className='relative w-full'>
+                <label
+                  htmlFor='blogConclusion'
+                  className={`absolute text-sm font-semibold transition-all duration-200 
+                ${formData.conclusion ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/4 right-4 translate-y-[-50%] text-gray-400 text-base'}`}>نتیجه‌گیری</label>
                 <textarea
+                  id='blogConclusion'
                   name="conclusion"
                   value={formData.conclusion}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-orange-400"
                 ></textarea>
               </div>
             )}
             <button
               type="submit"
-              className="bg-blue-500 text-white px-6 py-3 rounded-lg shadow-md transition-transform duration-300 hover:scale-105 hover:bg-blue-600"
+              className="bg-orange-500 text-white px-6 py-3 rounded-lg shadow-md transition-transform duration-300 hover:scale-105 hover:bg-orange-600"
             >
               {editIndex !== null ? 'ویرایش بلاگ' : 'ایجاد بلاگ'}
             </button>
@@ -307,7 +321,7 @@ export default function Blogs() {
         )}
       </div>
 
-      
+
       <div className="bg-[#f9f9f9] dark:bg-gray-800 rounded-md p-6 mt-6">
         <h2 className="text-xl font-bold">بلاگ های اضافه شده</h2>
         <div className="mt-4 space-y-4">
@@ -332,7 +346,7 @@ export default function Blogs() {
                   >
                     <FiX className="w-4 h-4" />
                   </button>
-                  
+
                 </div>
               </div>
             ))
