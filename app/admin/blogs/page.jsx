@@ -328,25 +328,29 @@ export default function Blogs() {
           {blogs.length > 0 ? (
             blogs.map((blog, index) => (
               <div key={blog.id} className="bg-white dark:bg-gray-800 p-4 border dark:border-white rounded flex justify-between items-center shadow-md dark:shadow-gray-700">
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold">{blog.title}</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">{blog.description}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">{blog.issuedDate}</p>
-                </div>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => handleEdit(index)}
-                    className="text-orange-500 hover:text-orange-600 mx-2"
-                  >
-                    <FiEdit className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(blog.id)}
-                    className="text-red-500 ring-1 ring-red-600 rounded hover:text-red-600"
-                  >
-                    <FiX className="w-4 h-4" />
-                  </button>
-
+                <div className="flex flex-1 flex-col md:flex-row justify-between items-center">
+                  {blog.previewImage && <img src={blog.previewImage} alt="preview" className='rounded mb-5 md:mb-0 w-full md:w-30 h-64 md:h-30' />}
+                  <div className='mx-3'>
+                    <h3 className="text-lg font-semibold">{blog.title}</h3>
+                    <p className='text-sm text-gray-400'>{blog.description.split(' ').length > 20
+                      ? blog.description.split(' ').slice(0, 20).join(' ') + '...'
+                      : blog.description}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">{blog.issuedDate}</p>
+                  </div>
+                  <div className='flex'>
+                    <button
+                      onClick={() => handleEdit(index)}
+                      className="text-orange-500 hover:text-orange-600 mx-1"
+                    >
+                      <FiEdit className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(blog.id)}
+                      className="text-red-500 ring-1 ring-red-600 rounded hover:text-red-600"
+                    >
+                      <FiX className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))

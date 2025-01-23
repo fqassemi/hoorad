@@ -31,7 +31,7 @@ export default function AdminSidebar({ isOpen }) {
 
   return (
     <div
-      className={`h-screen w-full fixed bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-4 rounded-xl rounded-s-none sm:w-52 transition-all duration-1000  ${isOpen ? 'left-0' : 'left-full'
+      className={`h-screen z-50 w-full fixed bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-4 rounded-bl-xl sm:w-52 transition-all duration-1000  ${isOpen ? 'left-0' : 'left-full'
         } sm:right-0`}
     >
       <h2 className="text-xl font-bold mb-4 flex items-center">

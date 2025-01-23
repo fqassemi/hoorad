@@ -94,12 +94,6 @@ const Courses = () => {
     }
   }, [dateTime]);
 
-  // useEffect(() => {
-  //   setFormData((prevState) => ({
-  //     ...prevState,
-  //     sessions: sessions,
-  //   }));
-  // }, [sessions]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -226,6 +220,7 @@ const Courses = () => {
     const courseToEdit = courses[index];
     setFormData({
       ...courseToEdit,
+      previewImage: null,
       sessions: courseToEdit.sessions || [],
     });
     setEditIndex(index);
@@ -331,49 +326,51 @@ const Courses = () => {
             </button>
           </div>
 
-          {formData.sessions.map((session, index) => (
-            <div key={index} className="mt-4 p-4 border rounded space-y-3">
-              <button
-                type="button"
-                onClick={() => openConfirmModal('removeSession', null, index)}
-                className="mt-2 text-white p-1.5 rounded bg-red-500 hover:bg-red-600"
-              >
-                <FiX className="w-4 h-4" />
-              </button>
-              <div className='relative w-full'>
-                <label htmlFor='courseSession'
-                  className={`absolute text-sm font-semibold transition-all duration-200 
+          <div className='h-80 overflow-y-scroll'>
+            {formData.sessions.map((session, index) => (
+              <div key={index} className="mt-4 p-4 border rounded space-y-3 shadow-md">
+                <button
+                  type="button"
+                  onClick={() => openConfirmModal('removeSession', null, index)}
+                  className="mt-2 text-white p-1.5 rounded bg-red-500 hover:bg-red-600"
+                >
+                  <FiX className="w-4 h-4" />
+                </button>
+                <div className='relative w-full'>
+                  <label htmlFor='courseSession'
+                    className={`absolute text-sm font-semibold transition-all duration-200 
                 ${session.title ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/2 right-4 translate-y-[-50%] text-gray-400 text-base'}`}>عنوان جلسه {index + 1}</label>
-                <input
-                  id='courseSession'
-                  type="text"
-                  value={session.title}
-                  onChange={(e) => handleSessionTitleChange(index, e)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-bold mb-1">فایل ویدیو</label>
-                <input
-                  type="file"
-                  accept="video/*"
-                  onChange={(e) => handleSessionVideoChange(index, e)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-bold mb-1">فایل کد</label>
-                <input
-                  type="file"
-                  accept=".zip,.rar,.tar,.tar.gz"
-                  onChange={(e) => handleSessionCodeChange(index, e)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                />
-              </div>
+                  <input
+                    id='courseSession'
+                    type="text"
+                    value={session.title}
+                    onChange={(e) => handleSessionTitleChange(index, e)}
+                    className="w-full px-4 py-2 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold mb-1">فایل ویدیو</label>
+                  <input
+                    type="file"
+                    accept="video/*"
+                    onChange={(e) => handleSessionVideoChange(index, e)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold mb-1">فایل کد</label>
+                  <input
+                    type="file"
+                    accept=".zip,.rar,.tar,.tar.gz"
+                    onChange={(e) => handleSessionCodeChange(index, e)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  />
+                </div>
 
-            </div>
-          ))}
+              </div>
+            ))}
+          </div>
 
           <button
             type="submit"
@@ -389,40 +386,39 @@ const Courses = () => {
         <div className="mt-4 space-y-4">
           {courses.length > 0 ? (
             courses.map((course, index) => (
-              <div key={index} className="p-4 border rounded flex justify-between items-center shadow-md">
-                <div className='flex'>
+              <div key={index} className="p-4 border rounded shadow-md">
+                <div className='flex items-center justify-between flex-col md:flex-row'>
                   {course.previewImage && (
-                    <div className="mt-2">
+                    <div className="mt-2 w-full h-64 md:h-30 md:w-30">
                       <img
-                        src={URL.createObjectURL(course.previewImage)}
+                        src={course.previewImage}
                         alt="preview"
-                        className="w-32 h-32 rounded object-cover"
+                        className="rounded w-full h-full"
                       />
                     </div>
                   )}
-                  <div className='mx-3 mt-3'>
+                  <div className='mt-3 mx-3'>
                     <h3 className="text-lg font-semibold">{course.title}</h3>
-                    <p className='text-sm text-gray-400'>{course.description.split(' ').length > 20
+                    <p className='text-sm text-gray-400 text-wrap '>{course.description.split(' ').length > 20
                       ? course.description.split(' ').slice(0, 20).join(' ') + '...'
                       : course.description}</p>
                     <p className="mt-2 text-sm text-gray-400">قیمت: {course.isFree ? 'رایگان' : `${course.price} تومان`}</p>
                     <p className="mt-2 text-xs text-gray-500">تاریخ ایجاد: {course.issuedDate}</p>
                   </div>
-                </div>
-
-                <div>
-                  <button
-                    onClick={() => handleEdit(index)}
-                    className="mt-2 text-white py-1.5 px-2 mx-1 rounded bg-orange-400 hover:bg-orange-500"
-                  >
-                    <FiEdit className='w-4 h-4' />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(course.id)}
-                    className="mt-2 text-white p-1.5 rounded bg-red-500 hover:bg-red-600"
-                  >
-                    <FiX className='w-4 h-4' />
-                  </button>
+                  <div className='flex'>
+                    <button
+                      onClick={() => handleEdit(index)}
+                      className="mt-2 text-white py-1.5 px-2 mx-1 rounded bg-orange-400 hover:bg-orange-500"
+                    >
+                      <FiEdit className='w-4 h-4' />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(course.id)}
+                      className="mt-2 text-white p-1.5 rounded bg-red-500 hover:bg-red-600"
+                    >
+                      <FiX className='w-4 h-4' />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))
