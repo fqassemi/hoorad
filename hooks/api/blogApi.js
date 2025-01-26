@@ -12,17 +12,15 @@ export const getBlogs = async () => {
   }
 };
 
-// Create a new blog
 export const createBlog = async (blogData) => {
   try {
     const newBlog = {
+      id : blogData.id,
       title: blogData.title,
-      description: blogData.description,
+      plainText : blogData.plainText,
+      html : blogData.html,
       previewImage: blogData.previewImage ? URL.createObjectURL(blogData.previewImage) : null,
-      subtitles: blogData.subtitles || [],
-      includeConclusion: blogData.includeConclusion || false,
       issuedDate: blogData.issuedDate || new Date().toISOString(),
-      conclusion: blogData.includeConclusion ? blogData.conclusion : '',
     };
 
     const response = await axios.post(API_BASE_URL, newBlog, {
@@ -36,37 +34,32 @@ export const createBlog = async (blogData) => {
   }
 };
 
-
-// Update an existing blog
 export const updateBlog = async (id, blogData) => {
   try {
     const updatedBlog = {
+      id : blogData.id,
       title: blogData.title,
-      description: blogData.description,
+      plainText : blogData.plainText,
+      html : blogData.html,
       previewImage: blogData.previewImage ? URL.createObjectURL(blogData.previewImage) : null,
-      subtitles: blogData.subtitles || [],
-      includeConclusion: blogData.includeConclusion || false,
       issuedDate: blogData.issuedDate || new Date().toISOString(),
-      conclusion: blogData.includeConclusion ? blogData.conclusion : '',
     };
 
     const response = await axios.put(`${API_BASE_URL}/${id}`, updatedBlog, {
       headers: { 'Content-Type': 'application/json' },
     });
 
-    return response.data; // Return the updated blog data
+    return response.data;
   } catch (error) {
     console.error('Error updating blog:', error.response?.data || error.message);
     throw new Error('Failed to update blog');
   }
 };
 
-
-// Delete a blog
 export const deleteBlog = async (id) => {
   try {
     const response = await axios.delete(`${API_BASE_URL}/${id}`);
-    return response.data; // Assuming the API returns a success message
+    return response.data; 
   } catch (error) {
     console.error('Error deleting blog:', error);
     throw new Error('Failed to delete blog');

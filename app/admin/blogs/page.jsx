@@ -5,17 +5,18 @@ import ConfirmModal from "@/components/templates/confirm-modal";
 import { FiEdit, FiX } from 'react-icons/fi';
 import { getBlogs, createBlog, updateBlog, deleteBlog } from '@/hooks/api/blogApi';
 
+import DraftEditor from './draft';
+
 export default function Blogs() {
   const [showForm, setShowForm] = useState(false);
   const [dateTime, setDateTime] = useState('');
   const [formData, setFormData] = useState({
+    id: '',
     title: '',
-    description: '',
+    plainText: '',
+    html: '',
     previewImage: null,
-    subtitles: [],
-    includeConclusion: false,
     issuedDate: dateTime,
-    conclusion: '',
   });
   const [blogs, setBlogs] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
@@ -78,27 +79,27 @@ export default function Blogs() {
     }
   };
 
-  const handleSubtitleChange = (index, key, value) => {
-    const updatedSubtitles = [...formData.subtitles];
-    updatedSubtitles[index] = {
-      ...updatedSubtitles[index],
-      [key]: value,
-    };
-    setFormData({ ...formData, subtitles: updatedSubtitles });
-  };
+  // const handleSubtitleChange = (index, key, value) => {
+  //   const updatedSubtitles = [...formData.subtitles];
+  //   updatedSubtitles[index] = {
+  //     ...updatedSubtitles[index],
+  //     [key]: value,
+  //   };
+  //   setFormData({ ...formData, subtitles: updatedSubtitles });
+  // };
 
-  const handleAddSubtitle = () => {
-    setFormData({
-      ...formData,
-      subtitles: [...formData.subtitles, { subtitle: '', explanation: '' }],
-    });
-  };
+  // const handleAddSubtitle = () => {
+  //   setFormData({
+  //     ...formData,
+  //     subtitles: [...formData.subtitles, { subtitle: '', explanation: '' }],
+  //   });
+  // };
 
-  const handleRemoveSubtitle = (index) => {
-    const updatedSubtitles = [...formData.subtitles];
-    updatedSubtitles.splice(index, 1);
-    setFormData({ ...formData, subtitles: updatedSubtitles });
-  };
+  // const handleRemoveSubtitle = (index) => {
+  //   const updatedSubtitles = [...formData.subtitles];
+  //   updatedSubtitles.splice(index, 1);
+  //   setFormData({ ...formData, subtitles: updatedSubtitles });
+  // };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -127,7 +128,7 @@ export default function Blogs() {
 
   const handleModalConfirm = async () => {
     const { action, blog } = modalState;
-
+  
     try {
       if (action === 'edit') {
         const updatedBlog = await updateBlog(blog.id, blog);
@@ -137,6 +138,9 @@ export default function Blogs() {
       } else if (action === 'add') {
         const createdBlog = await createBlog(blog);
         setBlogs((prev) => [...prev, createdBlog]);
+      } else if (action === 'delete') {
+        await deleteBlog(blog.id); 
+        setBlogs((prev) => prev.filter((b) => b.id !== blog.id)); 
       }
     } catch (error) {
       console.error(error.message);
@@ -149,19 +153,19 @@ export default function Blogs() {
     setModalState({ isOpen: false, action: '', blog: null });
     setShowForm(false);
     setFormData({
+      id: '',
       title: '',
-      description: '',
+      plainText: '',
+      html: '',
       previewImage: null,
-      subtitles: [],
-      includeConclusion: false,
       issuedDate: '',
-      conclusion: '',
     });
     setEditIndex(null);
   };
 
   const handleEdit = (index) => {
     const blogToEdit = blogs[index];
+
     setFormData({
       ...blogToEdit,
       previewImage: null,
@@ -170,13 +174,8 @@ export default function Blogs() {
     setShowForm(true);
   };
 
-  const handleDelete = async (blogId) => {
-    try {
-      await deleteBlog(blogId); // Call the API to delete the blog
-      setBlogs((prev) => prev.filter((blog) => blog.id !== blogId)); // Update local state to remove the deleted blog
-    } catch (error) {
-      console.error(error.message);
-    }
+  const handleDelete = (blogId) => {
+    openConfirmModal('delete', { id: blogId });
   };
 
 
@@ -194,38 +193,55 @@ export default function Blogs() {
         {showForm && (
           <form
             onSubmit={handleSubmit}
-            className="mt-8 space-y-6 bg-white dark:bg-[#4e4d4d] text-gray-700 dark:text-gray-900 transition-all duration-300 p-8 rounded-xl shadow-xl animate-fade-in"
+            className="mt-8 space-y-6 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-900 transition-all duration-300 p-8 rounded-xl shadow-xl animate-fade-in"
           >
-            <div className="relative w-full">
-              <label
-                htmlFor="blogTitle"
-                className={`absolute text-sm font-semibold transition-all duration-200 
+            <div className='flex gap-3 w-full'>
+              <div className="relative w-2/3">
+                <label
+                  htmlFor="blogTitle"
+                  className={`absolute text-sm font-semibold transition-all duration-200 
                 ${formData.title ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/2 right-4 translate-y-[-50%] text-gray-400 text-base'}`}
-              >
-                عنوان اصلی بلاگ
-              </label>
-              <input
-                id='blogTitle'
-                type="text"
-                name="title"
-                value={formData.title}
-                onChange={handleInputChange}
-                className="w-full px-4 pt-3 pb-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
-                required
-              />
+                >
+                  عنوان اصلی بلاگ
+                </label>
+                <input
+                  id='blogTitle'
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  className="w-full px-4 pt-3 pb-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  required
+                />
+              </div>
+              <div className="relative w-1/3">
+                <label
+                  htmlFor="blogId"
+                  className={`absolute text-sm font-semibold transition-all duration-200 
+                ${formData.id ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/2 right-4 translate-y-[-50%] text-gray-400 text-base'}`}
+                >
+                  آیدی بلاگ
+                </label>
+                <input
+                  id='blogId'
+                  type="text"
+                  name="id"
+                  value={formData.id}
+                  onChange={handleInputChange}
+                  className="w-full px-4 pt-3 pb-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  required
+                />
+              </div>
             </div>
 
             <div className="relative w-full">
-              <label htmlFor='blogDescription' className={`absolute text-sm font-semibold transition-all duration-200 
-                ${formData.description ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/4 right-4 translate-y-[-50%] text-gray-400 text-base'}`}>محتوای بلاگ</label>
-              <textarea
-                id='blogDescription'
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
-                required
-              ></textarea>
+
+              <DraftEditor
+                onContentChange={(htmlContent, plainText) =>
+                  setFormData({ ...formData, html: htmlContent, plainText: plainText })
+                }
+                initialHtml={formData.html}
+              />
             </div>
             <div>
               <label className="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">عکس پیش نمایش</label>
@@ -247,7 +263,7 @@ export default function Blogs() {
               )}
             </div>
 
-            <div>
+            {/* <div>
               <h3 className="text-md font-bold mb-2 text-gray-700 dark:text-gray-200">زیرعنوان‌ها</h3>
               {formData.subtitles.map((subtitle, index) => (
                 <div key={index} className="mb-6">
@@ -284,9 +300,9 @@ export default function Blogs() {
               >
                 افزودن زیرعنوان جدید
               </button>
-            </div>
+            </div> */}
 
-            <div>
+            {/* <div>
               <label className="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">آیا نتیجه‌گیری داشته باشد؟</label>
               <input
                 type="checkbox"
@@ -310,7 +326,7 @@ export default function Blogs() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-orange-400"
                 ></textarea>
               </div>
-            )}
+            )} */}
             <button
               type="submit"
               className="bg-orange-500 text-white px-6 py-3 rounded-lg shadow-md transition-transform duration-300 hover:scale-105 hover:bg-orange-600"
@@ -332,9 +348,7 @@ export default function Blogs() {
                   {blog.previewImage && <img src={blog.previewImage} alt="preview" className='rounded mb-5 md:mb-0 w-full md:w-30 h-64 md:h-30' />}
                   <div className='mx-3'>
                     <h3 className="text-lg font-semibold">{blog.title}</h3>
-                    <p className='text-sm text-gray-400'>{blog.description.split(' ').length > 20
-                      ? blog.description.split(' ').slice(0, 20).join(' ') + '...'
-                      : blog.description}</p>
+                    <p className='text-sm text-gray-400'>{blog.plainText}</p>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">{blog.issuedDate}</p>
                   </div>
                   <div className='flex'>
@@ -363,7 +377,13 @@ export default function Blogs() {
       <ConfirmModal
         open={modalState.isOpen}
         onClose={() => setModalState({ isOpen: false, action: '', blog: null })}
-        title={modalState.action === 'edit' ? 'آیا مطمئن هستید که می‌خواهید این بلاگ را ویرایش کنید؟' : 'آیا مطمئن هستید که می‌خواهید این بلاگ را اضافه کنید؟'}
+        title={
+          modalState.action === 'edit'
+            ? 'آیا مطمئن هستید که می‌خواهید این بلاگ را ویرایش کنید؟'
+            : modalState.action === 'add'
+              ? 'آیا مطمئن هستید که می‌خواهید این بلاگ را اضافه کنید؟'
+              : 'آیا مطمئن هستید که می‌خواهید این بلاگ را حذف کنید؟'
+        }
         onConfirmClick={handleModalConfirm}
       />
     </div>

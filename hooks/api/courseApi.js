@@ -15,6 +15,7 @@ export const postCourse = async (course) => {
 
     const newCourse = {
       title: course.title,
+      id: course.id,
       description: course.description,
       previewImage: course.previewImage ? URL.createObjectURL(course.previewImage) : null,
       price: course.price,
@@ -27,7 +28,6 @@ export const postCourse = async (course) => {
       headers: { 'Content-Type': 'application/json' },
     });
 
-    // Revoke object URLs to free memory
     if (course.previewImage) URL.revokeObjectURL(newCourse.previewImage);
     newCourse.sessions.forEach((session) => {
       if (session.videoFile) URL.revokeObjectURL(session.videoFile);
@@ -41,8 +41,6 @@ export const postCourse = async (course) => {
   }
 };
 
-
-
 export const getCourses = async () => {
   try {
     const response = await axios.get(API_URL);
@@ -55,14 +53,15 @@ export const getCourses = async () => {
 
 export const updateCourse = async (id, course) => {
   try {
-    
+
     const sessions = course.sessions ? transformSessions(course.sessions) : [];
 
     const updatedCourse = {
       title: course.title,
+      id: course.id,
       description: course.description,
-      previewImage: course.previewImage || null, 
-      sessions: sessions,  // Make sure transformed sessions are passed
+      previewImage: course.previewImage || null,
+      sessions: sessions,
       price: course.price,
       issuedDate: course.issuedDate || new Date().toISOString(),
     };
@@ -78,8 +77,6 @@ export const updateCourse = async (id, course) => {
   }
 };
 
-
-// Delete a blog (if needed in the future)
 export const deleteCourse = async (id) => {
   try {
     const response = await axios.delete(`${API_URL}/${id}`);
