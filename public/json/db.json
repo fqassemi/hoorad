@@ -1,38 +1,39 @@
 {
-  "courses": [
-    {
-      "id": "1",
-      "title": "React for Beginners",
-      "description": "A beginner course on ReactJS",
-      "price": 19.99,
-      "img__URL": "images/coursePic.jpg",
-      "instructor": "John Doe"
-    },
-    {
-      "id": "2",
-      "title": "Advanced JavaScript",
-      "description": "In-depth JavaScript course for experts",
-      "price": 29.99,
-      "img__URL": "images/coursePic.jpg",
-      "instructor": "Jane Smith"
-    }
-  ],
+  "courses": [],
   "blogs": [
     {
+      "id": "2",
+      "title": "Test",
+      "plainText": "سلام این  تست \nیک\nیک\nیک\nمیباشد",
+      "html": "<p>سلام <ins>این  </ins><strong>تست </strong></p>\n<ol>\n<li><strong>یک</strong></li>\n<li><strong>یک</strong></li>\n<li><strong>یک</strong></li>\n</ol>\n<h1><strong>میباشد</strong></h1>\n",
+      "previewImage": null,
+      "issuedDate": "۱۴۰۳/۱۱/۷"
+    }
+  ],
+  "users": [
+    {
       "id": "1",
-      "title": "Introduction to React",
-      "description": "Learn the basics of React",
-      "issuedDate": "2025-01-01",
-      "img__URL": "images/coursePic.jpg",
-      "content": "This is the content of the blog."
+      "name": "ali",
+      "family": "ahmadi",
+      "phone__number": "09121234567"
     },
     {
       "id": "2",
-      "title": "Understanding JavaScript Closures",
-      "description": "A deep dive into closures in JavaScript",
-      "issuedDate": "2025-01-05",
-      "img__URL": "images/coursePic.jpg",
-      "content": "This is the content of the second blog."
+      "name": "reza",
+      "family": "razavi",
+      "phone__number": "09191234567"
+    },
+    {
+      "id": "3",
+      "name": "erfan",
+      "family": "farhad",
+      "phone__number": "09643680864"
+    },
+    {
+      "id": "4",
+      "name": "Mohammad",
+      "family": "Jamil",
+      "phone__number": "09128093638"
     }
   ]
 }
