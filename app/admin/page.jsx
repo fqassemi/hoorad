@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { Line } from 'react-chartjs-2'; // وارد کردن نمودار خطی
+import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -13,7 +13,7 @@ import {
   Legend,
 } from 'chart.js';
 
-// ثبت اجزای مورد نیاز برای Chart.js
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -26,6 +26,10 @@ ChartJS.register(
 
 const Dashboard = () => {
   const [entryTime, setEntryTime] = useState('');
+
+  useEffect(() => {
+
+  })
 
   useEffect(() => {
     const storedLoginTime = localStorage.getItem("loginTime");
@@ -63,7 +67,7 @@ const Dashboard = () => {
     responsive: true,
     plugins: {
       legend: {
-        position: 'bottom', 
+        position: 'bottom',
       },
       title: {
         display: true,
@@ -78,7 +82,7 @@ const Dashboard = () => {
       <p className="text-gray-400 text-sm">شما می توانید محتوای سایت را مدیریت و ویرایش کنید.</p>
       <p className="text-gray-400 text-sm">ساعت ورود شما: {entryTime}</p>
 
-    
+
       <div className="w-full sm:w-3/4 h-full dark:bg-gray-700 rounded mt-6">
         <Line data={chartData} options={chartOptions} />
       </div>
