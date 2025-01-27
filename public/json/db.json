@@ -1,21 +1,12 @@
 {
   "courses": [],
-  "blogs": [
-    {
-      "id": "2",
-      "title": "Test",
-      "plainText": "سلام این  تست \nیک\nیک\nیک\nمیباشد",
-      "html": "<p>سلام <ins>این  </ins><strong>تست </strong></p>\n<ol>\n<li><strong>یک</strong></li>\n<li><strong>یک</strong></li>\n<li><strong>یک</strong></li>\n</ol>\n<h1><strong>میباشد</strong></h1>\n",
-      "previewImage": null,
-      "issuedDate": "۱۴۰۳/۱۱/۷"
-    }
-  ],
+  "blogs": [],
   "users": [
     {
       "id": "1",
-      "name": "ali",
-      "family": "ahmadi",
-      "phone__number": "09121234567"
+      "name": "Yahya",
+      "family": "Jamil",
+      "phone__number": "09128093638"
     },
     {
       "id": "2",
