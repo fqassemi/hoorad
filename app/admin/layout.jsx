@@ -7,7 +7,6 @@ import AdminHeader from '@/components/layout/admin-header';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 
-
 const AdminLayout = ({ children }) => {
   const [isOpen, setOpen] = useState(false);
 
@@ -15,13 +14,14 @@ const AdminLayout = ({ children }) => {
 
   useEffect(() => {
     const phoneNumber = Cookies.get('phoneNumber');
+    const adminPhoneNumbers = ['09394540361', '09123456789'];
 
     if (!phoneNumber) {
       router.push('/login');
       return;
     }
 
-    if (phoneNumber !== '09123456789') {
+    if (!adminPhoneNumbers.includes(phoneNumber)) {
       router.push('/');
     }
   }, [router]);

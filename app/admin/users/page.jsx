@@ -11,7 +11,7 @@ export default function Users() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showForm, setShowForm] = useState(false);
-  const [formError, setFormError] = useState(''); // State for form validation errors
+  const [formError, setFormError] = useState(''); 
 
   const [newUser, setNewUser] = useState({
     name: '',
@@ -59,25 +59,23 @@ export default function Users() {
   const validateForm = () => {
     const { name, family, phone__number } = newUser;
 
-    // Check if all fields are filled
     if (!name || !family || !phone__number) {
       setFormError('تمام فیلدها الزامی هستند.');
       return false;
     }
 
-    // Check if phone number is 11 digits and starts with 09
     const phoneRegex = /^09\d{9}$/;
     if (!phoneRegex.test(phone__number)) {
       setFormError('شماره تلفن باید 11 رقم و با 09 شروع شود.');
       return false;
     }
 
-    setFormError(''); // Clear any previous errors
+    setFormError('');
     return true;
   };
 
   const handleAddUser = async () => {
-    if (!validateForm()) return; // Stop if validation fails
+    if (!validateForm()) return; 
 
     const nextId = getNextId();
     const userToAdd = { ...newUser, id: nextId };
@@ -96,13 +94,9 @@ export default function Users() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <CircularLoader />
+        <CircularLoader className='text-orange-500'/>
       </div>
     );
-  }
-
-  if (error) {
-    return <div>{error}</div>;
   }
 
   return (

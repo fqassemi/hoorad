@@ -21,6 +21,7 @@ export const createBlog = async (blogData) => {
       html : blogData.html,
       previewImage: blogData.previewImage ? URL.createObjectURL(blogData.previewImage) : null,
       issuedDate: blogData.issuedDate || new Date().toISOString(),
+      author: blogData.author,
     };
 
     const response = await axios.post(API_BASE_URL, newBlog, {
@@ -43,6 +44,7 @@ export const updateBlog = async (id, blogData) => {
       html : blogData.html,
       previewImage: blogData.previewImage ? URL.createObjectURL(blogData.previewImage) : null,
       issuedDate: blogData.issuedDate || new Date().toISOString(),
+      author: blogData.author,
     };
 
     const response = await axios.put(`${API_BASE_URL}/${id}`, updatedBlog, {
