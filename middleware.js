@@ -6,7 +6,7 @@ export function middleware(request) {
   const phoneNumber = request.cookies.get('phoneNumber')?.value;
 
   
-  const adminPhoneNumbers = ['09123456789', '09394540361'];
+  const adminPhoneNumbers = ['09123456789', '09394540361', '09128093638'];
 
   if (pathname.startsWith('/admin')) {
     

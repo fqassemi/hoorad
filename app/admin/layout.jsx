@@ -14,7 +14,7 @@ const AdminLayout = ({ children }) => {
 
   useEffect(() => {
     const phoneNumber = Cookies.get('phoneNumber');
-    const adminPhoneNumbers = ['09394540361', '09123456789'];
+    const adminPhoneNumbers = ['09394540361', '09123456789', '09128093638'];
 
     if (!phoneNumber) {
       router.push('/login');
