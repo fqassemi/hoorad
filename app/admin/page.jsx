@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-const LineChart = dynamic(() => import('react-chartjs-2').then((mod) => mod.Line), {ssr: false,});
+const LineChart = dynamic(() => import('react-chartjs-2').then((mod) => mod.Line), {ssr: false});
 import {
   Chart as ChartJS,
   CategoryScale,
