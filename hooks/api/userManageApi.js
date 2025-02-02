@@ -19,7 +19,7 @@ const authHeaders = () => ({
 
 export const fetchUsers = async () => {
     try {
-        const response = await fetch(API_URL, authHeaders());
+        const response = await fetch(`${API_URL}${user}`, authHeaders());
 
         const data = await response.json();
         return data;
@@ -32,7 +32,7 @@ export const fetchUsers = async () => {
 
 export const addUser = async (user) => {
     try {
-        const response = await fetch(API_URL, {
+        const response = await fetch(`${API_URL}${user}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
