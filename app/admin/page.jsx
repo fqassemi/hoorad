@@ -85,7 +85,8 @@ const Dashboard = () => {
 
 
       <div className="w-full sm:w-3/4 h-full dark:bg-gray-700 rounded mt-6">
-        <LineChart data={chartData} options={chartOptions} />
+        {/* Commented out the LineChart component */}
+        {/* <LineChart data={chartData} options={chartOptions} /> */}
       </div>
     </div>
   );
