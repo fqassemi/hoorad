@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { Line } from 'react-chartjs-2';
+import dynamic from 'next/dynamic';
+#import { Line } from 'react-chartjs-2';
+const LineChart = dynamic(() => import('react-chartjs-2').then((mod) => mod.Line), {
+  ssr: false,
+});
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -84,7 +88,7 @@ const Dashboard = () => {
 
 
       <div className="w-full sm:w-3/4 h-full dark:bg-gray-700 rounded mt-6">
-        <Line data={chartData} options={chartOptions} />
+        <LineChart data={chartData} options={chartOptions} />
       </div>
     </div>
   );
