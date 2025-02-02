@@ -10,6 +10,8 @@ import { postCourse, getCourses, updateCourse, deleteCourse } from '@/hooks/api/
 
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 
+import CircularLoader from '@/components/ui/circular-loader';
+
 const Courses = () => {
   const [showForm, setShowForm] = useState(false);
   const [dateTime, setDateTime] = useState('');
@@ -25,6 +27,7 @@ const Courses = () => {
   });
   const [courses, setCourses] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [modalState, setModalState] = useState({
     isOpen: false,
     action: '',
@@ -70,6 +73,9 @@ const Courses = () => {
       } catch (error) {
         console.error('Failed to fetch courses:', error);
       }
+      finally {
+        setLoading(false);
+      }
     };
 
     fetchCourses();
@@ -99,23 +105,20 @@ const Courses = () => {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-  
-    // Handle checkbox (isFree) and price fields together
+
     if (name === 'isFree') {
       setFormData((prevState) => ({
         ...prevState,
         isFree: checked,
-        price: checked ? '' : prevState.price, // Clear price if isFree is checked
+        price: checked ? '' : prevState.price,
       }));
     } else if (name === 'price') {
-      // Allow only numeric values for price
       const numericValue = value.replace(/[^0-9]/g, '');
       setFormData((prevState) => ({
         ...prevState,
         [name]: numericValue,
       }));
     } else {
-      // Handle other inputs normally
       setFormData((prevState) => ({
         ...prevState,
         [name]: type === 'checkbox' ? checked : value,
@@ -205,7 +208,6 @@ const Courses = () => {
         setCourses(updatedCourses);
       }
 
-      // Reset form data with default values
       setFormData({
         title: '',
         id: '',
@@ -227,14 +229,14 @@ const Courses = () => {
   const handleEdit = (index) => {
     const courseToEdit = courses[index];
     setFormData({
-      title: courseToEdit.title || '', // Fallback to empty string if undefined
-      id: courseToEdit.id || '', // Fallback to empty string if undefined
-      description: courseToEdit.description || '', // Fallback to empty string if undefined
-      price: courseToEdit.price || '', // Fallback to empty string if undefined
-      isFree: courseToEdit.isFree || false, // Fallback to false if undefined
-      sessions: courseToEdit.sessions || [], // Fallback to empty array if undefined
-      previewImage: courseToEdit.previewImage || null, // Fallback to null if undefined
-      issuedDate: courseToEdit.issuedDate || dateTime, // Fallback to current date if undefined
+      title: courseToEdit.title || '',
+      id: courseToEdit.id || '',
+      description: courseToEdit.description || '',
+      price: courseToEdit.price || '',
+      isFree: courseToEdit.isFree || false,
+      sessions: courseToEdit.sessions || [],
+      previewImage: courseToEdit.previewImage || null,
+      issuedDate: courseToEdit.issuedDate || dateTime,
     });
     setEditIndex(index);
     setShowForm(true);
@@ -248,6 +250,14 @@ const Courses = () => {
       console.error('Error deleting course:', error.message);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <CircularLoader className='text-orange-500' />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">

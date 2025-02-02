@@ -5,11 +5,14 @@ import ConfirmModal from "@/components/templates/confirm-modal";
 import { FiEdit, FiX } from 'react-icons/fi';
 import { getBlogs, createBlog, updateBlog, deleteBlog } from '@/hooks/api/blogApi';
 
+import CircularLoader from '@/components/ui/circular-loader';
+
 import DraftEditor from './draft';
 
 export default function Blogs() {
   const [showForm, setShowForm] = useState(false);
   const [dateTime, setDateTime] = useState('');
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     id: '',
     title: '',
@@ -17,6 +20,7 @@ export default function Blogs() {
     html: '',
     previewImage: null,
     issuedDate: dateTime,
+    author: ''
   });
   const [blogs, setBlogs] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
@@ -56,6 +60,9 @@ export default function Blogs() {
         setBlogs(data);
       } catch (error) {
         console.error(error.message);
+      }
+      finally {
+        setLoading(false);
       }
     };
 
@@ -128,7 +135,7 @@ export default function Blogs() {
 
   const handleModalConfirm = async () => {
     const { action, blog } = modalState;
-  
+
     try {
       if (action === 'edit') {
         const updatedBlog = await updateBlog(blog.id, blog);
@@ -139,8 +146,8 @@ export default function Blogs() {
         const createdBlog = await createBlog(blog);
         setBlogs((prev) => [...prev, createdBlog]);
       } else if (action === 'delete') {
-        await deleteBlog(blog.id); 
-        setBlogs((prev) => prev.filter((b) => b.id !== blog.id)); 
+        await deleteBlog(blog.id);
+        setBlogs((prev) => prev.filter((b) => b.id !== blog.id));
       }
     } catch (error) {
       console.error(error.message);
@@ -159,6 +166,7 @@ export default function Blogs() {
       html: '',
       previewImage: null,
       issuedDate: '',
+      author: '',
     });
     setEditIndex(null);
   };
@@ -178,6 +186,13 @@ export default function Blogs() {
     openConfirmModal('delete', { id: blogId });
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <CircularLoader className='text-orange-500' />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -227,6 +242,24 @@ export default function Blogs() {
                   type="text"
                   name="id"
                   value={formData.id}
+                  onChange={handleInputChange}
+                  className="w-full px-4 pt-3 pb-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  required
+                />
+              </div>
+              <div className="relative w-1/3">
+                <label
+                  htmlFor="blogAuthor"
+                  className={`absolute text-sm font-semibold transition-all duration-200 
+                ${formData.author ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/2 right-4 translate-y-[-50%] text-gray-400 text-base'}`}
+                >
+                  نویسنده
+                </label>
+                <input
+                  id='blogAuthor'
+                  type="text"
+                  name="author"
+                  value={formData.author}
                   onChange={handleInputChange}
                   className="w-full px-4 pt-3 pb-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
                   required
@@ -343,13 +376,19 @@ export default function Blogs() {
         <div className="mt-4 space-y-4">
           {blogs.length > 0 ? (
             blogs.map((blog, index) => (
-              <div key={blog.id} className="bg-white dark:bg-gray-800 p-4 border dark:border-white rounded flex justify-between items-center shadow-md dark:shadow-gray-700">
-                <div className="flex flex-1 flex-col md:flex-row justify-between items-center">
-                  {blog.previewImage && <img src={blog.previewImage} alt="preview" className='rounded mb-5 md:mb-0 w-full md:w-30 h-64 md:h-30' />}
-                  <div className='mx-3'>
-                    <h3 className="text-lg font-semibold">{blog.title}</h3>
-                    <p className='text-sm text-gray-400'>{blog.plainText}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">{blog.issuedDate}</p>
+              <div key={blog.id} className="bg-white dark:bg-gray-800 p-4 border  rounded flex justify-between items-center shadow-md dark:shadow-gray-700">
+                <div className="flex flex-1 flex-col md:flex-row items-center justify-between">
+                  <div className='flex items-center'>
+                    {blog.previewImage && <img src={blog.previewImage} alt="preview" className='rounded mb-5 md:mb-0 w-full md:w-30 h-64 md:h-30' />}
+                    <div className='mx-3'>
+                      <h3 className="text-lg font-semibold my-1">{blog.title}</h3>
+                      <p className='text-sm text-gray-400'>
+                        {blog.plainText.split(' ').length > 20
+                          ? blog.plainText.split(' ').slice(0, 20).join(' ') + '...'
+                          : blog.plainText}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">تاریخ انتشار:{blog.issuedDate} | نویسنده: {blog.author}</p>
+                    </div>
                   </div>
                   <div className='flex'>
                     <button
