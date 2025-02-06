@@ -3,16 +3,22 @@
 import { useEffect, useState } from 'react';
 import ConfirmModal from "@/components/templates/confirm-modal";
 import { FiEdit, FiX } from 'react-icons/fi';
-import { getBlogs, createBlog, updateBlog, deleteBlog } from '@/hooks/api/blogApi';
+
+//Apis
+import useGetBlogs from '@/hooks/api/blog/useGetBlog';
+import usePostBlog from '@/hooks/api/blog/usePostBlog';
+import usePatchBlog from '@/hooks/api/blog/usePatchBlog';
+import useDeleteBlog from '@/hooks/api/blog/useDeleteBlog';
+import useGetBlog from '@/hooks/api/blog/useGetBlogId';
 
 import CircularLoader from '@/components/ui/circular-loader';
 
 import DraftEditor from './draft';
 
 export default function Blogs() {
+  const [blogDetails, setBlogDetails] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [dateTime, setDateTime] = useState('');
-  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     id: '',
     title: '',
@@ -22,13 +28,22 @@ export default function Blogs() {
     issuedDate: dateTime,
     author: ''
   });
-  const [blogs, setBlogs] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
   const [modalState, setModalState] = useState({
     isOpen: false,
     action: '',
     blog: null,
   });
+
+  const { data, error, isLoading } = useGetBlogs();
+
+  
+  const blogsArray = data?.blogs ?? [];
+
+
+  const { trigger: createBlogTrigger, isLoading: isCreating } = usePostBlog();
+  const { trigger: updateBlogTrigger, isLoading: isUpdating } = usePatchBlog();
+  const { trigger: deleteBlogTrigger, isLoading: isDeleting } = useDeleteBlog();
 
   useEffect(() => {
     const updateDateTime = () => {
@@ -53,22 +68,6 @@ export default function Blogs() {
     }
   }, [dateTime]);
 
-  useEffect(() => {
-    const fetchBlogs = async () => {
-      try {
-        const data = await getBlogs();
-        setBlogs(data);
-      } catch (error) {
-        console.error(error.message);
-      }
-      finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBlogs();
-  }, []);
-
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
 
@@ -86,28 +85,6 @@ export default function Blogs() {
     }
   };
 
-  // const handleSubtitleChange = (index, key, value) => {
-  //   const updatedSubtitles = [...formData.subtitles];
-  //   updatedSubtitles[index] = {
-  //     ...updatedSubtitles[index],
-  //     [key]: value,
-  //   };
-  //   setFormData({ ...formData, subtitles: updatedSubtitles });
-  // };
-
-  // const handleAddSubtitle = () => {
-  //   setFormData({
-  //     ...formData,
-  //     subtitles: [...formData.subtitles, { subtitle: '', explanation: '' }],
-  //   });
-  // };
-
-  // const handleRemoveSubtitle = (index) => {
-  //   const updatedSubtitles = [...formData.subtitles];
-  //   updatedSubtitles.splice(index, 1);
-  //   setFormData({ ...formData, subtitles: updatedSubtitles });
-  // };
-
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setFormData({
@@ -119,9 +96,7 @@ export default function Blogs() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newBlog = { ...formData, issuedDate: dateTime };
-
     const action = editIndex !== null ? 'edit' : 'add';
-
     openConfirmModal(action, newBlog);
   };
 
@@ -129,7 +104,7 @@ export default function Blogs() {
     setModalState({
       isOpen: true,
       action,
-      blog,
+      blog: { ...blog, id: formData.id },
     });
   };
 
@@ -138,16 +113,15 @@ export default function Blogs() {
 
     try {
       if (action === 'edit') {
-        const updatedBlog = await updateBlog(blog.id, blog);
-        setBlogs((prev) =>
-          prev.map((b) => (b.id === updatedBlog.id ? updatedBlog : b))
-        );
+        await updateBlogTrigger({ blogId: blog.id, updatedBlog: blog });
+        const updatedBlogs = data.map((b) => (b.id === blog.id ? blog : b));
+        const data = updatedBlogs;
       } else if (action === 'add') {
-        const createdBlog = await createBlog(blog);
-        setBlogs((prev) => [...prev, createdBlog]);
+        await createBlogTrigger({ blogId: blog.id, newBlog: blog });
+        const data = [...data, blog];
       } else if (action === 'delete') {
-        await deleteBlog(blog.id);
-        setBlogs((prev) => prev.filter((b) => b.id !== blog.id));
+        await deleteBlogTrigger({ arg: { id: blog.id }, url: `blogs/${blog.id}` });
+        const data = data.filter((b) => b.id !== blog.id);
       }
     } catch (error) {
       console.error(error.message);
@@ -172,8 +146,7 @@ export default function Blogs() {
   };
 
   const handleEdit = (index) => {
-    const blogToEdit = blogs[index];
-
+    const blogToEdit = data[index];
     setFormData({
       ...blogToEdit,
       previewImage: null,
@@ -186,7 +159,25 @@ export default function Blogs() {
     openConfirmModal('delete', { id: blogId });
   };
 
-  if (loading) {
+
+  useEffect(() => {
+    const fetchBlogDetails = async () => {
+      const blogData = await Promise.all(
+        blogsArray.map(async (blogId) => {
+          const blogDetail = await useGetBlog(blogId); 
+          return blogDetail;
+        })
+      );
+      setBlogDetails(blogData); 
+    };
+
+    if (blogsArray.length > 0) {
+      fetchBlogDetails();
+    }
+  }, [blogsArray]);
+
+
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <CircularLoader className='text-orange-500' />
@@ -268,7 +259,6 @@ export default function Blogs() {
             </div>
 
             <div className="relative w-full">
-
               <DraftEditor
                 onContentChange={(htmlContent, plainText) =>
                   setFormData({ ...formData, html: htmlContent, plainText: plainText })
@@ -296,70 +286,7 @@ export default function Blogs() {
               )}
             </div>
 
-            {/* <div>
-              <h3 className="text-md font-bold mb-2 text-gray-700 dark:text-gray-200">زیرعنوان‌ها</h3>
-              {formData.subtitles.map((subtitle, index) => (
-                <div key={index} className="mb-6">
-                  <label className="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">
-                    زیرعنوان {index + 1}
-                  </label>
-                  <input
-                    type="text"
-                    value={subtitle.subtitle}
-                    onChange={(e) => handleSubtitleChange(index, 'subtitle', e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
-                    required
-                  />
-                  <textarea
-                    value={subtitle.explanation}
-                    onChange={(e) => handleSubtitleChange(index, 'explanation', e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
-                    placeholder="توضیحات"
-                    required
-                  ></textarea>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveSubtitle(index)}
-                    className="mt-2 text-red-500 text-sm transition-opacity duration-200 hover:opacity-80"
-                  >
-                    حذف زیرعنوان
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={handleAddSubtitle}
-                className="bg-orange-500 text-white px-4 py-2 rounded-lg shadow-md transition-transform duration-300 hover:scale-105 hover:bg-orange-600"
-              >
-                افزودن زیرعنوان جدید
-              </button>
-            </div> */}
 
-            {/* <div>
-              <label className="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">آیا نتیجه‌گیری داشته باشد؟</label>
-              <input
-                type="checkbox"
-                name="includeConclusion"
-                checked={formData.includeConclusion}
-                onChange={handleInputChange}
-                className="ml-2"
-              />
-            </div>
-            {formData.includeConclusion && (
-              <div className='relative w-full'>
-                <label
-                  htmlFor='blogConclusion'
-                  className={`absolute text-sm font-semibold transition-all duration-200 
-                ${formData.conclusion ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/4 right-4 translate-y-[-50%] text-gray-400 text-base'}`}>نتیجه‌گیری</label>
-                <textarea
-                  id='blogConclusion'
-                  name="conclusion"
-                  value={formData.conclusion}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-orange-400"
-                ></textarea>
-              </div>
-            )} */}
             <button
               type="submit"
               className="bg-orange-500 text-white px-6 py-3 rounded-lg shadow-md transition-transform duration-300 hover:scale-105 hover:bg-orange-600"
@@ -374,17 +301,18 @@ export default function Blogs() {
       <div className="bg-[#f9f9f9] dark:bg-gray-800 rounded-md p-6 mt-6">
         <h2 className="text-xl font-bold">بلاگ های اضافه شده</h2>
         <div className="mt-4 space-y-4">
-          {blogs.length > 0 ? (
-            blogs.map((blog, index) => (
-              <div key={blog.id} className="bg-white dark:bg-gray-800 p-4 border  rounded flex justify-between items-center shadow-md dark:shadow-gray-700">
+          {blogsArray.length > 0 ? (
+            blogsArray.map((blog, index) => {
+              const { data: blogData, error, isLoading } = useGetBlog(blog) || {}; 
+              return (<div key={blogData.id} className="bg-white dark:bg-gray-800 p-4 border  rounded flex justify-between items-center shadow-md dark:shadow-gray-700">
                 <div className="flex flex-1 flex-col md:flex-row items-center justify-between">
                   <div className='flex items-center'>
                     {blog.previewImage && <img src={blog.previewImage} alt="preview" className='rounded mb-5 md:mb-0 w-full md:w-30 h-64 md:h-30' />}
                     <div className='mx-3'>
-                      <h3 className="text-lg font-semibold my-1">{blog.title}</h3>
+                      <h3 className="text-lg font-semibold my-1">{blogData.title}</h3>
                       <p className='text-sm text-gray-400'>
-                        {blog.plainText.split(' ').length > 20
-                          ? blog.plainText.split(' ').slice(0, 20).join(' ') + '...'
+                        {blog?.plainText.split(' ').length > 20
+                          ? blog?.plainText.split(' ').slice(0, 20).join(' ') + '...'
                           : blog.plainText}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">تاریخ انتشار:{blog.issuedDate} | نویسنده: {blog.author}</p>
@@ -405,8 +333,8 @@ export default function Blogs() {
                     </button>
                   </div>
                 </div>
-              </div>
-            ))
+              </div>)
+            })
           ) : (
             <p className="text-center text-[#0e0e0e] dark:text-gray-200">هیچ بلاگی اضافه نشده است.</p>
           )}
