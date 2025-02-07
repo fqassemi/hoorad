@@ -1,5 +1,5 @@
 "use client"
-import { getBlogs } from '@/hooks/api/blogApi';
+// import { getBlogs } from '@/hooks/api/blogApi';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
