@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { getBlogs } from "@/hooks/api/blogApi";
+// import { getBlogs } from "@/hooks/api/blogApi";
 import CircularLoader from "@/components/ui/circular-loader";
 import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
 import Link from 'next/link';
