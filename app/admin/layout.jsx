@@ -1,30 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import AdminSidebar from '@/components/layout/admin-sidebar';
 import AdminHeader from '@/components/layout/admin-header';
 
-import { useRouter } from 'next/navigation';
-import Cookies from 'js-cookie';
-
 const AdminLayout = ({ children }) => {
   const [isOpen, setOpen] = useState(false);
-
-  const router = useRouter();
-
-  useEffect(() => {
-    const phoneNumber = Cookies.get('phoneNumber');
-    const adminPhoneNumbers = ['09394540361', '09123456789', '09128093638'];
-
-    if (!phoneNumber) {
-      router.push('/login');
-      return;
-    }
-
-    if (!adminPhoneNumbers.includes(phoneNumber)) {
-      router.push('/');
-    }
-  }, [router]);
 
   return (
     <div className="flex">

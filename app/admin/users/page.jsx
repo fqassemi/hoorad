@@ -1,46 +1,53 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import CircularLoader from '@/components/ui/circular-loader';
-import { fetchUsers, addUser } from '@/hooks/api/userManageApi';
+
+import useGetUsers from '@/hooks/api/users/useGetUsers';
+import useEditInfo from '@/hooks/api/edit-user/useEditInfo';
+// import useRegister from '@/hooks/api/login/useRegister';
+
+import { getCookie } from 'cookies-next';
+
+import { FiX } from 'react-icons/fi';
+import { FiEdit } from 'react-icons/fi';
 
 export default function Users() {
-  const [users, setUsers] = useState([]);
-  const [filters, setFilters] = useState({ name: '', family: '', phone__number: '' });
-  const [showFilters, setShowFilters] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [showForm, setShowForm] = useState(false);
-  const [formError, setFormError] = useState(''); 
+  const { data, error, isLoading } = useGetUsers();
+  const { trigger: editTrigger, isMutating: editIsMutating } = useEditInfo();
+  // const { trigger, isMutating } = useRegister();
 
+  const [filters, setFilters] = useState({ first_name: '', last_name: '', phone_number: '' });
+
+  const [showFilters, setShowFilters] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+
+  const [selectedUser, setSelectedUser] = useState("");
+
+  const [formError, setFormError] = useState('');
   const [newUser, setNewUser] = useState({
-    name: '',
-    family: '',
-    phone__number: '',
+    first_name: '',
+    last_name: '',
+    phone_number: '',
+    courses: []
+  });
+  const [editUser, setEditUser] = useState({
+    first_name: '',
+    last_name: '',
   });
 
-  useEffect(() => {
-    async function loadUsers() {
-      try {
-        const data = await fetchUsers();
-        setUsers(data);
-      } catch (err) {
-        setError('Failed to fetch users');
-        console.error('Error fetching users:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
+  const userInfo = data?.user_info;
 
-    loadUsers();
-  }, []);
+  const matchesFilter = (userInfo) => {
+    return (
+      (userInfo.first_name?.toLowerCase().includes(filters.first_name.toLowerCase()) || !filters.name) &&
+      (userInfo.last_name?.toLowerCase().includes(filters.last_name.toLowerCase()) || !filters.family) &&
+      (userInfo.phone_number?.includes(filters.phone_number) || !filters.phone_number)
+    );
+  };
 
-  const filteredUsers = users.filter(
-    (user) =>
-      (user.name?.toLowerCase().includes(filters.name.toLowerCase()) || !filters.name) &&
-      (user.family?.toLowerCase().includes(filters.family.toLowerCase()) || !filters.family) &&
-      (user.phone__number?.includes(filters.phone__number) || !filters.phone__number)
-  );
+  const filteredUsers = userInfo && matchesFilter(userInfo) ? [userInfo] : [];
 
   const handleNewUserChange = (e) => {
     const { name, value } = e.target;
@@ -50,22 +57,30 @@ export default function Users() {
     }));
   };
 
-  const getNextId = () => {
-    if (users.length === 0) return 1;
-    const maxId = Math.max(...users.map((user) => user.id));
-    return maxId + 1;
-  };
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditUser((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }
+
+  // const getNextId = () => {
+  //   if (!data || data.length === 0) return 1;
+  //   const maxId = Math.max(...data.map((user) => user.id));
+  //   return maxId + 1;
+  // };
 
   const validateForm = () => {
-    const { name, family, phone__number } = newUser;
+    const { first_name, last_name, phone_number } = newUser;
 
-    if (!name || !family || !phone__number) {
+    if (!first_name || !last_name || !phone_number) {
       setFormError('تمام فیلدها الزامی هستند.');
       return false;
     }
 
     const phoneRegex = /^09\d{9}$/;
-    if (!phoneRegex.test(phone__number)) {
+    if (!phoneRegex.test(phone_number)) {
       setFormError('شماره تلفن باید 11 رقم و با 09 شروع شود.');
       return false;
     }
@@ -74,27 +89,50 @@ export default function Users() {
     return true;
   };
 
+  //Add new user as admin (May needed in future)
   const handleAddUser = async () => {
-    if (!validateForm()) return; 
-
-    const nextId = getNextId();
-    const userToAdd = { ...newUser, id: nextId };
+    if (!validateForm()) return;
 
     try {
-      const data = await addUser(userToAdd);
-      setUsers((prevUsers) => [...prevUsers, data]);
-      setNewUser({ name: '', family: '', phone__number: '' });
-      setShowForm(false);
-    } catch (err) {
-      setError('Failed to add user');
-      console.error('Error adding user:', err);
+      const userPayload = { ...newUser, courses: newUser.courses || [] };
+
+      const response = await trigger(userPayload);
+
+      if (response) {
+        setNewUser({ first_name: '', last_name: '', phone_number: '', courses: [] });
+        setShowForm(false);
+      }
+    } catch (error) {
+      console.error('Failed to add user:', error.response?.data || error.message);
+      setFormError(error.response?.data?.message || 'خطا در افزودن کاربر');
     }
+  }
+
+  const handleEditUser = (user) => {
+    setSelectedUser(user);
+    setShowEdit(true);
   };
 
-  if (loading) {
+  const handleUpdateUser = async () => {
+    const accessToken = getCookie('courses_accessToken');
+    console.log(accessToken);
+    
+    await editTrigger({ first_name: editUser.first_name, last_name: editUser.last_name, access_token: accessToken });
+    setShowEdit(false);
+  };
+
+  if (error) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <CircularLoader className='text-orange-500'/>
+        <p className="text-red-500">Failed to load user data</p>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <CircularLoader className="text-orange-500" />
       </div>
     );
   }
@@ -106,7 +144,7 @@ export default function Users() {
           <h1 className="text-3xl font-extrabold mb-6 text-gray-800 tracking-wide dark:text-gray-200">
             مدیریت کاربران
           </h1>
-          <h3 className="dark:text-gray-200 mb-4">تعداد کاربران : {users.length}</h3>
+          <h3 className="dark:text-gray-200 mb-4">تعداد کاربران : {filteredUsers.length}</h3>
           <button
             className="bg-orange-500 py-2 px-4 rounded hover:scale-90 transition-transform duration-200 hover:bg-orange-600 text-white"
             onClick={() => setShowForm(!showForm)}
@@ -118,30 +156,30 @@ export default function Users() {
         <div className={`overflow-hidden transition-all duration-1000 ${showForm ? 'max-h-96' : 'max-h-0'}`}>
           <div className="p-6 bg-[#f9f9f9] dark:bg-gray-800 rounded-lg mt-4 flex flex-col gap-4">
             <div className="flex justify-between items-center flex-col sm:flex-row">
-              <div className='flex lg:flex-row flex-col'>
+              <div className="flex lg:flex-row flex-col">
                 <input
                   type="text"
-                  name="name"
+                  name="first_name"
                   placeholder=" نام کاربر جدید"
-                  value={newUser.name}
+                  value={newUser.first_name}
                   onChange={handleNewUserChange}
                   required
                   className="py-3 px-2 rounded-e-none rounded ring-1 ring-orange-500 outline-none text-sm dark:bg-gray-800"
                 />
                 <input
                   type="text"
-                  name="family"
+                  name="last_name"
                   placeholder=" نام خانوادگی کاربر جدید"
-                  value={newUser.family}
+                  value={newUser.last_name}
                   onChange={handleNewUserChange}
                   required
-                  className="py-3  px-2 rounded-none ring-1 ring-orange-500 outline-none text-sm dark:bg-gray-800"
+                  className="py-3 px-2 rounded-none ring-1 ring-orange-500 outline-none text-sm dark:bg-gray-800"
                 />
                 <input
                   type="text"
-                  name="phone__number"
+                  name="phone_number"
                   placeholder="شماره تلفن کاربر جدید"
-                  value={newUser.phone__number}
+                  value={newUser.phone_number}
                   onChange={handleNewUserChange}
                   required
                   maxLength={11}
@@ -158,9 +196,66 @@ export default function Users() {
                 </button>
               </div>
             </div>
-            {formError && (
-              <p className="text-red-500 text-sm">{formError}</p> // Display validation error
-            )}
+            {formError && <p className="text-red-500 text-sm">{formError}</p>}
+          </div>
+        </div>
+
+        <div className={`overflow-hidden transition-all duration-1000 ${showEdit ? 'max-h-96' : 'max-h-0'}`}>
+          <div className="p-6 bg-[#f9f9f9] dark:bg-gray-800 rounded-lg mt-4 flex flex-col gap-4">
+            <div className='flex justify-between items-center'>
+              <div>
+                <span className="text-gray-600 dark:text-gray-300 text-sm sm:text-base">
+                  نام فعلی: {selectedUser.first_name}
+                </span>
+                <span className="text-gray-600 dark:text-gray-300 text-sm sm:text-base mr-4">
+                  نام خانوادگی فعلی: {selectedUser.last_name}
+                </span>
+              </div>
+              <div>
+                <button className="text-red-500 ring-1 ring-red-500 hover:bg-red-200 hover:text-red-700 text-sm px-2 py-1 rounded" onClick={() => setShowEdit(false)}><FiX className='w-4 h-4' /></button>
+              </div>
+            </div>
+            <div className="flex justify-between items-center flex-col sm:flex-row">
+              <div className="flex lg:flex-row flex-col">
+                <input
+                  type="text"
+                  name="first_name"
+                  placeholder=" نام جدید کاربر "
+                  value={editUser.first_name}
+                  onChange={handleEditChange}
+                  required
+                  className="py-3 px-2 rounded-e-none rounded ring-1 ring-orange-500 outline-none text-sm dark:bg-gray-800"
+                />
+                <input
+                  type="text"
+                  name="last_name"
+                  placeholder=" نام خانوادگی جدید کاربر"
+                  value={editUser.last_name}
+                  onChange={handleEditChange}
+                  required
+                  className="py-3 px-2 rounded-none ring-1 ring-orange-500 outline-none text-sm dark:bg-gray-800"
+                />
+                <input
+                  type="text"
+                  name="phone_number"
+                  placeholder="شماره تلفن جدید کاربر"
+                  value={selectedUser.phone_number}
+                  disabled
+                  maxLength={11}
+                  minLength={11}
+                  className="py-3 px-2 rounded rounded-s-none ring-1 ring-orange-500 outline-none text-sm dark:bg-gray-800"
+                />
+              </div>
+              <div>
+                <button
+                  className="bg-orange-500 py-2 px-4 rounded hover:scale-90 transition-transform duration-200 hover:bg-orange-600 text-white mt-4 sm:mt-0"
+                  onClick={handleUpdateUser}
+                >
+                  ویرایش اطلاعات
+                </button>
+              </div>
+            </div>
+            {formError && <p className="text-red-500 text-sm">{formError}</p>}
           </div>
         </div>
       </div>
@@ -196,28 +291,28 @@ export default function Users() {
               <input
                 type="text"
                 placeholder="نام"
-                value={filters.name}
-                onChange={(e) => setFilters({ ...filters, name: e.target.value })}
+                value={filters.first_name}
+                onChange={(e) => setFilters({ ...filters, first_name: e.target.value })}
                 className="py-3 px-2 rounded rounded-l-none ring-1 ring-orange-500 outline-none text-sm dark:bg-gray-800"
               />
               <input
                 type="text"
                 placeholder="نام خانوادگی"
-                value={filters.family}
-                onChange={(e) => setFilters({ ...filters, family: e.target.value })}
+                value={filters.last_name}
+                onChange={(e) => setFilters({ ...filters, last_name: e.target.value })}
                 className="py-3 px-2 rounded rounded-s-none rounded-l-none ring-1 ring-orange-500 outline-none text-sm dark:bg-gray-800"
               />
               <input
                 type="text"
                 placeholder="شماره تلفن"
-                value={filters.phone__number}
-                onChange={(e) => setFilters({ ...filters, phone__number: e.target.value })}
+                value={filters.phone_number}
+                onChange={(e) => setFilters({ ...filters, phone_number: e.target.value })}
                 className="py-3 px-2 rounded rounded-s-none ring-1 ring-orange-500 outline-none text-sm dark:bg-gray-800"
               />
             </div>
             <p className="text-sm">
-              {filteredUsers.length > 0
-                ? `${filteredUsers.length} کاربر یافت شد.`
+              {filteredUsers?.length > 0
+                ? `${filteredUsers?.length} کاربر یافت شد.`
                 : 'کاربری یافت نشد.'}
             </p>
           </div>
@@ -230,30 +325,40 @@ export default function Users() {
               <th style={{ border: '1px solid #ddd', padding: '8px' }}>نام</th>
               <th style={{ border: '1px solid #ddd', padding: '8px' }}>نام خانوادگی</th>
               <th style={{ border: '1px solid #ddd', padding: '8px' }}>شماره تلفن</th>
+              <th style={{ border: '1px solid #ddd', padding: '8px' }}> مدیریت کاربر</th>
             </tr>
           </thead>
           <tbody>
-            {filteredUsers.map((user, index) => (
-              <tr
-                key={user.id}
-                className={`text-gray-800 dark:text-white ${index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-300 dark:bg-orange-500'
-                  }`}
-              >
-                <td style={{ border: '1px solid #ddd', padding: '8px' }} className="text-xs sm:text-base">
-                  {user.id}
-                </td>
-                <td style={{ border: '1px solid #ddd', padding: '8px' }} className="text-xs sm:text-base">
-                  {user.name}
-                </td>
-                <td style={{ border: '1px solid #ddd', padding: '8px' }} className="text-xs sm:text-base">
-                  {user.family}
-                </td>
-                <td style={{ border: '1px solid #ddd', padding: '8px' }} className="text-xs sm:text-base">
-                  {user.phone__number}
-                </td>
+            {filteredUsers.length > 0 ? (
+              filteredUsers.map((user, index) => (
+                <tr
+                  key={index}
+                  className={`text-gray-800 dark:text-white ${index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-300 dark:bg-orange-500'
+                    }`}
+                >
+                  <td style={{ border: '1px solid #ddd', padding: '8px' }} className="text-xs sm:text-base">1</td>
+                  <td style={{ border: '1px solid #ddd', padding: '8px' }} className="text-xs sm:text-base">
+                    {user.first_name}
+                  </td>
+                  <td style={{ border: '1px solid #ddd', padding: '8px' }} className="text-xs sm:text-base">
+                    {user.last_name}
+                  </td>
+                  <td style={{ border: '1px solid #ddd', padding: '8px' }} className="text-xs sm:text-base">
+                    {user.phone_number}
+                  </td>
+                  <td className='flex justify-center items-center mt-1'>
+                    <button className="text-blue-500 ring-1 ring-blue-500 hover:bg-blue-200 hover:text-blue-700 text-sm px-2 py-1 rounded ml-2" onClick={() => handleEditUser(user)}><FiEdit className='w-4 h-4' /></button>
+                    <button className="text-red-500 ring-1 ring-red-500 hover:bg-red-200 hover:text-red-700 text-sm px-2 py-1 rounded" onClick={() => handleDeleteUser(user.id)}><FiX className='w-4 h-4' /></button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4" className="text-center py-4">کاربری یافت نشد.</td>
               </tr>
-            ))}
+            )}
           </tbody>
+
         </table>
       </div>
     </div>

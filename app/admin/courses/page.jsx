@@ -166,7 +166,6 @@ const Courses = () => {
             setCourses(updatedCourses);
           }
 
-
           setShowForm(false);
           setFormData({
             title: '',
