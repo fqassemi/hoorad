@@ -9,16 +9,13 @@ import useGetBlogs from '@/hooks/api/blog/useGetBlog';
 import usePostBlog from '@/hooks/api/blog/usePostBlog';
 import usePatchBlog from '@/hooks/api/blog/usePatchBlog';
 import useDeleteBlog from '@/hooks/api/blog/useDeleteBlog';
-import useGetBlog from '@/hooks/api/blog/useGetBlogId';
-
 
 import CircularLoader from '@/components/ui/circular-loader';
 
-//Editor
 import DraftEditor from './draft';
 
 export default function Blogs() {
-  const [blogDetails, setBlogDetails] = useState([]);
+  
   const [showForm, setShowForm] = useState(false);
   const [dateTime, setDateTime] = useState('');
   const [formData, setFormData] = useState({
@@ -38,10 +35,6 @@ export default function Blogs() {
   });
 
   const { data, error, isLoading } = useGetBlogs();
-
-  
-  const blogsArray = data?.blogs ?? [];
-
 
   const { trigger: createBlogTrigger, isLoading: isCreating } = usePostBlog();
   const { trigger: updateBlogTrigger, isLoading: isUpdating } = usePatchBlog();
@@ -160,23 +153,6 @@ export default function Blogs() {
   const handleDelete = (blogId) => {
     openConfirmModal('delete', { id: blogId });
   };
-
-
-  useEffect(() => {
-    const fetchBlogDetails = async () => {
-      const blogData = await Promise.all(
-        blogsArray.map(async (blogId) => {
-          const blogDetail = await useGetBlog(blogId); 
-          return blogDetail;
-        })
-      );
-      setBlogDetails(blogData); 
-    };
-
-    if (blogsArray.length > 0) {
-      fetchBlogDetails();
-    }
-  }, [blogsArray]);
 
 
   if (isLoading) {
@@ -303,15 +279,14 @@ export default function Blogs() {
       <div className="bg-[#f9f9f9] dark:bg-gray-800 rounded-md p-6 mt-6">
         <h2 className="text-xl font-bold">بلاگ های اضافه شده</h2>
         <div className="mt-4 space-y-4">
-          {blogsArray.length > 0 ? (
-            blogsArray.map((blog, index) => {
-              const { data: blogData, error, isLoading } = useGetBlog(blog) || {}; 
-              return (<div key={blogData.id} className="bg-white dark:bg-gray-800 p-4 border  rounded flex justify-between items-center shadow-md dark:shadow-gray-700">
+          {data.length > 0 ? (
+            data?.map((blog, index) => {
+              return (<div key={blog.id} className="bg-white dark:bg-gray-800 p-4 border  rounded flex justify-between items-center shadow-md dark:shadow-gray-700">
                 <div className="flex flex-1 flex-col md:flex-row items-center justify-between">
                   <div className='flex items-center'>
                     {blog.previewImage && <img src={blog.previewImage} alt="preview" className='rounded mb-5 md:mb-0 w-full md:w-30 h-64 md:h-30' />}
                     <div className='mx-3'>
-                      <h3 className="text-lg font-semibold my-1">{blogData.title}</h3>
+                      <h3 className="text-lg font-semibold my-1">{blog.title}</h3>
                       <p className='text-sm text-gray-400'>
                         {blog?.plainText.split(' ').length > 20
                           ? blog?.plainText.split(' ').slice(0, 20).join(' ') + '...'

@@ -6,13 +6,16 @@ import ConfirmModal from "@/components/templates/confirm-modal";
 import { FiEdit, FiX, FiPlus } from 'react-icons/fi';
 import { MdOutlineKeyboardArrowDown } from 'react-icons/md';
 
-import { postCourse, getCourses, updateCourse, deleteCourse } from '@/hooks/api/courseApi';
+import useGetCourses from '@/hooks/api/course/useGetCourse';
 
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 
 import CircularLoader from '@/components/ui/circular-loader';
 
 const Courses = () => {
+  const [courses, setCourses] = useState([]);
+  const [data, isMuting] = useGetCourses();
+
   const [showForm, setShowForm] = useState(false);
   const [dateTime, setDateTime] = useState('');
   const [formData, setFormData] = useState({
@@ -25,7 +28,6 @@ const Courses = () => {
     previewImage: null,
     issuedDate: dateTime,
   });
-  const [courses, setCourses] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
   const [loading, setLoading] = useState(true);
   const [modalState, setModalState] = useState({
@@ -66,32 +68,10 @@ const Courses = () => {
   };
 
   useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const fetchedCourses = await getCourses();
-        setCourses(fetchedCourses);
-      } catch (error) {
-        console.error('Failed to fetch courses:', error);
-      }
-      finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCourses();
-
-    const updateDateTime = () => {
-      const now = new Date();
-      const formattedDateTime = new Intl.DateTimeFormat('fa-IR', {
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-      }).format(now);
-      setDateTime(formattedDateTime);
-    };
-
-    updateDateTime();
-  }, []);
+    if (data) {
+      console.log(data);
+    }
+  }, [data]);
 
   useEffect(() => {
     if (dateTime) {
@@ -152,7 +132,7 @@ const Courses = () => {
       } else {
         let response;
         if (action === 'add') {
-          response = await postCourse(course);
+          response = await useGetCourses(course);
         } else if (action === 'edit') {
           response = await updateCourse(course.id, course);
         }

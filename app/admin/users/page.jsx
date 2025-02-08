@@ -2,19 +2,23 @@
 
 import React, { useState } from 'react';
 import CircularLoader from '@/components/ui/circular-loader';
+import ConfirmModal from '@/components/templates/confirm-modal';
 
 import useGetUsers from '@/hooks/api/users/useGetUsers';
 import useEditInfo from '@/hooks/api/edit-user/useEditInfo';
+import useDeleteUser from '@/hooks/api/users/useDeleteUser';
 // import useRegister from '@/hooks/api/login/useRegister';
 
 import { getCookie } from 'cookies-next';
 
-import { FiX } from 'react-icons/fi';
-import { FiEdit } from 'react-icons/fi';
+import { FiX, FiEdit } from 'react-icons/fi';
+
+
 
 export default function Users() {
   const { data, error, isLoading } = useGetUsers();
   const { trigger: editTrigger, isMutating: editIsMutating } = useEditInfo();
+  const { trigger: deleteTrigger, isMutating: deleteIsMutating } = useDeleteUser();
   // const { trigger, isMutating } = useRegister();
 
   const [filters, setFilters] = useState({ first_name: '', last_name: '', phone_number: '' });
@@ -24,6 +28,11 @@ export default function Users() {
   const [showEdit, setShowEdit] = useState(false);
 
   const [selectedUser, setSelectedUser] = useState("");
+  const [modalState, setModalState] = useState({
+    isOpen: false,
+    action: '',
+    userToDelete: null,
+  });
 
   const [formError, setFormError] = useState('');
   const [newUser, setNewUser] = useState({
@@ -37,17 +46,18 @@ export default function Users() {
     last_name: '',
   });
 
-  const userInfo = data?.user_info;
+  const userInfo = data?.users;
+  const userCount = data?.users?.length || 0;
 
-  const matchesFilter = (userInfo) => {
+  const matchesFilter = (user) => {
     return (
-      (userInfo.first_name?.toLowerCase().includes(filters.first_name.toLowerCase()) || !filters.name) &&
-      (userInfo.last_name?.toLowerCase().includes(filters.last_name.toLowerCase()) || !filters.family) &&
-      (userInfo.phone_number?.includes(filters.phone_number) || !filters.phone_number)
+      (user.first_name?.toLowerCase().includes(filters.first_name.toLowerCase()) || !filters.first_name) &&
+      (user.last_name?.toLowerCase().includes(filters.last_name.toLowerCase()) || !filters.last_name) &&
+      (user.phone_number?.includes(filters.phone_number) || !filters.phone_number)
     );
   };
 
-  const filteredUsers = userInfo && matchesFilter(userInfo) ? [userInfo] : [];
+  const filteredUsers = userInfo ? userInfo.filter(matchesFilter) : [];
 
   const handleNewUserChange = (e) => {
     const { name, value } = e.target;
@@ -64,12 +74,6 @@ export default function Users() {
       [name]: value,
     }));
   }
-
-  // const getNextId = () => {
-  //   if (!data || data.length === 0) return 1;
-  //   const maxId = Math.max(...data.map((user) => user.id));
-  //   return maxId + 1;
-  // };
 
   const validateForm = () => {
     const { first_name, last_name, phone_number } = newUser;
@@ -115,10 +119,35 @@ export default function Users() {
 
   const handleUpdateUser = async () => {
     const accessToken = getCookie('courses_accessToken');
-    console.log(accessToken);
-    
     await editTrigger({ first_name: editUser.first_name, last_name: editUser.last_name, access_token: accessToken });
     setShowEdit(false);
+  };
+
+  const handleDeleteUser = (user) => {
+    setModalState({
+      isOpen: true,
+      action: 'delete',
+      userToDelete: user,
+    });
+  };
+
+  const handleModalConfirm = async () => {
+    if (modalState.action === 'delete' && modalState.userToDelete) {
+      const phoneNumber = modalState.userToDelete.phone_number;
+      const accessToken = getCookie('courses_accessToken');
+      if (!phoneNumber || !accessToken) return;
+
+      try {
+        await deleteTrigger({
+          phoneNumber,
+          accessToken,
+        });
+        setModalState({ isOpen: false, action: '', userToDelete: null });
+      } catch (error) {
+        console.error('Failed to delete user:', error.response?.data || error.message);
+        setModalState({ isOpen: false, action: '', userToDelete: null });
+      }
+    }
   };
 
   if (error) {
@@ -144,7 +173,7 @@ export default function Users() {
           <h1 className="text-3xl font-extrabold mb-6 text-gray-800 tracking-wide dark:text-gray-200">
             مدیریت کاربران
           </h1>
-          <h3 className="dark:text-gray-200 mb-4">تعداد کاربران : {filteredUsers.length}</h3>
+          <h3 className="dark:text-gray-200 mb-4">تعداد کاربران : {userCount}</h3>
           <button
             className="bg-orange-500 py-2 px-4 rounded hover:scale-90 transition-transform duration-200 hover:bg-orange-600 text-white"
             onClick={() => setShowForm(!showForm)}
@@ -333,22 +362,22 @@ export default function Users() {
               filteredUsers.map((user, index) => (
                 <tr
                   key={index}
-                  className={`text-gray-800 dark:text-white ${index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-300 dark:bg-orange-500'
+                  className={`text-gray-800 dark:text-white ${index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-300 dark:bg-zinc-600'
                     }`}
                 >
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }} className="text-xs sm:text-base">1</td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }} className="text-xs sm:text-base">
+                  <td style={{ padding: '8px' }} className="text-xs sm:text-base">{index + 1}</td>
+                  <td style={{ padding: '8px' }} className="text-xs sm:text-base">
                     {user.first_name}
                   </td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }} className="text-xs sm:text-base">
+                  <td style={{ padding: '8px' }} className="text-xs sm:text-base">
                     {user.last_name}
                   </td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }} className="text-xs sm:text-base">
+                  <td style={{ padding: '8px' }} className="text-xs sm:text-base">
                     {user.phone_number}
                   </td>
                   <td className='flex justify-center items-center mt-1'>
                     <button className="text-blue-500 ring-1 ring-blue-500 hover:bg-blue-200 hover:text-blue-700 text-sm px-2 py-1 rounded ml-2" onClick={() => handleEditUser(user)}><FiEdit className='w-4 h-4' /></button>
-                    <button className="text-red-500 ring-1 ring-red-500 hover:bg-red-200 hover:text-red-700 text-sm px-2 py-1 rounded" onClick={() => handleDeleteUser(user.id)}><FiX className='w-4 h-4' /></button>
+                    <button className="text-red-500 ring-1 ring-red-500 hover:bg-red-200 hover:text-red-700 text-sm px-2 py-1 rounded" onClick={() => handleDeleteUser(user)}><FiX className='w-4 h-4' /></button>
                   </td>
                 </tr>
               ))
@@ -361,6 +390,15 @@ export default function Users() {
 
         </table>
       </div>
+
+      <ConfirmModal
+        open={modalState.isOpen}
+        onClose={() => setModalState({ isOpen: false, action: '', userToDelete: null })}
+        title={            
+            'آیا مطمئن هستید که می‌خواهید این کاربر را حذف کنید؟'
+        }
+        onConfirmClick={handleModalConfirm}
+      />
     </div>
   );
 }
