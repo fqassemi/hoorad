@@ -122,7 +122,9 @@ const Courses = () => {
         if (action === 'add') {
           response = await createCourseTrigger({ courseId: course.id, newCourse: course });
         } else {
-          response = await updateCourseTrigger({ courseId: course.id, updateCourse: course });
+          console.log(course); //corect
+          
+          response = await updateCourseTrigger({ courseId: course.id, updatedCourse: course });
         }
         await mutate(); 
         setFormData({

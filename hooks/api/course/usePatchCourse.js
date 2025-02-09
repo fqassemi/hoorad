@@ -3,6 +3,8 @@ import axiosInstance from "@/lib/axiosInstance";
 
 const patchCourse = async (url, { arg }) => {
   const { courseId, updatedCourse } = arg; 
+  console.log(updatedCourse);
+  
   try {
     const response = await axiosInstance.patch(`${url}/${courseId}`, updatedCourse); 
     return response.data;
@@ -17,4 +19,3 @@ const usePatchCourse = () => {
 };
 
 export default usePatchCourse;
-
