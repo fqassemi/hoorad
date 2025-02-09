@@ -7,7 +7,7 @@ import { FiBookOpen, FiUsers, FiFileText, FiGrid } from "react-icons/fi";
 import { FaMoon, FaSun } from 'react-icons/fa'
 import { useState, useEffect } from 'react';
 
-export default function AdminSidebar({ isOpen }) {
+export default function AdminSidebar({ isOpen, setOpen }) {
   const pathname = usePathname();
   const [darkMode, setDarkMode] = useState(false);
 
@@ -25,7 +25,7 @@ export default function AdminSidebar({ isOpen }) {
   };
 
   const isActive = (path) => {
-    if (pathname === '/') return path === '/admin'; // Default to '/admin' if the path is root
+    if (pathname === '/') return path === '/admin';
     return pathname === path;
   };
 
@@ -40,7 +40,7 @@ export default function AdminSidebar({ isOpen }) {
       </h2>
       <ul>
         <li>
-          <Link href="/admin">
+          <Link href="/admin" onClick={() => setOpen(false)}>
             <div
               className={`block p-2 rounded transition-all ease-in-out ${isActive('/admin') ? 'text-orange-500 font-semibold' : 'hover:text-orange-600'
                 }`}
@@ -53,7 +53,7 @@ export default function AdminSidebar({ isOpen }) {
           </Link>
         </li>
         <li>
-          <Link href="/admin/courses">
+          <Link href="/admin/courses" onClick={() => setOpen(false)}>
             <div
               className={`block p-2 rounded transition-all ease-in-out ${isActive('/admin/courses') ? 'text-orange-500 font-semibold' : 'hover:text-orange-600'
                 }`}
@@ -66,7 +66,7 @@ export default function AdminSidebar({ isOpen }) {
           </Link>
         </li>
         <li>
-          <Link href="/admin/users">
+          <Link href="/admin/users" onClick={() => setOpen(false)}>
             <div
               className={`block p-2 rounded transition-all ease-in-out ${isActive('/admin/users') ? 'text-orange-500 font-semibold' : 'hover:text-orange-600'
                 }`}
@@ -79,7 +79,7 @@ export default function AdminSidebar({ isOpen }) {
           </Link>
         </li>
         <li>
-          <Link href="/admin/blogs">
+          <Link href="/admin/blogs" onClick={() => setOpen(false)}>
             <div
               className={`block p-2 rounded transition-all ease-in-out ${isActive('/admin/blogs') ? 'text-orange-500 font-semibold' : 'hover:text-orange-600'
                 }`}

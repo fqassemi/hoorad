@@ -9,7 +9,7 @@ const AdminLayout = ({ children }) => {
 
   return (
     <div className="flex">
-      <AdminSidebar isOpen={isOpen} />
+      <AdminSidebar isOpen={isOpen} setOpen={setOpen} />
       <div className="flex-1">
         <AdminHeader isOpen={isOpen} setOpen={setOpen} />
         <main className="p-2 m-0 sm:mr-52 sm:p-4 bg-[#ff9f9]">{children}</main>
