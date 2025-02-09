@@ -1,8 +1,21 @@
 import useSWRMutation from 'swr/mutation';
 import axiosInstance from '@/lib/axiosInstance';
 
-const fetcher = (url, data) => axiosInstance.delete(url, data.arg).then(res => res.data);
+const deleteCourse = async (url, { arg }) => {
+  const { id } = arg;
+  console.log(id); // get id undefind
+  
+  try {
+    const response = await axiosInstance.delete(`${url}/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting course:', error);
+    throw error;
+  }
+};
 
-const useDeleteCourse = () => useSWRMutation('courses', fetcher);
+const useDeleteCourse = () => {
+  return useSWRMutation('courses', deleteCourse);
+};
 
 export default useDeleteCourse;

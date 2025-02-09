@@ -376,8 +376,8 @@ export default function Users() {
                     {user.phone_number}
                   </td>
                   <td className='flex justify-center items-center mt-1'>
-                    <button className="text-blue-500 ring-1 ring-blue-500 hover:bg-blue-200 hover:text-blue-700 text-sm px-2 py-1 rounded ml-2" onClick={() => handleEditUser(user)}><FiEdit className='w-4 h-4' /></button>
-                    <button className="text-red-500 ring-1 ring-red-500 hover:bg-red-200 hover:text-red-700 text-sm px-2 py-1 rounded" onClick={() => handleDeleteUser(user)}><FiX className='w-4 h-4' /></button>
+                    <button className="text-blue-500 ring-1 ring-blue-500 hover:bg-blue-200 hover:text-blue-700 text-sm px-2 py-1 rounded ml-2" onClick={() => handleEditUser(user)}><FiEdit className='w-3 h-3 sm:w-4 sm:h-4' /></button>
+                    <button className="text-red-500 ring-1 ring-red-500 hover:bg-red-200 hover:text-red-700 text-sm px-2 py-1 rounded" onClick={() => handleDeleteUser(user)}><FiX className='w-3 h-3 sm:w-4 sm:h-4' /></button>
                   </td>
                 </tr>
               ))
