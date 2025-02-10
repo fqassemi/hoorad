@@ -13,16 +13,14 @@ import useDeleteCourse from '@/hooks/api/course/useDeleteCourse';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 import CircularLoader from '@/components/ui/circular-loader';
 import ConfirmModal from "@/components/templates/confirm-modal";
-//cookie
-import { getCookie } from 'cookies-next';
+import ConnectionStatus from '@/components/ui/connectionStatus';
+
 
 const Courses = () => {
-  
   const { data, isLoading, mutate } = useGetCourses();
   const { trigger: createCourseTrigger, isLoading: isCreating } = usePostCourse();
   const { trigger: updateCourseTrigger, isLoading: isUpdating } = usePatchCourse();
   const { trigger: deleteCourseTrigger, isLoading: isDeleting } = useDeleteCourse();
-  
 
   const [showForm, setShowForm] = useState(false);
   const [dateTime, setDateTime] = useState('');
@@ -43,40 +41,33 @@ const Courses = () => {
     sessionIndex: null,
   });
 
-  const handleSessionTitleChange = (index, e) => {
+  const addSession = () => {
+    const sessionNumber = formData.sessions.length + 1;
+    const newSession = {
+      title: `جلسه ${sessionNumber}`,
+      resources: [{ id: '', title: '' }],
+    };
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      sessions: [...prevFormData.sessions, newSession],
+    }));
+  };
+
+  const handleResourceTitleChange = (sessionIndex, resourceIndex, e) => {
     const updatedSessions = [...formData.sessions];
-    updatedSessions[index].title = e.target.value;
+    updatedSessions[sessionIndex].resources[resourceIndex].title = e.target.value;
     setFormData({ ...formData, sessions: updatedSessions });
   };
 
-  // const handleSessionVideoChange = (index, e) => {
-  //   const updatedSessions = [...formData.sessions];
-  //   updatedSessions[index].videoFile = e.target.files[0];
-  //   setFormData({ ...formData, sessions: updatedSessions });
-  // };
-
-  // const handleSessionCodeChange = (index, e) => {
-  //   const updatedSessions = [...formData.sessions];
-  //   updatedSessions[index].codeFile = e.target.files[0];
-  //   setFormData({ ...formData, sessions: updatedSessions });
-  // };
-
-  const addSession = (resourceTitle) => {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      sessions: [
-        ...prevFormData.sessions,
-        {
-          title: `آموزش ${prevFormData.sessions.length + 1}`, 
-          resources: [{ id: '', title: resourceTitle }], 
-        },
-      ],
-    }));
+  const handleSessionVideoChange = (sessionIndex, e) => {
+    const updatedSessions = [...formData.sessions];
+    updatedSessions[sessionIndex].videoFile = e.target.files[0];
+    setFormData({ ...formData, sessions: updatedSessions });
   };
-  
 
-  const handleRemoveSession = (index) => {
-    const updatedSessions = formData.sessions.filter((_, i) => i !== index);
+  const handleSessionCodeChange = (sessionIndex, e) => {
+    const updatedSessions = [...formData.sessions];
+    updatedSessions[sessionIndex].codeFile = e.target.files[0];
     setFormData({ ...formData, sessions: updatedSessions });
   };
 
@@ -108,61 +99,10 @@ const Courses = () => {
   };
 
   const handleAction = async (action, course = null, sessionIndex = null) => {
-    if (action === 'removeSession' && sessionIndex !== null) {
-      return handleRemoveSession(sessionIndex);
-    }
-  
     setModalState({ isOpen: true, action, course, sessionIndex });
-  
-    if (action === 'add' || action === 'edit') {
-      const { issuedDate, ...newCourseData } = formData;
-  
-      try {
-        let response;
-        if (action === 'add') {
-          response = await createCourseTrigger({ courseId: course.id, newCourse: course });
-        } else {
-          console.log(course); //corect
-          
-          response = await updateCourseTrigger({ courseId: course.id, updatedCourse: course });
-        }
-        await mutate(); 
-        setFormData({
-          name: '',
-          id: '',
-          description: '',
-          price: '',
-          sessions: [],
-          is_enrolled: false,
-          issuedDate: dateTime,
-        });
-  
-        setEditIndex(null);
-        setShowForm(false);
-      } catch (error) {
-        console.error(`Error handling ${action}:`, error);
-      } finally {
-        setModalState({ isOpen: false, action: '', course: null, sessionIndex: null });
-      }
-    }
   };
 
-  const handleModalConfirm = async () => {
-    if (modalState.action === 'removeSession' && modalState.sessionIndex !== null) {
-      handleRemoveSession(modalState.sessionIndex);
-    } else if (modalState.action === 'edit' || modalState.action === 'add') {
-      await handleAction(modalState.action, modalState.course);
-    }
-    setModalState({ isOpen: false, action: '', course: null, sessionIndex: null });
-  };
-  
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    const actionType = editIndex !== null ? 'edit' : 'add';
-    const { issuedDate, ...courseData } = formData; 
-    
-    await handleAction(actionType, courseData);
+  const resetForm = () => {
     setFormData({
       name: '',
       id: '',
@@ -172,11 +112,48 @@ const Courses = () => {
       is_enrolled: false,
       issuedDate: dateTime,
     });
-  
     setEditIndex(null);
     setShowForm(false);
   };
-  
+
+  const handleModalConfirm = async () => {
+    if (modalState.action === 'removeSession' && modalState.sessionIndex !== null) {
+      const updatedSessions = formData.sessions.filter((_, i) => i !== modalState.sessionIndex);
+      setFormData({ ...formData, sessions: updatedSessions });
+    }
+    else if (modalState.action === 'deleteCourse' && modalState.course) {
+      try {
+        await deleteCourseTrigger({ id: modalState.course.id });
+        await mutate();
+      } catch (error) {
+        console.error('Error deleting course:', error.message);
+      }
+    }
+    else if (modalState.action === 'edit' || modalState.action === 'add') {
+      try {
+        let response;
+        if (modalState.action === 'add') {
+          response = await createCourseTrigger({ courseId: modalState.course.id, newCourse: modalState.course });
+        } else {
+          response = await updateCourseTrigger({ courseId: modalState.course.id, updatedCourse: modalState.course });
+        }
+        await mutate();
+        resetForm();
+      } catch (error) {
+        console.error(`Error handling ${modalState.action}:`, error);
+      }
+    }
+    setModalState({ isOpen: false, action: '', course: null, sessionIndex: null });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const actionType = editIndex !== null ? 'edit' : 'add';
+    const { issuedDate, ...courseData } = formData;
+    await handleAction(actionType, courseData);
+    resetForm();
+  };
+
   const handleEdit = (index) => {
     const courseToEdit = data[index];
     setFormData({
@@ -192,13 +169,13 @@ const Courses = () => {
     setShowForm(true);
   };
 
-  const handleDelete = async (courseId) => {
-    try {
-      await deleteCourseTrigger({ id: courseId }); 
-      await mutate();
-    } catch (error) {
-      console.error('Error deleting course:', error.message);
-    }
+  const handleDelete = (courseId) => {
+    setModalState({
+      isOpen: true,
+      action: 'deleteCourse',
+      course: { id: courseId },
+      sessionIndex: null,
+    });
   };
 
   if (isLoading) {
@@ -215,7 +192,7 @@ const Courses = () => {
 
       <button
         onClick={() => setShowForm(!showForm)}
-        className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+        className="bg-orange-500 text-white sm:px-4 px-3 text-sm py-2 rounded hover:bg-orange-600"
       >
         {showForm ? 'بستن فرم' : 'ایجاد دوره جدید'}
       </button>
@@ -311,15 +288,14 @@ const Courses = () => {
               </button>
             </div>
             <div className='px-16'>
-              {formData.sessions.map((session, index) => (
-                <div key={index} className="my-2">
+              {formData.sessions.map((session, sessionIndex) => (
+                <div key={sessionIndex} className="my-2">
                   <div className="flex items-center justify-between">
-
                     <Accordion type="single" collapsible className="w-full">
-                      <AccordionItem value={`session-${index}`}>
+                      <AccordionItem value={`session-${sessionIndex}`}>
                         <AccordionTrigger className="w-full [&[data-state=open]_#container]:rounded-b-none [&[data-state=open]_#container]:bg-customOrange [&[data-state=open]_#container]:text-white">
                           <div className="flex items-center justify-between gap-x-1 rounded-lg bg-white dark:bg-gray-800 px-3 py-4 transition-all duration-150 hover:bg-orange-100 max-sm:text-sm" id="container">
-                            <p>جلسه {index + 1}</p>
+                            <p>جلسه {sessionIndex + 1}</p>
                             <MdOutlineKeyboardArrowDown
                               className="size-5 transition-all duration-200"
                               id="arrowSvg"
@@ -328,26 +304,28 @@ const Courses = () => {
                         </AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white py-4 px-8 dark:bg-gray-800">
-                            <div className='relative w-full'>
-                              <label htmlFor='courseSession'
-                                className={`absolute text-sm font-semibold transition-all duration-200 
-                    ${session.title ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/2 right-4 translate-y-[-50%] text-gray-400 text-base'}`}>عنوان جلسه {index + 1}</label>
-                              <input
-                                id='courseSession'
-                                type="text"
-                                value={session.title}
-                                onChange={(e) => handleSessionTitleChange(index, e)}
-                                className="w-full px-4 py-2 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
-                                required
-                              />
-                            </div>
+                            {session.resources.map((resource, resourceIndex) => (
+                              <div key={resourceIndex} className='relative w-full'>
+                                <label htmlFor='resourceTitle'
+                                  className={`absolute text-sm font-semibold transition-all duration-200 
+                    ${resource.title ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/2 right-4 translate-y-[-50%] text-gray-400 text-base'}`}>عنوان منبع</label>
+                                <input
+                                  id='resourceTitle'
+                                  type="text"
+                                  value={resource.title}
+                                  onChange={(e) => handleResourceTitleChange(sessionIndex, resourceIndex, e)}
+                                  className="w-full px-4 py-2 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+                                  required
+                                />
+                              </div>
+                            ))}
                             <div className='flex justify-between gap-4'>
                               <div>
                                 <label className="block text-sm font-bold mb-1">فایل ویدیو</label>
                                 <input
                                   type="file"
                                   accept="video/*"
-                                  onChange={(e) => handleSessionVideoChange(index, e)}
+                                  onChange={(e) => handleSessionVideoChange(sessionIndex, e)}
                                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                                 />
                               </div>
@@ -356,7 +334,7 @@ const Courses = () => {
                                 <input
                                   type="file"
                                   accept=".zip,.rar,.tar,.tar.gz"
-                                  onChange={(e) => handleSessionCodeChange(index, e)}
+                                  onChange={(e) => handleSessionCodeChange(sessionIndex, e)}
                                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                                 />
                               </div>
@@ -368,7 +346,7 @@ const Courses = () => {
 
                     <button
                       type="button"
-                      onClick={() => handleAction('removeSession', null, index)}
+                      onClick={() => handleAction('removeSession', null, sessionIndex)}
                       className="ml-4 text-white p-1.5 rounded bg-red-500 hover:bg-red-600 mx-2"
                     >
                       <FiX className="w-4 h-4" />
@@ -387,7 +365,6 @@ const Courses = () => {
 
         </div>
       )}
-
       <div className="mt-6 bg-[#f9f9f9] dark:bg-gray-800 p-6 rounded-lg">
         <h2 className="text-xl font-bold">دوره های اضافه شده</h2>
         <div className="mt-4 space-y-4">
@@ -441,9 +418,11 @@ const Courses = () => {
         title={
           modalState.action === 'removeSession'
             ? 'آیا مطمئن هستید که می‌خواهید این جلسه را حذف کنید؟'
-            : modalState.action === 'edit'
-              ? 'آیا مطمئن هستید که می‌خواهید این دوره را ویرایش کنید؟'
-              : 'آیا مطمئن هستید که می‌خواهید این دوره را اضافه کنید؟'
+            : modalState.action === 'deleteCourse'
+              ? 'آیا مطمئن هستید که می‌خواهید این دوره را حذف کنید؟'
+              : modalState.action === 'edit'
+                ? 'آیا مطمئن هستید که می‌خواهید این دوره را ویرایش کنید؟'
+                : 'آیا مطمئن هستید که می‌خواهید این دوره را اضافه کنید؟'
         }
         onConfirmClick={handleModalConfirm}
       />

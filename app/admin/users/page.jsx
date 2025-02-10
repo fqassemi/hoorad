@@ -170,12 +170,12 @@ export default function Users() {
     <div>
       <div className="relative">
         <div className="p-6 bg-[#f9f9f9] dark:bg-gray-800 rounded-lg z-10">
-          <h1 className="text-3xl font-extrabold mb-6 text-gray-800 tracking-wide dark:text-gray-200">
+          <h1 className="sm:text-3xl text-2xl font-extrabold mb-6 text-gray-800 tracking-wide dark:text-gray-200">
             مدیریت کاربران
           </h1>
-          <h3 className="dark:text-gray-200 mb-4">تعداد کاربران : {userCount}</h3>
+          <h3 className="dark:text-gray-200 mb-4 sm:text-base text-sm">تعداد کاربران : {userCount}</h3>
           <button
-            className="bg-orange-500 py-2 px-4 rounded hover:scale-90 transition-transform duration-200 hover:bg-orange-600 text-white"
+            className="bg-orange-500 py-2 sm:px-4 px-3 rounded hover:scale-90 transition-transform duration-200 hover:bg-orange-600 text-white sm:text-base text-sm"
             onClick={() => setShowForm(!showForm)}
           >
             {showForm ? <span>بستن فرم</span> : <span>اضافه کاربر جدید</span>}
@@ -350,11 +350,11 @@ export default function Users() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }} className="mt-6">
           <thead>
             <tr className="bg-white dark:text-gray-200 dark:bg-[#494748]">
-              <th style={{ border: '1px solid #ddd', padding: '8px' }}>ID</th>
-              <th style={{ border: '1px solid #ddd', padding: '8px' }}>نام</th>
-              <th style={{ border: '1px solid #ddd', padding: '8px' }}>نام خانوادگی</th>
-              <th style={{ border: '1px solid #ddd', padding: '8px' }}>شماره تلفن</th>
-              <th style={{ border: '1px solid #ddd', padding: '8px' }}> مدیریت کاربر</th>
+              <th style={{ border: '1px solid #ddd', padding: '8px' }} className='text-xs sm:text-base' >ID</th>
+              <th style={{ border: '1px solid #ddd', padding: '8px' }} className='text-xs sm:text-base' >نام</th>
+              <th style={{ border: '1px solid #ddd', padding: '8px' }} className='text-xs sm:text-base' >نام خانوادگی</th>
+              <th style={{ border: '1px solid #ddd', padding: '8px' }} className='text-xs sm:text-base' >شماره تلفن</th>
+              <th style={{ border: '1px solid #ddd', padding: '8px' }} className='text-xs sm:text-base' > مدیریت کاربر</th>
             </tr>
           </thead>
           <tbody>

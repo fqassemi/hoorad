@@ -3,7 +3,6 @@ import axiosInstance from '@/lib/axiosInstance';
 
 const deleteCourse = async (url, { arg }) => {
   const { id } = arg;
-  console.log(id); 
   
   try {
     const response = await axiosInstance.delete(`${url}/${id}`);

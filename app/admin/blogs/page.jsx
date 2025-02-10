@@ -1,21 +1,18 @@
 'use client';
-
 import { useEffect, useState } from 'react';
-import ConfirmModal from "@/components/templates/confirm-modal";
+//Icons
 import { FiEdit, FiX } from 'react-icons/fi';
-
 //Apis
 import useGetBlogs from '@/hooks/api/blog/useGetBlog';
 import usePostBlog from '@/hooks/api/blog/usePostBlog';
 import usePatchBlog from '@/hooks/api/blog/usePatchBlog';
 import useDeleteBlog from '@/hooks/api/blog/useDeleteBlog';
-
+//components
 import CircularLoader from '@/components/ui/circular-loader';
-
+import ConfirmModal from "@/components/templates/confirm-modal";
 import DraftEditor from './draft';
 
 export default function Blogs() {
-  
   const [showForm, setShowForm] = useState(false);
   const [dateTime, setDateTime] = useState('');
   const [formData, setFormData] = useState({
@@ -34,7 +31,7 @@ export default function Blogs() {
     blog: null,
   });
 
-  const { data, error, isLoading } = useGetBlogs();
+  const { data, error, isLoading, mutate } = useGetBlogs();
 
   const { trigger: createBlogTrigger, isLoading: isCreating } = usePostBlog();
   const { trigger: updateBlogTrigger, isLoading: isUpdating } = usePatchBlog();
@@ -99,24 +96,26 @@ export default function Blogs() {
     setModalState({
       isOpen: true,
       action,
-      blog: { ...blog, id: formData.id },
+      blog: { ...blog }, 
     });
   };
 
   const handleModalConfirm = async () => {
     const { action, blog } = modalState;
-
+  
     try {
       if (action === 'edit') {
         await updateBlogTrigger({ blogId: blog.id, updatedBlog: blog });
         const updatedBlogs = data.map((b) => (b.id === blog.id ? blog : b));
-        const data = updatedBlogs;
+        mutate(updatedBlogs, false); 
       } else if (action === 'add') {
         await createBlogTrigger({ blogId: blog.id, newBlog: blog });
-        const data = [...data, blog];
+        const updatedBlogs = [...data, blog];
+        mutate(updatedBlogs, false); 
       } else if (action === 'delete') {
-        await deleteBlogTrigger({ arg: { id: blog.id }, url: `blogs/${blog.id}` });
-        const data = data.filter((b) => b.id !== blog.id);
+        await deleteBlogTrigger({ id: blog.id });
+        const updatedBlogs = data.filter((b) => b.id !== blog.id);
+        mutate(updatedBlogs, false);
       }
     } catch (error) {
       console.error(error.message);
@@ -166,10 +165,10 @@ export default function Blogs() {
   return (
     <div>
       <div className="p-6 bg-[#f9f9f9] dark:bg-gray-800 text-gray-700 dark:text-gray-200 transition-colors duration-300 rounded-lg">
-        <h1 className="text-3xl font-bold mb-6 tracking-wide">مدیریت مقالات و بلاگ</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold mb-6 tracking-wide">مدیریت مقالات و بلاگ</h1>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="bg-orange-500 text-white px-6 py-2 rounded-lg shadow-md transition-transform duration-300 hover:scale-105 hover:bg-orange-600"
+          className="bg-orange-500 text-white text-sm sm:text-base px-3 sm:px-6 py-2 rounded-lg shadow-md transition-transform duration-300 hover:scale-105 hover:bg-orange-600"
         >
           {showForm ? 'بستن فرم' : 'ایجاد بلاگ جدید'}
         </button>
@@ -179,8 +178,8 @@ export default function Blogs() {
             onSubmit={handleSubmit}
             className="mt-8 space-y-6 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-900 transition-all duration-300 p-8 rounded-xl shadow-xl animate-fade-in"
           >
-            <div className='flex gap-3 w-full'>
-              <div className="relative w-2/3">
+            <div className='flex gap-3 w-full flex-col sm:flex-row'>
+              <div className="relative sm:w-2/3 w-full">
                 <label
                   htmlFor="blogTitle"
                   className={`absolute text-sm font-semibold transition-all duration-200 
@@ -198,7 +197,7 @@ export default function Blogs() {
                   required
                 />
               </div>
-              <div className="relative w-1/3">
+              <div className="relative sm:w-1/3 w-full">
                 <label
                   htmlFor="blogId"
                   className={`absolute text-sm font-semibold transition-all duration-200 
@@ -216,7 +215,7 @@ export default function Blogs() {
                   required
                 />
               </div>
-              <div className="relative w-1/3">
+              <div className="relative sm:w-1/3 w-full">
                 <label
                   htmlFor="blogAuthor"
                   className={`absolute text-sm font-semibold transition-all duration-200 
@@ -279,7 +278,7 @@ export default function Blogs() {
       <div className="bg-[#f9f9f9] dark:bg-gray-800 rounded-md p-6 mt-6">
         <h2 className="text-xl font-bold">بلاگ های اضافه شده</h2>
         <div className="mt-4 space-y-4">
-          {data.length > 0 ? (
+          {data?.length > 0 ? (
             data?.map((blog, index) => {
               return (<div key={blog.id} className="bg-white dark:bg-gray-800 p-4 border  rounded flex justify-between items-center shadow-md dark:shadow-gray-700">
                 <div className="flex flex-1 flex-col md:flex-row items-center justify-between">
@@ -295,7 +294,7 @@ export default function Blogs() {
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">تاریخ انتشار:{blog.issuedDate} | نویسنده: {blog.author}</p>
                     </div>
                   </div>
-                  <div className='flex'>
+                  <div className='flex mt-3 sm:mt-0'>
                     <button
                       onClick={() => handleEdit(index)}
                       className="text-orange-500 hover:text-orange-600 mx-1"
@@ -304,7 +303,7 @@ export default function Blogs() {
                     </button>
                     <button
                       onClick={() => handleDelete(blog.id)}
-                      className="text-red-500 ring-1 ring-red-600 rounded hover:text-red-600"
+                      className="text-red-500 ring-1 ring-red-600 rounded hover:text-red-600 hover:bg-red-200"
                     >
                       <FiX className="w-4 h-4" />
                     </button>
