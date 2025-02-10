@@ -3,6 +3,8 @@ import axiosInstance from "@/lib/axiosInstance";
 
 const patchBlog = async (url, { arg }) => {
   const { blogId, updatedBlog } = arg;
+  console.log(updatedBlog);
+  
   try {
     const response = await axiosInstance.patch(`${url}/${blogId}`, updatedBlog); 
     return response.data;

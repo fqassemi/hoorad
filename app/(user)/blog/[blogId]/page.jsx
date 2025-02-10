@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-// import { getBlogs } from "@/hooks/api/blogApi";
+import useGetBlogs from '@/hooks/api/blog/useGetBlog';
 import CircularLoader from "@/components/ui/circular-loader";
 import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
 import Link from 'next/link';
@@ -11,29 +11,19 @@ import Link from 'next/link';
 export default function BlogPost() {
     const { blogId } = useParams();
     const router = useRouter();
-    const [blogs, setBlogs] = useState([]);
+    const { data: blogs, loading } = useGetBlogs(); // Use the hook to fetch blogs
     const [blog, setBlog] = useState(null);
     const [randomBlogs, setRandomBlogs] = useState([]);
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        async function fetchData() {
-            try {
-                const data = await getBlogs();
-                setBlogs(data);
-                const randomBlogs = getRandomBlogs(data, 3);
-                setRandomBlogs(randomBlogs);
+        if (blogs && blogs.length > 0) {
+            const currentBlog = blogs.find((b) => b.id === blogId);
+            setBlog(currentBlog);
 
-                const currentBlog = data.find((b) => b.id === blogId);
-                setBlog(currentBlog);
-            } catch (error) {
-                console.error("Error fetching blog:", error);
-            } finally {
-                setLoading(false);
-            }
+            const randomBlogs = getRandomBlogs(blogs, 3);
+            setRandomBlogs(randomBlogs);
         }
-        fetchData();
-    }, [blogId]);
+    }, [blogs, blogId]);
 
     const getRandomBlogs = (blogsArray, num) => {
         const shuffled = [...blogsArray].sort(() => Math.random() - 0.5);

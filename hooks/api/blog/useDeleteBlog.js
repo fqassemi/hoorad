@@ -1,8 +1,20 @@
 import useSWRMutation from 'swr/mutation';
 import axiosInstance from '@/lib/axiosInstance';
 
-const fetcher = (url, data) => axiosInstance.delete(url, data.arg).then(res => res.data);
+const deleteBlog = async (url, { arg }) => {
+    const { id } = arg; 
+    console.log(id); 
+    try {
+      const response = await axiosInstance.delete(`${url}/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting Blog:', error);
+      throw error;
+    }
+  };
 
-const useDeleteBlog = () => useSWRMutation('blogs', fetcher);
+const useDeleteBlog = () => {
+  return useSWRMutation('blogs', deleteBlog);
+};
 
 export default useDeleteBlog;

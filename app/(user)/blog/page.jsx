@@ -1,5 +1,4 @@
 "use client"
-// import { getBlogs } from '@/hooks/api/blogApi';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
@@ -9,26 +8,19 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import { Autoplay } from 'swiper/modules';
 
+import useGetBlogs from '@/hooks/api/blog/useGetBlog';
+
 export default function Blog() {
+  const { data, loading } = useGetBlogs();
   const [blogs, setBlogs] = useState([]);
   const [visibleBlogs, setVisibleBlogs] = useState(7);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchBlogs = async () => {
-      try {
-        const blogData = await getBlogs();
-        const reversedBlogs = blogData.reverse();
-        setBlogs(reversedBlogs);
-      } catch (error) {
-        console.error('Error fetching blogs:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBlogs();
-  }, []);
+    if (data) {
+      const reversedBlogs = [...data].reverse(); 
+      setBlogs(reversedBlogs);
+    }
+  }, [data]);
 
   const loadMoreBlogs = () => {
     setVisibleBlogs(blogs.length);
@@ -51,7 +43,7 @@ export default function Blog() {
         autoplay={{ delay: 7000, disableOnInteraction: false }}
         loop={true}
       >
-        {blogs.slice(0, 3).map((blog) => (
+        {blogs?.slice(0, 3).map((blog) => (
           <SwiperSlide key={blog.id}>
             <div className="latest-blog">
               <div className="bg-white rounded-lg flex flex-col lg:flex-row justify-between">
@@ -88,8 +80,8 @@ export default function Blog() {
       <div className='mt-8'>
         <h2 className="text-2xl font-bold mb-4">بلاگ های بیشتر</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {blogs.length > 1 ? (
-            blogs.slice(1, visibleBlogs).map((blog) => {
+          {blogs?.length > 1 ? (
+            blogs?.slice(1, visibleBlogs).map((blog) => {
               
               const isTitleLong = (blog.title.split(' ').slice(0, 10)) > 6;
               const wordLimit = isTitleLong ? 15 : 20;
@@ -118,7 +110,7 @@ export default function Blog() {
           )}
         </div>
 
-        {blogs.length > visibleBlogs && (
+        {blogs?.length > visibleBlogs && (
           <div className="flex justify-center mt-6">
             <button
               onClick={loadMoreBlogs}
