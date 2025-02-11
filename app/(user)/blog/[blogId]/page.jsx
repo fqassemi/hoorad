@@ -11,13 +11,13 @@ import Link from 'next/link';
 export default function BlogPost() {
     const { blogId } = useParams();
     const router = useRouter();
-    const { data: blogs, loading } = useGetBlogs(); // Use the hook to fetch blogs
+    const { data: blogs, loading } = useGetBlogs();
     const [blog, setBlog] = useState(null);
     const [randomBlogs, setRandomBlogs] = useState([]);
 
     useEffect(() => {
         if (blogs && blogs.length > 0) {
-            const currentBlog = blogs.find((b) => b.id === blogId);
+            const currentBlog = blogs?.find((b) => b.id === blogId);
             setBlog(currentBlog);
 
             const randomBlogs = getRandomBlogs(blogs, 3);
@@ -30,19 +30,19 @@ export default function BlogPost() {
         return shuffled.slice(0, num);
     };
 
-    if (loading)
+    if (loading) {
         return (
             <div className="flex justify-center items-center h-screen">
                 <CircularLoader className='text-orange-500' />
             </div>
         );
+    }
 
-    if (!blog) return <h1 className="text-center text-xl">Blog not found</h1>;
 
-    const currentIndex = blogs.findIndex((b) => b.id === blogId);
+    const currentIndex = blogs?.findIndex((b) => b.id === blogId);
 
     const prevBlogId = currentIndex > 0 ? blogs[currentIndex - 1].id : null;
-    const nextBlogId = currentIndex < blogs.length - 1 ? blogs[currentIndex + 1].id : null;
+    const nextBlogId = currentIndex < blogs?.length - 1 ? blogs[currentIndex + 1].id : null;
 
     const goToPrevBlog = () => prevBlogId && router.push(`/blog/${prevBlogId}`);
     const goToNextBlog = () => nextBlogId && router.push(`/blog/${nextBlogId}`);
@@ -68,19 +68,19 @@ export default function BlogPost() {
                     </button>
                 </div>
 
-                <h1 className="text-2xl font-bold">{blog.title}</h1>
-                <img src={blog.previewImage} alt="" className="rounded my-4" />
-                <p className="mt-4 text-gray-700 text-justify leading-7">{blog.plainText}</p>
+                <h1 className="text-2xl font-bold">{blog?.title}</h1>
+                <img src={blog?.previewImage} alt="" className="rounded my-4" />
+                <p className="mt-4 text-gray-700 text-justify leading-7">{blog?.plainText}</p>
                 <div className="w-full h-[1px] bg-neutral-300 mt-6 mb-3"></div>
                 <div className="">
-                    <p className="text-gray-700 text-sm">تاریخ انتشار: {blog.issuedDate}</p>
-                    <p className="text-gray-700 text-sm"> نویسنده: {blog.author}</p>
+                    <p className="text-gray-700 text-sm">تاریخ انتشار: {blog?.issuedDate}</p>
+                    <p className="text-gray-700 text-sm"> نویسنده: {blog?.author}</p>
                 </div>
             </div>
             <div className=" mx-16 lg:mx-36 mt-12">
-                <h2 class="text-2xl font-bold mb-4">بلاگ های بیشتر</h2>
+                <h2 className="text-2xl font-bold mb-4">بلاگ های بیشتر</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 ">
-                    {randomBlogs.map((randomBlog) => (
+                    {randomBlogs?.map((randomBlog) => (
                         <Link href={`/blog/${randomBlog.id}`} key={randomBlog.id}>
                             <div className="border rounded-lg overflow-hidden shadow-md hover:shadow-lg transition flex flex-col h-full">
                                 <img
