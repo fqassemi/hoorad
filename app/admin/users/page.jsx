@@ -11,7 +11,8 @@ import useDeleteUser from '@/hooks/api/users/useDeleteUser';
 
 import { getCookie } from 'cookies-next';
 
-import { FiX, FiEdit } from 'react-icons/fi';
+import { FiX, FiEdit, FiUserPlus, FiFilter } from 'react-icons/fi';
+import { motion, AnimatePresence } from 'framer-motion';
 
 
 
@@ -167,194 +168,175 @@ export default function Users() {
   }
 
   return (
-    <div>
-      <div className="relative">
-        <div className="p-6 bg-[#f9f9f9] dark:bg-gray-800 rounded-lg z-10">
-          <h1 className="sm:text-3xl text-2xl font-extrabold mb-6 text-gray-800 tracking-wide dark:text-gray-200">
-            مدیریت کاربران
-          </h1>
-          <h3 className="dark:text-gray-200 mb-4 sm:text-base text-sm">تعداد کاربران : {userCount}</h3>
-          <button
-            className="bg-orange-500 py-2 sm:px-4 px-3 rounded hover:scale-90 transition-transform duration-200 hover:bg-orange-600 text-white sm:text-base text-sm"
-            onClick={() => setShowForm(!showForm)}
+    <div className="min-h-screen p-6 bg-[#f9f9f9] dark:bg-gray-900">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-4">
+          مدیریت کاربران
+        </h1>
+        <h3 className="text-gray-600 dark:text-gray-300 mb-6">
+          تعداد کاربران: <span className="font-semibold">{userCount}</span>
+        </h3>
+        <button
+          className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-all duration-300 flex items-center gap-2"
+          onClick={() => setShowForm(!showForm)}
+        >
+          <FiUserPlus className="w-5 h-5" />
+          {showForm ? 'بستن فرم' : 'اضافه کاربر جدید'}
+        </button>
+      </div>
+      <AnimatePresence>
+        {showForm && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="mt-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md"
           >
-            {showForm ? <span>بستن فرم</span> : <span>اضافه کاربر جدید</span>}
-          </button>
-        </div>
-
-        <div className={`overflow-hidden transition-all duration-1000 ${showForm ? 'max-h-96' : 'max-h-0'}`}>
-          <div className="p-6 bg-[#f9f9f9] dark:bg-gray-800 rounded-lg mt-4 flex flex-col gap-4">
-            <div className="flex justify-between items-center flex-col sm:flex-row">
-              <div className="flex lg:flex-row flex-col">
-                <input
-                  type="text"
-                  name="first_name"
-                  placeholder=" نام کاربر جدید"
-                  value={newUser.first_name}
-                  onChange={handleNewUserChange}
-                  required
-                  className="py-3 px-2 rounded-e-none rounded ring-1 ring-orange-500 outline-none text-sm dark:bg-gray-800"
-                />
-                <input
-                  type="text"
-                  name="last_name"
-                  placeholder=" نام خانوادگی کاربر جدید"
-                  value={newUser.last_name}
-                  onChange={handleNewUserChange}
-                  required
-                  className="py-3 px-2 rounded-none ring-1 ring-orange-500 outline-none text-sm dark:bg-gray-800"
-                />
-                <input
-                  type="text"
-                  name="phone_number"
-                  placeholder="شماره تلفن کاربر جدید"
-                  value={newUser.phone_number}
-                  onChange={handleNewUserChange}
-                  required
-                  maxLength={11}
-                  minLength={11}
-                  className=" py-3 px-2 rounded rounded-s-none ring-1 ring-orange-500 outline-none text-sm dark:bg-gray-800"
-                />
-              </div>
-              <div>
-                <button
-                  className="bg-orange-500 py-2 px-4 rounded hover:scale-90 transition-transform duration-200 hover:bg-orange-600 text-white mt-4 sm:mt-0"
-                  onClick={handleAddUser}
-                >
-                  ایجاد کاربر جدید
-                </button>
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <input
+                type="text"
+                name="first_name"
+                placeholder="نام کاربر جدید"
+                value={newUser.first_name}
+                onChange={handleNewUserChange}
+                className="p-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white"
+              />
+              <input
+                type="text"
+                name="last_name"
+                placeholder="نام خانوادگی کاربر جدید"
+                value={newUser.last_name}
+                onChange={handleNewUserChange}
+                className="p-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white"
+              />
+              <input
+                type="text"
+                name="phone_number"
+                placeholder="شماره تلفن کاربر جدید"
+                value={newUser.phone_number}
+                onChange={handleNewUserChange}
+                maxLength={11}
+                minLength={11}
+                className="p-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white"
+              />
             </div>
-            {formError && <p className="text-red-500 text-sm">{formError}</p>}
-          </div>
-        </div>
-
-        <div className={`overflow-hidden transition-all duration-1000 ${showEdit ? 'max-h-96' : 'max-h-0'}`}>
-          <div className="p-6 bg-[#f9f9f9] dark:bg-gray-800 rounded-lg mt-4 flex flex-col gap-4">
-            <div className='flex justify-between items-center'>
+            <button
+              className="mt-4 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-all duration-300"
+              onClick={handleAddUser}
+            >
+              ایجاد کاربر جدید
+            </button>
+            {formError && (
+              <p className="mt-2 text-sm text-red-500">{formError}</p>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {showEdit && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="mt-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md"
+          >
+            <div className="flex justify-between items-center mb-4">
               <div>
-                <span className="text-gray-600 dark:text-gray-300 text-sm sm:text-base">
+                <span className="text-gray-600 dark:text-gray-300">
                   نام فعلی: {selectedUser.first_name}
                 </span>
-                <span className="text-gray-600 dark:text-gray-300 text-sm sm:text-base mr-4">
+                <span className="text-gray-600 dark:text-gray-300 ml-4">
                   نام خانوادگی فعلی: {selectedUser.last_name}
                 </span>
               </div>
-              <div>
-                <button className="text-red-500 ring-1 ring-red-500 hover:bg-red-200 hover:text-red-700 text-sm px-2 py-1 rounded" onClick={() => setShowEdit(false)}><FiX className='w-4 h-4' /></button>
-              </div>
+              <button
+                className="text-red-500 hover:text-red-700 transition-all duration-300"
+                onClick={() => setShowEdit(false)}
+              >
+                <FiX className="w-5 h-5" />
+              </button>
             </div>
-            <div className="flex justify-between items-center flex-col sm:flex-row">
-              <div className="flex lg:flex-row flex-col">
-                <input
-                  type="text"
-                  name="first_name"
-                  placeholder=" نام جدید کاربر "
-                  value={editUser.first_name}
-                  onChange={handleEditChange}
-                  required
-                  className="py-3 px-2 rounded-e-none rounded ring-1 ring-orange-500 outline-none text-sm dark:bg-gray-800"
-                />
-                <input
-                  type="text"
-                  name="last_name"
-                  placeholder=" نام خانوادگی جدید کاربر"
-                  value={editUser.last_name}
-                  onChange={handleEditChange}
-                  required
-                  className="py-3 px-2 rounded-none ring-1 ring-orange-500 outline-none text-sm dark:bg-gray-800"
-                />
-                <input
-                  type="text"
-                  name="phone_number"
-                  placeholder="شماره تلفن جدید کاربر"
-                  value={selectedUser.phone_number}
-                  disabled
-                  maxLength={11}
-                  minLength={11}
-                  className="py-3 px-2 rounded rounded-s-none ring-1 ring-orange-500 outline-none text-sm dark:bg-gray-800"
-                />
-              </div>
-              <div>
-                <button
-                  className="bg-orange-500 py-2 px-4 rounded hover:scale-90 transition-transform duration-200 hover:bg-orange-600 text-white mt-4 sm:mt-0"
-                  onClick={handleUpdateUser}
-                >
-                  ویرایش اطلاعات
-                </button>
-              </div>
-            </div>
-            {formError && <p className="text-red-500 text-sm">{formError}</p>}
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-[#f9f9f9] dark:bg-gray-800 p-4 rounded-lg mt-6">
-        <div className="flex justify-between my-5">
-          <h2>لیست کاربران</h2>
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="py-1 px-2 rounded ring-1 ring-orange-500 text-sm flex items-center"
-          >
-            <span className="mr-1">{showFilters ? ' بستن فیلتر' : 'فیلتر'}</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-4 h-4"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M10.5 6h8.25m-8.25 6h5.25m-5.25 6h2.25M4.5 6h.008v.008H4.5V6zm0 6h.008v.008H4.5v-.008zm0 6h.008v.008H4.5v-.008z"
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input
+                type="text"
+                name="first_name"
+                placeholder="نام جدید کاربر"
+                value={editUser.first_name}
+                onChange={handleEditChange}
+                className="p-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white"
               />
-            </svg>
+              <input
+                type="text"
+                name="last_name"
+                placeholder="نام خانوادگی جدید کاربر"
+                value={editUser.last_name}
+                onChange={handleEditChange}
+                className="p-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+            <button
+              className="mt-4 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-all duration-300"
+              onClick={handleUpdateUser}
+            >
+              ویرایش اطلاعات
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <div className="mt-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
+            لیست کاربران
+          </h2>
+          <button
+            className="flex items-center gap-2 text-orange-500 hover:text-orange-600 transition-all duration-300"
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <FiFilter className="w-5 h-5" />
+            {showFilters ? 'بستن فیلتر' : 'فیلتر'}
           </button>
         </div>
 
         {showFilters && (
-          <div>
-            <div className="grid grid-cols-3 mb-4 bg-white dark:bg-[#4e4d4d] p-5 rounded-lg">
-              <input
-                type="text"
-                placeholder="نام"
-                value={filters.first_name}
-                onChange={(e) => setFilters({ ...filters, first_name: e.target.value })}
-                className="py-3 px-2 rounded rounded-l-none ring-1 ring-orange-500 outline-none text-sm dark:bg-gray-800"
-              />
-              <input
-                type="text"
-                placeholder="نام خانوادگی"
-                value={filters.last_name}
-                onChange={(e) => setFilters({ ...filters, last_name: e.target.value })}
-                className="py-3 px-2 rounded rounded-s-none rounded-l-none ring-1 ring-orange-500 outline-none text-sm dark:bg-gray-800"
-              />
-              <input
-                type="text"
-                placeholder="شماره تلفن"
-                value={filters.phone_number}
-                onChange={(e) => setFilters({ ...filters, phone_number: e.target.value })}
-                className="py-3 px-2 rounded rounded-s-none ring-1 ring-orange-500 outline-none text-sm dark:bg-gray-800"
-              />
-            </div>
-            <p className="text-sm">
-              {filteredUsers?.length > 0
-                ? `${filteredUsers?.length} کاربر یافت شد.`
-                : 'کاربری یافت نشد.'}
-            </p>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4"
+          >
+            <input
+              type="text"
+              placeholder="نام"
+              value={filters.first_name}
+              onChange={(e) => setFilters({ ...filters, first_name: e.target.value })}
+              className="p-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white"
+            />
+            <input
+              type="text"
+              placeholder="نام خانوادگی"
+              value={filters.last_name}
+              onChange={(e) => setFilters({ ...filters, last_name: e.target.value })}
+              className="p-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white"
+            />
+            <input
+              type="text"
+              placeholder="شماره تلفن"
+              value={filters.phone_number}
+              onChange={(e) => setFilters({ ...filters, phone_number: e.target.value })}
+              className="p-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white"
+            />
+          </motion.div>
         )}
-
-        <table style={{ width: '100%', borderCollapse: 'collapse' }} className="mt-6">
+      </div>
+      <div className="mt-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md overflow-x-auto">
+        <table className="w-full">
           <thead>
-            <tr className="bg-white dark:text-gray-200 dark:bg-[#494748]">
-              <th style={{ border: '1px solid #ddd', padding: '8px' }} className='text-xs sm:text-base' >ID</th>
-              <th style={{ border: '1px solid #ddd', padding: '8px' }} className='text-xs sm:text-base' >نام</th>
-              <th style={{ border: '1px solid #ddd', padding: '8px' }} className='text-xs sm:text-base' >نام خانوادگی</th>
-              <th style={{ border: '1px solid #ddd', padding: '8px' }} className='text-xs sm:text-base' >شماره تلفن</th>
-              <th style={{ border: '1px solid #ddd', padding: '8px' }} className='text-xs sm:text-base' > مدیریت کاربر</th>
+            <tr className="bg-gray-100 dark:bg-gray-700">
+              <th className="p-3 text-center text-gray-800 dark:text-white text-sm sm:text-base ">ID</th>
+              <th className="p-3 text-center text-gray-800 dark:text-white text-sm sm:text-base ">نام</th>
+              <th className="p-3 text-center text-gray-800 dark:text-white text-sm sm:text-base ">نام خانوادگی</th>
+              <th className="p-3 text-center text-gray-800 dark:text-white text-sm sm:text-base ">شماره تلفن</th>
+              <th className="p-3 text-center text-gray-800 dark:text-white text-sm sm:text-base ">مدیریت کاربر</th>
             </tr>
           </thead>
           <tbody>
@@ -362,43 +344,38 @@ export default function Users() {
               filteredUsers.map((user, index) => (
                 <tr
                   key={index}
-                  className={`text-gray-800 dark:text-white ${index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-300 dark:bg-zinc-600'
-                    }`}
+                  className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300"
                 >
-                  <td style={{ padding: '8px' }} className="text-xs sm:text-base">{index + 1}</td>
-                  <td style={{ padding: '8px' }} className="text-xs sm:text-base">
-                    {user.first_name}
-                  </td>
-                  <td style={{ padding: '8px' }} className="text-xs sm:text-base">
-                    {user.last_name}
-                  </td>
-                  <td style={{ padding: '8px' }} className="text-xs sm:text-base">
-                    {user.phone_number}
-                  </td>
-                  <td className='flex justify-center items-center mt-1'>
-                    <button className="text-blue-500 ring-1 ring-blue-500 hover:bg-blue-200 hover:text-blue-700 text-sm px-2 py-1 rounded ml-2" onClick={() => handleEditUser(user)}><FiEdit className='w-3 h-3 sm:w-4 sm:h-4' /></button>
-                    <button className="text-red-500 ring-1 ring-red-500 hover:bg-red-200 hover:text-red-700 text-sm px-2 py-1 rounded" onClick={() => handleDeleteUser(user)}><FiX className='w-3 h-3 sm:w-4 sm:h-4' /></button>
+                  <td className="p-3 text-gray-800 text-center dark:text-white sm:text-base text-sm">{index + 1}</td>
+                  <td className="p-3 text-gray-800 text-center dark:text-white sm:text-base text-sm">{user.first_name}</td>
+                  <td className="p-3 text-gray-800 text-center dark:text-white sm:text-base text-sm">{user.last_name}</td>
+                  <td className="p-3 text-gray-800 text-center dark:text-white sm:text-base text-sm">{user.phone_number}</td>
+                  <td className="p-3 flex items-center justify-center gap-2">
+                    <button
+                      className="text-blue-500 hover:text-blue-700 transition-all duration-300"
+                      onClick={() => handleEditUser(user)}
+                    >
+                      <FiEdit className="w-5 h-5" />
+                    </button>
+                    <button
+                      className="text-red-500 hover:text-red-700 transition-all duration-300"
+                      onClick={() => handleDeleteUser(user)}
+                    >
+                      <FiX className="w-5 h-5" />
+                    </button>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="4" className="text-center py-4">کاربری یافت نشد.</td>
+                <td colSpan="5" className="p-3 text-center text-gray-800 dark:text-white">
+                  کاربری یافت نشد.
+                </td>
               </tr>
             )}
           </tbody>
-
         </table>
       </div>
-
-      <ConfirmModal
-        open={modalState.isOpen}
-        onClose={() => setModalState({ isOpen: false, action: '', userToDelete: null })}
-        title={            
-            'آیا مطمئن هستید که می‌خواهید این کاربر را حذف کنید؟'
-        }
-        onConfirmClick={handleModalConfirm}
-      />
     </div>
   );
 }

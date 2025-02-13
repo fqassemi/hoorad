@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { MdHome } from 'react-icons/md';
-import { FiBookOpen, FiUsers, FiFileText, FiGrid } from "react-icons/fi";
+import { FiBookOpen, FiUsers, FiFileText, FiGrid, FiInfo } from "react-icons/fi";
 import { LuScrollText } from "react-icons/lu";
 import { FaMoon, FaSun } from 'react-icons/fa'
 import { useState, useEffect } from 'react';
@@ -93,14 +93,27 @@ export default function AdminSidebar({ isOpen, setOpen }) {
           </Link>
         </li>
         <li>
-          <Link href="/admin/blogs" onClick={() => setOpen(false)}>
+          <Link href="/admin/news" onClick={() => setOpen(false)}>
             <div
-              className={`block p-2 rounded transition-all ease-in-out ${isActive('/admin/blogs') ? 'text-orange-500 font-semibold' : 'hover:text-orange-600'
+              className={`block p-2 rounded transition-all ease-in-out ${isActive('/admin/news') ? 'text-orange-500 font-semibold' : 'hover:text-orange-600'
                 }`}
             >
               <div className="flex items-center">
                 <LuScrollText className="h-6 w-6" />
                 <span className="text-base mx-1">مدیریت اخبار</span>
+              </div>
+            </div>
+          </Link>
+        </li>
+        <li>
+          <Link href="/admin/about-me" onClick={() => setOpen(false)}>
+            <div
+              className={`block p-2 rounded transition-all ease-in-out ${isActive('/admin/about-me') ? 'text-orange-500 font-semibold' : 'hover:text-orange-600'
+                }`}
+            >
+              <div className="flex items-center">
+              <FiInfo className="w-6 h-6" />
+                <span className="text-base mx-1">مدیریت درباره من</span>
               </div>
             </div>
           </Link>
