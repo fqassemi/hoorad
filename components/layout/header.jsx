@@ -32,7 +32,8 @@ function Header({ userData }) {
    const { setIsLogin } = useAuth();
 
    const pathname = usePathname();
-   const isBlogPage = pathname.includes('blog');
+   const isBlogPage = pathname.includes('blogs');
+   const isCoursePage = pathname.includes('course-detail');
 
    const updateQueryParams = useUpdateQueryParams(
       'logout-modal',
@@ -61,12 +62,21 @@ function Header({ userData }) {
       });
    };
 
+   let headerText;
+   if (isCoursePage) {
+      headerText = 'دروس';
+   } else if (isBlogPage) {
+      headerText = 'بلاگ';
+   } else {
+      headerText = 'دروس بلاگ';
+   }
+
    return (
       <header className="sticky top-0 z-10 w-full bg-[#F5F5F5] shadow-md max-sm:pb-6 max-sm:pt-8 sm:h-[72px]">
          <div className="mx-auto flex h-full max-w-1440 items-start justify-between px-4 sm:items-center lg:px-[78px]">
             <div className="flex gap-7 max-sm:max-w-[250px] max-sm:grow max-sm:flex-col sm:items-center sm:gap-52">
                <Link href="/" className="flex items-center font-bold italic">
-                  <p className="pt-1">{isBlogPage ? 'بلاگ' : 'دروس'}</p>
+                  <p className="pt-1">{headerText}</p>
                   <GiBlackBook className="-scale-x-100 text-2xl text-customOrange" />
                </Link>
 

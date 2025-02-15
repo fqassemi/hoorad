@@ -44,8 +44,8 @@ export default function BlogPost() {
     const prevBlogId = currentIndex > 0 ? blogs[currentIndex - 1].id : null;
     const nextBlogId = currentIndex < blogs?.length - 1 ? blogs[currentIndex + 1].id : null;
 
-    const goToPrevBlog = () => prevBlogId && router.push(`/blog/${prevBlogId}`);
-    const goToNextBlog = () => nextBlogId && router.push(`/blog/${nextBlogId}`);
+    const goToPrevBlog = () => prevBlogId && router.push(`/blogs/${prevBlogId}`);
+    const goToNextBlog = () => nextBlogId && router.push(`/blogs/${nextBlogId}`);
 
     return (
         <div>
@@ -81,7 +81,7 @@ export default function BlogPost() {
                 <h2 className="text-2xl font-bold mb-4">بلاگ های بیشتر</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 ">
                     {randomBlogs?.map((randomBlog) => (
-                        <Link href={`/blog/${randomBlog.id}`} key={randomBlog.id}>
+                        <Link href={`/blogs/${randomBlog.id}`} key={randomBlog.id}>
                             <div className="border rounded-lg overflow-hidden shadow-md hover:shadow-lg transition flex flex-col h-full">
                                 <img
                                     src={randomBlog.previewImage}

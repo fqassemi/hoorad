@@ -1,6 +1,8 @@
 // Components
 import CourseCard from '@/components/templates/course-card';
 
+import Blog from '@/components/templates/blogs';
+
 // Libs
 import fetchDataHandler from '@/lib/fetchDataHandler';
 
@@ -17,6 +19,9 @@ export default async function Home() {
             {coursesData?.map(item => (
                <CourseCard key={item?.id} detail={item} />
             ))}
+         </div>
+         <div>
+            <Blog/>
          </div>
       </section>
    );

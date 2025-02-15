@@ -2,11 +2,11 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
-import CircularLoader from '@/components/ui/circular-loader';
+// import CircularLoader from '@/components/ui/circular-loader';
 
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
-import { Autoplay } from 'swiper/modules';
+// import { Swiper, SwiperSlide } from 'swiper/react';
+// import 'swiper/css';
+// import { Autoplay } from 'swiper/modules';
 
 import useGetBlogs from '@/hooks/api/blog/useGetBlog';
 
@@ -35,8 +35,8 @@ export default function Blog() {
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <Swiper
+    <div className="container mx-auto">
+      {/* <Swiper
         modules={[Autoplay]}
         spaceBetween={30}
         slidesPerView={1}
@@ -75,19 +75,19 @@ export default function Blog() {
             </div>
           </SwiperSlide>
         ))}
-      </Swiper>
+      </Swiper> */}
 
       <div className='mt-8'>
-        <h2 className="text-2xl font-bold mb-4">بلاگ های بیشتر</h2>
+        <h2 className="text-3xl font-bold mb-4">  بلاگ ها</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {blogs?.length > 1 ? (
-            blogs?.slice(1, visibleBlogs).map((blog) => {
+            blogs?.slice(0, visibleBlogs).map((blog) => {
               
               const isTitleLong = (blog.title.split(' ').slice(0, 10)) > 6;
               const wordLimit = isTitleLong ? 15 : 20;
 
               return (
-                <Link href={`blog/${blog.id}`} key={blog.id}>
+                <Link href={`blogs/${blog.id}`} key={blog.id}>
                   <div className="blog-card bg-white p-5 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-150">
                     <img src={blog.previewImage} alt={blog.title} className='rounded' />
                     <h3 className="text-lg font-semibold my-4 truncate">
