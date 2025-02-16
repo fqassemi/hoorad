@@ -122,3 +122,41 @@ body {
    }
 }
 
+
+.custom-html-content h1 {
+   font-size: 2.5rem;
+   font-weight: bold;
+   margin: 1rem 0;
+ }
+ 
+ .custom-html-content h2 {
+   font-size: 2rem;
+   font-weight: bold;
+   margin: 0.875rem 0;
+ }
+ 
+ .custom-html-content h3 {
+   font-size: 1.75rem;
+   font-weight: bold;
+   margin: 0.75rem 0;
+ }
+ 
+
+ .custom-html-content h4 {
+   font-size: 1.5rem;
+   font-weight: bold;
+   margin: 0.65rem 0;
+ }
+
+ .custom-html-content h5 {
+   font-size: 1.25rem;
+   font-weight: bold;
+   margin: 0.5rem 0;
+ }
+
+ .custom-html-content h6 {
+   font-size: 1rem;
+   font-weight: bold;
+   margin: 0.5rem 0;
+ }
+ /* Add styles for h4, h5, h6 as needed */
