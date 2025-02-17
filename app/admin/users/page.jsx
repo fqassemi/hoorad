@@ -328,7 +328,7 @@ export default function Users() {
           </motion.div>
         )}
       </div>
-      <div className="mt-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md overflow-x-auto">
+      <div className="mt-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full">
         <table className="w-full">
           <thead>
             <tr className="bg-gray-100 dark:bg-gray-700">

@@ -7,7 +7,6 @@ import CircularLoader from "@/components/ui/circular-loader";
 import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
 import Link from 'next/link';
 
-
 export default function BlogPost() {
     const { blogId } = useParams();
     const router = useRouter();
@@ -38,7 +37,6 @@ export default function BlogPost() {
         );
     }
 
-
     const currentIndex = blogs?.findIndex((b) => b.id === blogId);
 
     const prevBlogId = currentIndex > 0 ? blogs[currentIndex - 1].id : null;
@@ -46,6 +44,8 @@ export default function BlogPost() {
 
     const goToPrevBlog = () => prevBlogId && router.push(`/blogs/${prevBlogId}`);
     const goToNextBlog = () => nextBlogId && router.push(`/blogs/${nextBlogId}`);
+
+    const decodeHtml = decodeURIComponent(blog?.html || "");
 
     return (
         <div>
@@ -70,7 +70,8 @@ export default function BlogPost() {
 
                 <h1 className="text-2xl font-bold">{blog?.title}</h1>
                 <img src={blog?.previewImage} alt="" className="rounded my-4" />
-                <p className="mt-4 text-gray-700 text-justify leading-7">{blog?.plainText}</p>
+                
+                <div dangerouslySetInnerHTML={{ __html: decodeHtml }} className="custom-html-content" />
                 <div className="w-full h-[1px] bg-neutral-300 mt-6 mb-3"></div>
                 <div className="">
                     <p className="text-gray-700 text-sm">تاریخ انتشار: {blog?.issuedDate}</p>
@@ -100,7 +101,6 @@ export default function BlogPost() {
                     ))}
                 </div>
             </div>
-
         </div>
     );
 }

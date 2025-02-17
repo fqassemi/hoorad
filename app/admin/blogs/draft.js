@@ -17,7 +17,8 @@ import "./DraftEditor.css";
 const DraftEditor = ({ onContentChange, initialHtml }) => {
   const [editorState, setEditorState] = useState(() => {
     if (initialHtml) {
-      const blocksFromHTML = convertFromHTML(initialHtml);
+      const decodedHtml = decodeURIComponent(initialHtml);
+      const blocksFromHTML = convertFromHTML(decodedHtml);
       const contentState = ContentState.createFromBlockArray(
         blocksFromHTML.contentBlocks,
         blocksFromHTML.entityMap
@@ -131,7 +132,11 @@ const DraftEditor = ({ onContentChange, initialHtml }) => {
             const contentState = editorState.getCurrentContent();
             const htmlContent = draftToHtml(convertToRaw(contentState));
             const plainText = contentState.getPlainText();
-            onContentChange(htmlContent, plainText); 
+            
+            // Encode the HTML content before sending it
+            const encodedHtmlContent = encodeURIComponent(htmlContent);
+            
+            onContentChange(encodedHtmlContent, plainText); 
             setEditorState(editorState);
           }}
           dir="rtl"
