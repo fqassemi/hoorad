@@ -18,10 +18,11 @@ import {
     faSuperscript,
     faTextWidth,
     faUnderline,
+    faLink,
 } from "@fortawesome/free-solid-svg-icons";
 import { RichUtils } from "draft-js";
 
-const Toolbar = ({ editorState, setEditorState }) => {
+const Toolbar = ({ editorState, setEditorState, addLink }) => {    
     const tools = [
         {
             label: "bold",
@@ -125,6 +126,12 @@ const Toolbar = ({ editorState, setEditorState }) => {
             icon: <FontAwesomeIcon icon={faAlignRight} transform="grow-2" />,
             method: "block",
         },
+        {
+            label: "link",
+            style: "LINK",
+            icon: <FontAwesomeIcon icon={faLink} />,
+            method: "inline",
+        },
         { label: "H1", style: "header-one", method: "block" },
         { label: "H2", style: "header-two", method: "block" },
         { label: "H3", style: "header-three", method: "block" },
@@ -135,9 +142,13 @@ const Toolbar = ({ editorState, setEditorState }) => {
 
     const applyStyle = (e, style, method) => {
         e.preventDefault();
-        method === "block"
-            ? setEditorState(RichUtils.toggleBlockType(editorState, style))
-            : setEditorState(RichUtils.toggleInlineStyle(editorState, style));
+        if (style === "LINK") {
+            addLink();
+        } else {
+            method === "block"
+                ? setEditorState(RichUtils.toggleBlockType(editorState, style))
+                : setEditorState(RichUtils.toggleInlineStyle(editorState, style));
+        }
     };
 
     const isActive = (style, method) => {
@@ -156,22 +167,26 @@ const Toolbar = ({ editorState, setEditorState }) => {
 
     return (
         <div className="toolbar-grid">
-            {tools.map((item, idx) => (
-                <button
-                    style={{
-                        color: isActive(item.style, item.method)
-                            ? "rgba(0, 0, 0, 1)"
-                            : "rgba(0, 0, 0, 0.3)",
-                    }}
-                    key={`${item.label}-${idx}`}
-                    className="editor-btn"
-                    title={item.label}
-                    onClick={(e) => applyStyle(e, item.style, item.method)}
-                    onMouseDown={(e) => e.preventDefault()}
-                >
-                    {item.icon || item.label}
-                </button>
-            ))}
+            {tools.map((item, idx) => {
+                console.log(item);
+                return (
+                    <button
+                        style={{
+                            color: isActive(item.style, item.method)
+                                ? "rgba(0, 0, 0, 1)"
+                                : "rgba(0, 0, 0, 0.3)",
+                        }}
+                        key={`${item.label}-${idx}`}
+                        className="editor-btn"
+                        title={item.label}
+                        onClick={(e) => applyStyle(e, item.style, item.method)}
+                        onMouseDown={(e) => e.preventDefault()}
+                    >
+                        {item.icon || item.label}
+                    </button>
+                )
+
+            })}
         </div>
     );
 };

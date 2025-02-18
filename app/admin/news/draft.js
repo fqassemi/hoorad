@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -9,12 +9,39 @@ import {
   convertFromRaw,
   convertFromHTML,
   ContentState,
+  CompositeDecorator,
 } from "draft-js";
 import draftToHtml from 'draftjs-to-html';
-import Toolbar from "@/app/admin/blogs/ToolBar/ToolBar";
+import Toolbar from "@/app/admin/news/ToolBar/ToolBar";
 import "./DraftEditor.css";
 
 const DraftEditor = ({ onContentChange, initialHtml }) => {
+  const findLinkEntities = (contentBlock, callback, contentState) => {
+    contentBlock.findEntityRanges((character) => {
+      const entityKey = character.getEntity();
+      return (
+        entityKey !== null &&
+        contentState.getEntity(entityKey).getType() === "LINK"
+      );
+    }, callback);
+  };
+
+  const Link = ({ contentState, entityKey, children }) => {
+    const { url } = contentState.getEntity(entityKey).getData();
+    return (
+      <a href={url} style={{ color: "blue", textDecoration: "underline" }}>
+        {children}
+      </a>
+    );
+  };
+
+  const decorator = new CompositeDecorator([
+    {
+      strategy: findLinkEntities,
+      component: Link,
+    },
+  ]);
+
   const [editorState, setEditorState] = useState(() => {
     if (initialHtml) {
       const blocksFromHTML = convertFromHTML(initialHtml);
@@ -22,9 +49,9 @@ const DraftEditor = ({ onContentChange, initialHtml }) => {
         blocksFromHTML.contentBlocks,
         blocksFromHTML.entityMap
       );
-      return EditorState.createWithContent(contentState);
+      return EditorState.createWithContent(contentState, decorator);
     } else {
-      return EditorState.createEmpty();
+      return EditorState.createEmpty(decorator);
     }
   });
 
@@ -116,22 +143,43 @@ const DraftEditor = ({ onContentChange, initialHtml }) => {
     }
   };
 
+  const addLink = () => {
+    const selection = editorState.getSelection();
+    if (!selection.isCollapsed()) {
+      const url = prompt("Enter a URL:");
+      if (url) {
+        const contentState = editorState.getCurrentContent();
+        const contentStateWithEntity = contentState.createEntity("LINK", "MUTABLE", {
+          url: url,
+        });
+        const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+        console.log("Entity Key:", entityKey); // Log entity key
+        const newEditorState = EditorState.set(editorState, {
+          currentContent: contentStateWithEntity,
+        });
+        setEditorState(RichUtils.toggleLink(newEditorState, selection, entityKey));
+      }
+    }
+  };
+
   return (
     <div className="editor-wrapper" onClick={focusEditor} dir="rtl">
-      <Toolbar editorState={editorState} setEditorState={setEditorState} />
+      <Toolbar
+        editorState={editorState}
+        setEditorState={setEditorState}
+        addLink={addLink}
+      />
       <div className="editor-container">
         <Editor
           ref={editor}
           placeholder="محتوای خبر را اینجا بنویسید..."
           handleKeyCommand={handleKeyCommand}
           editorState={editorState}
-          customStyleMap={styleMap}
-          blockStyleFn={myBlockStyleFn}
           onChange={(editorState) => {
             const contentState = editorState.getCurrentContent();
             const htmlContent = draftToHtml(convertToRaw(contentState));
             const plainText = contentState.getPlainText();
-            onContentChange(htmlContent, plainText); 
+            onContentChange(htmlContent, plainText);
             setEditorState(editorState);
           }}
           dir="rtl"

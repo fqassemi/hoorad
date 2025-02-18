@@ -159,4 +159,12 @@ body {
    font-weight: bold;
    margin: 0.5rem 0;
  }
- /* Add styles for h4, h5, h6 as needed */
+ 
+
+ .custom-html-content li {
+   list-style: decimal;
+ }
+
+ .custom-html-content ol {
+   list-style: disc;
+ }

@@ -1,6 +1,6 @@
 function CourseSession() {
    return (
-      <section className="mx-auto max-w-1440 px-4 lg:px-[78px]">
+      <section className="mx-auto max-w-1440 px-4 lg:px-[78px] mb-20 mt-10 sm:mb-30 sm:mt-15">
          <div>
             <p className="text-xl font-bold lg:text-3xl">آموزش اول</p>
             <div>

@@ -284,7 +284,7 @@ export default function Blogs() {
         <div className="mt-4 space-y-4">
           {data?.length > 0 ? (
             data?.map((blog, index) => {
-              return (<div key={blog.id} className="bg-white dark:bg-gray-800 p-4 border  rounded flex justify-between items-center shadow-md dark:shadow-gray-700">
+              return (<div key={blog.id} className="bg-white dark:bg-gray-800 p-6 border  rounded flex justify-between items-center shadow-md dark:shadow-gray-700">
                 <div className="flex flex-1 flex-col md:flex-row items-center justify-between">
                   <div className='flex items-center'>
                     {blog.previewImage && <img src={blog.previewImage} alt="preview" className='rounded mb-5 md:mb-0 w-full md:w-30 h-64 md:h-30' />}
@@ -301,15 +301,15 @@ export default function Blogs() {
                   <div className='flex mt-3 sm:mt-0'>
                     <button
                       onClick={() => handleEdit(index)}
-                      className="text-orange-500 hover:text-orange-600 mx-1"
+                      className="mt-2 text-white py-1.5 px-2 mx-1 rounded bg-orange-400 hover:bg-orange-500"
                     >
-                      <FiEdit className="w-4 h-4" />
+                      <FiEdit className='w-4 h-4' />
                     </button>
                     <button
-                      onClick={() => handleDelete(blog.id)}
-                      className="text-red-500 ring-1 ring-red-600 rounded hover:text-red-600 hover:bg-red-200"
+                      onClick={() => handleDelete(course.id)}
+                      className="mt-2 text-white p-1.5 rounded bg-red-500 hover:bg-red-600"
                     >
-                      <FiX className="w-4 h-4" />
+                      <FiX className='w-4 h-4' />
                     </button>
                   </div>
                 </div>
