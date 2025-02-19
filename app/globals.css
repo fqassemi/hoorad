@@ -168,3 +168,8 @@ body {
  .custom-html-content ol {
    list-style: disc;
  }
+
+ .custom-html-content a {
+   text-decoration: underline;
+   color: royalblue;
+ }

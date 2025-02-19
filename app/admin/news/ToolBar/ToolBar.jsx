@@ -168,16 +168,15 @@ const Toolbar = ({ editorState, setEditorState, addLink }) => {
     return (
         <div className="toolbar-grid">
             {tools.map((item, idx) => {
-                console.log(item);
                 return (
                     <button
                         style={{
                             color: isActive(item.style, item.method)
-                                ? "rgba(0, 0, 0, 1)"
-                                : "rgba(0, 0, 0, 0.3)",
+                                ? "rgba(0, 0, 0, 1 )"
+                                : "rgba(209, 213, 219, 1)",
                         }}
                         key={`${item.label}-${idx}`}
-                        className="editor-btn"
+                        className="editor-btn dark:bg-gray-700 border-gray-300 dark:border-gray-600 dark:text-white"
                         title={item.label}
                         onClick={(e) => applyStyle(e, item.style, item.method)}
                         onMouseDown={(e) => e.preventDefault()}

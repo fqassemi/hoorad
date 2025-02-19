@@ -163,7 +163,7 @@ const DraftEditor = ({ onContentChange, initialHtml }) => {
   };
 
   return (
-    <div className="editor-wrapper" onClick={focusEditor} dir="rtl">
+    <div className="editor-wrapper dark:bg-gray-700 border-gray-300 dark:border-gray-600" onClick={focusEditor} dir="rtl" >
       <Toolbar
         editorState={editorState}
         setEditorState={setEditorState}
