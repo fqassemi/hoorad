@@ -132,10 +132,7 @@ const DraftEditor = ({ onContentChange, initialHtml }) => {
             const contentState = editorState.getCurrentContent();
             const htmlContent = draftToHtml(convertToRaw(contentState));
             const plainText = contentState.getPlainText();
-            
-            // Encode the HTML content before sending it
             const encodedHtmlContent = encodeURIComponent(htmlContent);
-            
             onContentChange(encodedHtmlContent, plainText); 
             setEditorState(editorState);
           }}

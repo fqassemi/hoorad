@@ -3,14 +3,17 @@ import { useEffect, useState } from 'react';
 //Icons
 import { FiEdit, FiX } from 'react-icons/fi';
 //Apis
-// import useGetBlogs from '@/hooks/api/blog/useGetBlog';
-// import usePostBlog from '@/hooks/api/blog/usePostBlog';
-// import usePatchBlog from '@/hooks/api/blog/usePatchBlog';
-// import useDeleteBlog from '@/hooks/api/blog/useDeleteBlog';
+import useGetNews from '@/hooks/api/news/useGetNews';
+import usePostNews from '@/hooks/api/news/usePostNews';
+import usePatchNews from '@/hooks/api/news/usePatchNews';
+import useDeleteNews from '@/hooks/api/news/useDeleteNews';
 //components
 import CircularLoader from '@/components/ui/circular-loader';
 import ConfirmModal from "@/components/templates/confirm-modal";
 import DraftEditor from './draft';
+
+import { motion, AnimatePresence } from 'framer-motion';
+
 
 export default function News() {
   const [showForm, setShowForm] = useState(false);
@@ -31,12 +34,11 @@ export default function News() {
     blog: null,
   });
 
-  // const { data, error, isLoading, mutate } = useGetBlogs();
-  const [data,setData]= useState([])
+  const { data, error, isLoading, mutate } = useGetNews();
 
-  // const { trigger: createBlogTrigger, isLoading: isCreating } = usePostBlog();
-  // const { trigger: updateBlogTrigger, isLoading: isUpdating } = usePatchBlog();
-  // const { trigger: deleteBlogTrigger, isLoading: isDeleting } = useDeleteBlog();
+  const { trigger: createNewsTrigger, isLoading: isCreating } = usePostNews();
+  const { trigger: updateNewsTrigger, isLoading: isUpdating } = usePatchNews();
+  const { trigger: deleteNewsTrigger, isLoading: isDeleting } = useDeleteNews();
 
   useEffect(() => {
     const updateDateTime = () => {
@@ -94,7 +96,7 @@ export default function News() {
     setModalState({
       isOpen: true,
       action,
-      blog: { ...news },
+      news: { ...news },
     });
   };
 
@@ -103,12 +105,12 @@ export default function News() {
 
     try {
       if (action === 'edit') {
-        await updateNewsTrigger({ newsId: news.id, updatedNews: news });
+        await updateNewsTrigger({ id: news.id, updatedNews: news });
         const updatedNews = data.map((n) => (n.id === news.id ? news : n));
         mutate(updatedNews, false);
       } else if (action === 'add') {
-        await createNewsTrigger({ newsId: news.id, newNews: news });
-        const updatedNews = [...data, blog];
+        await createNewsTrigger({ id:news.id,newNews: news });
+        const updatedNews = [...data, news];
         mutate(updatedNews, false);
       } else if (action === 'delete') {
         await deleteNewsTrigger({ id: news.id });
@@ -151,89 +153,103 @@ export default function News() {
     openConfirmModal('delete', { id: newsId });
   };
 
+  if (error) {
+    return (
+      <div className='text-red-500'>
+        something went wrong...
+      </div>
+    )
+  }
 
-  // if (isLoading) {
-  //   return (
-  //     <div className="flex justify-center items-center h-screen">
-  //       <CircularLoader className='text-orange-500' />
-  //     </div>
-  //   );
-  // }
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <CircularLoader className='text-orange-500' />
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <div className="p-6 bg-[#f9f9f9] dark:bg-gray-800 text-gray-700 dark:text-gray-200 transition-colors duration-300 rounded-lg">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-6 tracking-wide">مدیریت اخبار</h1>
-        <button
+    <div className="p-6 bg-[#f9f9f9] dark:bg-gray-900 text-gray-700 dark:text-gray-200 transition-colors duration-300">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-wide">مدیریت اخبار</h1>
+        <motion.button
           onClick={() => setShowForm(!showForm)}
-          className="bg-orange-500 text-white text-sm sm:text-base px-3 sm:px-6 py-2 rounded-lg shadow-md transition-transform duration-300 hover:scale-105 hover:bg-orange-600"
+          className="bg-gradient-to-r from-orange-500 to-orange-600 text-white text-sm sm:text-base px-4 sm:px-6 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
           {showForm ? 'بستن فرم' : 'ایجاد خبر جدید'}
-        </button>
+        </motion.button>
+      </div>
 
+      <AnimatePresence>
         {showForm && (
-          <form
+          <motion.form
             onSubmit={handleSubmit}
-            className="mt-8 space-y-6 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-900 transition-all duration-300 p-8 rounded-xl shadow-xl animate-fade-in"
+            className="mb-8 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
           >
-            <div className='flex gap-3 w-full flex-col sm:flex-row'>
-              <div className="relative sm:w-2/3 w-full">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+              <div className="relative">
                 <label
                   htmlFor="newsTitle"
                   className={`absolute text-sm font-semibold transition-all duration-200 
-                ${formData.title ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/2 right-4 translate-y-[-50%] text-gray-400 text-base'}`}
+                    ${formData.title ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/2 right-4 translate-y-[-50%] text-gray-400 text-base'}`}
                 >
                   عنوان اصلی خبر
                 </label>
                 <input
-                  id='newsTitle'
+                  id="newsTitle"
                   type="text"
                   name="title"
                   value={formData.title}
                   onChange={handleInputChange}
-                  className="w-full px-4 pt-3 pb-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   required
                 />
               </div>
-              <div className="relative sm:w-1/3 w-full">
+              <div className="relative">
                 <label
                   htmlFor="newsId"
                   className={`absolute text-sm font-semibold transition-all duration-200 
-                ${formData.id ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/2 right-4 translate-y-[-50%] text-gray-400 text-base'}`}
+      ${formData.id ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/2 right-4 translate-y-[-50%] text-gray-400 text-base'}`}
                 >
                   آیدی خبر
                 </label>
                 <input
-                  id='newsId'
+                  id="newsId"
                   type="text"
                   name="id"
                   value={formData.id}
                   onChange={handleInputChange}
-                  className="w-full px-4 pt-3 pb-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   required
                 />
               </div>
-              <div className="relative sm:w-1/3 w-full">
+              <div className="relative">
                 <label
                   htmlFor="newsAuthor"
                   className={`absolute text-sm font-semibold transition-all duration-200 
-                ${formData.author ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/2 right-4 translate-y-[-50%] text-gray-400 text-base'}`}
+                    ${formData.author ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/2 right-4 translate-y-[-50%] text-gray-400 text-base'}`}
                 >
                   نویسنده
                 </label>
                 <input
-                  id='newsAuthor'
+                  id="newsAuthor"
                   type="text"
                   name="author"
                   value={formData.author}
                   onChange={handleInputChange}
-                  className="w-full px-4 pt-3 pb-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   required
                 />
               </div>
             </div>
-
-            <div className="relative w-full">
+            <div className="mt-6">
               <DraftEditor
                 onContentChange={(htmlContent, plainText) =>
                   setFormData({ ...formData, html: htmlContent, plainText: plainText })
@@ -241,13 +257,14 @@ export default function News() {
                 initialHtml={formData.html}
               />
             </div>
-            <div>
-              <label className="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">عکس پیش نمایش</label>
+
+            <div className="mt-6">
+              <label className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-200">عکس پیش نمایش</label>
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 dark:bg-gray-700 dark:border-gray-600"
               />
               {formData.previewImage && (
                 <div className="mt-4">
@@ -255,60 +272,79 @@ export default function News() {
                   <img
                     src={formData.previewImage}
                     alt="preview"
-                    className="w-32 h-32 rounded-lg shadow-lg object-cover"
+                    className="w-32 h-32 rounded-lg shadow-lg object-cover mt-2"
                   />
                 </div>
               )}
             </div>
-            <button
+            <motion.button
               type="submit"
-              className="bg-orange-500 text-white px-6 py-3 rounded-lg shadow-md transition-transform duration-300 hover:scale-105 hover:bg-orange-600"
+              className="mt-6 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               {editIndex !== null ? 'ویرایش خبر' : 'ایجاد خبر'}
-            </button>
-          </form>
+            </motion.button>
+          </motion.form>
         )}
-      </div>
+      </AnimatePresence>
 
 
-      <div className="bg-[#f9f9f9] dark:bg-gray-800 rounded-md p-6 mt-6">
-        <h2 className="text-xl font-bold"> اخبار اضافه شده</h2>
-        <div className="mt-4 space-y-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+        <h2 className="text-xl font-bold mb-6">اخبار اضافه شده</h2>
+        <div className="space-y-4">
           {data?.length > 0 ? (
-            data?.map((news, index) => {
-              return (<div key={news.id} className="bg-white dark:bg-gray-800 p-4 border  rounded flex justify-between items-center shadow-md dark:shadow-gray-700">
-                <div className="flex flex-1 flex-col md:flex-row items-center justify-between">
-                  <div className='flex items-center'>
-                    {news.previewImage && <img src={news.previewImage} alt="preview" className='rounded mb-5 md:mb-0 w-full md:w-30 h-64 md:h-30' />}
-                    <div className='mx-3'>
-                      <h3 className="text-lg font-semibold my-1">{news.title}</h3>
-                      <p className='text-sm text-gray-400'>
-                        {news?.plainText.split(' ').length > 20
-                          ? news?.plainText.split(' ').slice(0, 20).join(' ') + '...'
-                          : news.plainText}
+            data?.map((news, index) => (
+              <motion.div
+                key={news.title}
+                className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
+                  <div className="flex items-start space-x-4">
+                    {news.previewImage && (
+                      <img
+                        src={news.previewImage}
+                        alt="preview"
+                        className="w-24 h-24 rounded-lg object-cover"
+                      />
+                    )}
+                    <div>
+                      <h3 className="text-lg font-semibold">{news.title}</h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        {news.plainText.split(' ').slice(0, 20).join(' ')}...
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">تاریخ انتشار:{news.issuedDate} | نویسنده: {news.author}</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-300 mt-2">
+                        تاریخ انتشار: {news.issuedDate} | نویسنده: {news.author}
+                      </p>
                     </div>
                   </div>
-                  <div className='flex mt-3 sm:mt-0'>
-                    <button
+                  <div className="flex space-x-2 mt-4 md:mt-0">
+                    <motion.button
                       onClick={() => handleEdit(index)}
-                      className="text-orange-500 hover:text-orange-600 mx-1"
+                      className="text-orange-500 hover:text-orange-600"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
                     >
-                      <FiEdit className="w-4 h-4" />
-                    </button>
-                    <button
+                      <FiEdit className="w-5 h-5" />
+                    </motion.button>
+                    <motion.button
                       onClick={() => handleDelete(news.id)}
-                      className="text-red-500 ring-1 ring-red-600 rounded hover:text-red-600 hover:bg-red-200"
+                      className="text-red-500 hover:text-red-600"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
                     >
-                      <FiX className="w-4 h-4" />
-                    </button>
+                      <FiX className="w-5 h-5" />
+                    </motion.button>
                   </div>
                 </div>
-              </div>)
-            })
+              </motion.div>
+            ))
           ) : (
-            <p className="text-center text-[#0e0e0e] dark:text-gray-200">هیچ خبری اضافه نشده است.</p>
+            <p className="text-center text-gray-500 dark:text-gray-400">هیچ خبری اضافه نشده است.</p>
           )}
         </div>
       </div>

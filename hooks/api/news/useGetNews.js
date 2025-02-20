@@ -3,6 +3,6 @@ import axiosInstance from '@/lib/axiosInstance';
 
 const fetcher = url => axiosInstance.get(url).then(res => res.data);
 
-const useGetImage = () => useSWR('images', fetcher);
+const useGetNews = () => useSWR('news', fetcher);
 
-export default useGetImage;
+export default useGetNews;

@@ -25,7 +25,7 @@ async function layout({ children }) {
             <Header userData={userData} />
          </Suspense>
 
-         <div className="mb-20 mt-10 sm:mb-30 sm:mt-15">{children}</div>
+         <div className="mt-0 mb-0">{children}</div>
       </div>
    );
 }

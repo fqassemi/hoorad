@@ -25,7 +25,8 @@ export default function BlogPost() {
     }, [blogs, blogId]);
 
     const getRandomBlogs = (blogsArray, num) => {
-        const shuffled = [...blogsArray].sort(() => Math.random() - 0.5);
+        const filteredBlogs = blogsArray.filter((b) => b.id !== blogId); // Exclude current blog
+        const shuffled = [...filteredBlogs].sort(() => Math.random() - 0.5);
         return shuffled.slice(0, num);
     };
 

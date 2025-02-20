@@ -21,7 +21,7 @@ async function CourseDetail({ params }) {
    const courseData = await fetchDataHandler(`courses/${courseId}`, {}, true);
 
    return (
-      <section className="mx-auto max-w-1440 px-4 lg:px-[78px]">
+      <section className="mx-auto max-w-1440 px-4 lg:px-[78px] mb-20 mt-10 sm:mb-30 sm:mt-15">
          <div className="flex gap-5 rounded-3xl bg-[#F5F5F5] p-5 max-lg:flex-col lg:gap-6 lg:p-7.5">
             <div className="relative aspect-video shrink-0 lg:h-60 xl:h-72">
                <Image src="/images/coursePic.jpg" fill alt="course" className="rounded-xl" sizes="531px" />

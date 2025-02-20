@@ -1,8 +1,14 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import usePatchAbout from "@/hooks/api/aboutme/usePatchAbout";
+import useGetAbout from "@/hooks/api/aboutme/useGetAbout";
+import CircularLoader from "@/components/ui/circular-loader";
 
 export default function AboutUs() {
+  const { data, error, isLoading } = useGetAbout();
+  const { trigger: updateAbout } = usePatchAbout();
+
   const [formData, setFormData] = useState({
     description: "",
     contact: {
@@ -11,6 +17,48 @@ export default function AboutUs() {
       address: "",
     },
   });
+
+  const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    if (data) {
+      setFormData({
+        description: data.description || "",
+        contact: {
+          email: data.contact?.email || "",
+          phone: data.contact?.phone || "",
+          address: data.contact?.address || "",
+        },
+      });
+    }
+  }, [data]);
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.description.trim()) {
+      newErrors.description = "توضیحات الزامی است.";
+    }
+
+    if (!formData.contact.email.trim()) {
+      newErrors.email = "ایمیل الزامی است.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.contact.email)) {
+      newErrors.email = "ایمیل معتبر نیست.";
+    }
+
+    if (!formData.contact.phone.trim()) {
+      newErrors.phone = "شماره تماس الزامی است.";
+    } else if (!/^\d{10,11}$/.test(formData.contact.phone)) {
+      newErrors.phone = "شماره تماس معتبر نیست.";
+    }
+
+    if (!formData.contact.address.trim()) {
+      newErrors.address = "آدرس الزامی است.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -31,7 +79,37 @@ export default function AboutUs() {
         [name]: value,
       }));
     }
+
+    if (errors[name]) {
+      setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+    }
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      await updateAbout({ updatedInfo: formData });
+    } catch (error) {
+      console.error("خطا در به‌روزرسانی اطلاعات:", error);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <CircularLoader className='text-orange-500' />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div>خطا در دریافت اطلاعات!</div>;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-[#f9f9f9] dark:bg-gray-900">
@@ -46,8 +124,7 @@ export default function AboutUs() {
             مدیریت درباره من
           </h1>
 
-          <form className="space-y-6">
-            {/* Description Field */}
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -68,11 +145,12 @@ export default function AboutUs() {
                 className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all duration-300 resize-none"
                 placeholder="توضیحات خود را وارد کنید..."
               />
+              {errors.description && (
+                <p className="text-red-500 text-sm mt-1">{errors.description}</p>
+              )}
             </motion.div>
 
-            {/* Contact Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Email Field */}
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -93,9 +171,11 @@ export default function AboutUs() {
                   className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all duration-300"
                   placeholder="example@example.com"
                 />
+                {errors.email && (
+                  <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                )}
               </motion.div>
 
-              {/* Phone Field */}
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -116,10 +196,12 @@ export default function AboutUs() {
                   className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all duration-300"
                   placeholder="09123456789"
                 />
+                {errors.phone && (
+                  <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
+                )}
               </motion.div>
             </div>
 
-            {/* Address Field */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -140,9 +222,11 @@ export default function AboutUs() {
                 className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all duration-300 resize-none"
                 placeholder="آدرس خود را وارد کنید..."
               />
+              {errors.address && (
+                <p className="text-red-500 text-sm mt-1">{errors.address}</p>
+              )}
             </motion.div>
 
-            {/* Submit Button */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}

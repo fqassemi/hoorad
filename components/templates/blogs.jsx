@@ -1,88 +1,40 @@
-"use client"
+"use client";
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
-// import CircularLoader from '@/components/ui/circular-loader';
-
-// import { Swiper, SwiperSlide } from 'swiper/react';
-// import 'swiper/css';
-// import { Autoplay } from 'swiper/modules';
-
-import useGetBlogs from '@/hooks/api/blog/useGetBlog';
-
-export default function Blog() {
-  const { data, loading } = useGetBlogs();
+export default function Blog({ blogsDetail }) {
   const [blogs, setBlogs] = useState([]);
   const [visibleBlogs, setVisibleBlogs] = useState(7);
 
   useEffect(() => {
-    if (data) {
-      const reversedBlogs = [...data].reverse(); 
+    if (blogsDetail) {
+      console.log(blogsDetail);
+      
+      const reversedBlogs = [...blogsDetail].reverse(); // Reverse the blogs array
       setBlogs(reversedBlogs);
     }
-  }, [data]);
+  }, [blogsDetail]);
 
   const loadMoreBlogs = () => {
-    setVisibleBlogs(blogs.length);
+    setVisibleBlogs(blogs.length); // Show all blogs
   };
 
-  if (loading) {
+  // If blogsDetail is not provided, show a loading state or a message
+  if (!blogsDetail) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <CircularLoader className='text-orange-500' />
+        <p className="text-gray-500">Loading blogs...</p>
       </div>
     );
   }
 
   return (
     <div className="container mx-auto">
-      {/* <Swiper
-        modules={[Autoplay]}
-        spaceBetween={30}
-        slidesPerView={1}
-        autoplay={{ delay: 7000, disableOnInteraction: false }}
-        loop={true}
-      >
-        {blogs?.slice(0, 3).map((blog) => (
-          <SwiperSlide key={blog.id}>
-            <div className="latest-blog">
-              <div className="bg-white rounded-lg flex flex-col lg:flex-row justify-between">
-                <div className="flex flex-col justify-center flex-grow p-6 lg:ml-6 lg:p-0">
-                  <Link href={`/blog/${blog.id}`}>
-                    <h1 className="font-semibold text-2xl lg:text-4xl mb-3 text-center lg:text-right leading-tight lg:leading-snug">
-                      <span className='hover:border-b-2 hover:border-orange-500 cursor-pointer'>
-                        {blog.title}
-                      </span>
-                    </h1>
-                  </Link>
-                  <p className="text-gray-700 mt-2 text-justify leading-7">
-                    {blog.plainText.split(' ').length > 20
-                      ? blog.plainText.split(' ').slice(0, 30).join(' ') + '...'
-                      : blog.plainText}
-                  </p>
-                  <p className="text-sm text-gray-500 mt-4 text-center lg:text-right">
-                    <strong>نویسنده:</strong> {blog.author} • <strong>تاریخ انتشار:</strong> {blog.issuedDate}
-                  </p>
-                </div>
-                <div className="w-full lg:w-[450px] flex-shrink-0 mt-6 lg:mt-0">
-                  <img
-                    src={blog.previewImage}
-                    alt="preview"
-                    className="w-full h-auto lg:h-full object-cover rounded"
-                  />
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper> */}
-
       <div className='mt-8'>
-        <h2 className="text-3xl font-bold mb-4">  بلاگ ها</h2>
+        <h2 className="text-3xl font-bold mb-4">بلاگ ها</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {blogs?.length > 1 ? (
+          {blogs?.length > 0 ? (
             blogs?.slice(0, visibleBlogs).map((blog) => {
-              
               const isTitleLong = (blog.title.split(' ').slice(0, 10)) > 6;
               const wordLimit = isTitleLong ? 15 : 20;
 
@@ -106,7 +58,7 @@ export default function Blog() {
               );
             })
           ) : (
-            <p className="text-gray-500">No other blogs available.</p>
+            <p className="text-gray-500">No blogs available.</p>
           )}
         </div>
 
