@@ -329,7 +329,7 @@ export default function News() {
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                     >
-                      <FiEdit className="w-5 h-5" />
+                      <FiEdit size={20} />
                     </motion.button>
                     <motion.button
                       onClick={() => handleDelete(news.id)}
@@ -337,7 +337,7 @@ export default function News() {
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                     >
-                      <FiX className="w-5 h-5" />
+                      <FiX size={28} />
                     </motion.button>
                   </div>
                 </div>

@@ -40,7 +40,7 @@ export default function AboutMe() {
             transition={{ delay: 0.2, duration: 0.8 }}
             className="text-4xl font-extrabold text-gray-900 mb-6 text-center"
           >
-            درباره من
+            درباره ما
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, x: -50 }}

@@ -23,15 +23,16 @@ export default function AboutUs() {
   useEffect(() => {
     if (data) {
       setFormData({
-        description: data.description || "",
+        description: data.content.description || "",
         contact: {
-          email: data.contact?.email || "",
-          phone: data.contact?.phone || "",
-          address: data.contact?.address || "",
+          email: data.content.contact?.email || "",
+          phone: data.content.contact?.phone || "",
+          address: data.content.contact?.address || "",
         },
       });
     }
   }, [data]);
+  
 
   const validateForm = () => {
     const newErrors = {};
@@ -121,7 +122,7 @@ export default function AboutUs() {
       >
         <div className="p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl">
           <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-8 text-center">
-            مدیریت درباره من
+            مدیریت درباره ما
           </h1>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
