@@ -85,7 +85,7 @@ export default function Event() {
                 >
                     {isMenuOpen ? <FiChevronLeft size={20} /> : <FiChevronRight size={20} />}
                 </button>
-
+                <main>
                     <div className="bg-white rounded-lg shadow-sm max-w-3xl mx-auto mt-4 px-6 py-8">
                         <div className="px-6">
                             <img src="/images/coursePic.jpg" alt="" className="rounded-lg w-full h-64 object-cover" />
