@@ -10,7 +10,8 @@ import useDeleteBlog from '@/hooks/api/blog/useDeleteBlog';
 //components
 import CircularLoader from '@/components/ui/circular-loader';
 import ConfirmModal from "@/components/templates/confirm-modal";
-import DraftEditor from './draft';
+import DraftEditor from '../news/draft';
+import { motion } from 'framer-motion';
 
 export default function Blogs() {
   const [showForm, setShowForm] = useState(false);
@@ -170,72 +171,75 @@ export default function Blogs() {
 
   return (
     <div>
-      <div className="p-6 bg-[#f9f9f9] dark:bg-gray-800 text-gray-700 dark:text-gray-200 transition-colors duration-300 rounded-lg">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-6 tracking-wide">مدیریت مقالات و بلاگ</h1>
+      <div className="p-6 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 text-gray-700 dark:text-gray-200 transition-colors duration-300 rounded-lg shadow-lg">
+        <h1 className="text-3xl sm:text-4xl font-bold mb-6 tracking-wide text-gray-800 dark:text-gray-100">مدیریت مقالات و بلاگ</h1>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="bg-orange-500 text-white text-sm sm:text-base px-3 sm:px-6 py-2 rounded-lg shadow-md transition-transform duration-300 hover:scale-105 hover:bg-orange-600"
+          className="bg-gradient-to-r from-orange-500 to-orange-600 text-white text-sm sm:text-base px-4 sm:px-6 py-2 rounded-lg shadow-md transition-transform duration-300 hover:scale-105 hover:shadow-lg"
         >
           {showForm ? 'بستن فرم' : 'ایجاد بلاگ جدید'}
         </button>
 
         {showForm && (
-          <form
+          <motion.form
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
             onSubmit={handleSubmit}
-            className="mt-8 space-y-6 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-900 transition-all duration-300 p-8 rounded-xl shadow-xl animate-fade-in"
+            className="mt-8 space-y-6 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-200 transition-all duration-300 p-8 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700"
           >
-            <div className='flex gap-3 w-full flex-col sm:flex-row'>
-              <div className="relative sm:w-2/3 w-full">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="relative">
                 <label
                   htmlFor="blogTitle"
                   className={`absolute text-sm font-semibold transition-all duration-200 
-                ${formData.title ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/2 right-4 translate-y-[-50%] text-gray-400 text-base'}`}
+            ${formData.title ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/2 right-4 translate-y-[-50%] text-gray-400 text-base'}`}
                 >
                   عنوان اصلی بلاگ
                 </label>
                 <input
-                  id='blogTitle'
+                  id="blogTitle"
                   type="text"
                   name="title"
                   value={formData.title}
                   onChange={handleInputChange}
-                  className="w-full px-4 pt-3 pb-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  className="w-full px-4 pt-3 pb-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
                   required
                 />
               </div>
-              <div className="relative sm:w-1/3 w-full">
+              <div className="relative">
                 <label
                   htmlFor="blogId"
                   className={`absolute text-sm font-semibold transition-all duration-200 
-                ${formData.id ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/2 right-4 translate-y-[-50%] text-gray-400 text-base'}`}
+            ${formData.id ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/2 right-4 translate-y-[-50%] text-gray-400 text-base'}`}
                 >
                   آیدی بلاگ
                 </label>
                 <input
-                  id='blogId'
+                  id="blogId"
                   type="text"
                   name="id"
                   value={formData.id}
                   onChange={handleInputChange}
-                  className="w-full px-4 pt-3 pb-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  className="w-full px-4 pt-3 pb-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
                   required
                 />
               </div>
-              <div className="relative sm:w-1/3 w-full">
+              <div className="relative">
                 <label
                   htmlFor="blogAuthor"
                   className={`absolute text-sm font-semibold transition-all duration-200 
-                ${formData.author ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/2 right-4 translate-y-[-50%] text-gray-400 text-base'}`}
+            ${formData.author ? 'top-0 right-4 text-orange-400 text-xs' : 'top-1/2 right-4 translate-y-[-50%] text-gray-400 text-base'}`}
                 >
                   نویسنده
                 </label>
                 <input
-                  id='blogAuthor'
+                  id="blogAuthor"
                   type="text"
                   name="author"
                   value={formData.author}
                   onChange={handleInputChange}
-                  className="w-full px-4 pt-3 pb-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  className="w-full px-4 pt-3 pb-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
                   required
                 />
               </div>
@@ -249,74 +253,101 @@ export default function Blogs() {
                 initialHtml={formData.html}
               />
             </div>
+
             <div>
-              <label className="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">عکس پیش نمایش</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-200">
+                عکس پیش نمایش
+              </label>
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
               />
               {formData.previewImage && (
-                <div className="mt-4">
-                  <p className="text-gray-700 dark:text-gray-200">پیش نمایش:</p>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3 }}
+                  className="mt-4"
+                >
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">پیش نمایش:</p>
                   <img
                     src={formData.previewImage}
                     alt="preview"
-                    className="w-32 h-32 rounded-lg shadow-lg object-cover"
+                    className="w-32 h-32 rounded-lg shadow-lg object-cover border border-gray-200 dark:border-gray-600"
                   />
-                </div>
+                </motion.div>
               )}
             </div>
-            <button
+
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               type="submit"
-              className="bg-orange-500 text-white px-6 py-3 rounded-lg shadow-md transition-transform duration-300 hover:scale-105 hover:bg-orange-600"
+              className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-3 rounded-lg shadow-md transition-transform duration-300 hover:shadow-lg"
             >
               {editIndex !== null ? 'ویرایش بلاگ' : 'ایجاد بلاگ'}
-            </button>
-          </form>
+            </motion.button>
+          </motion.form>
         )}
       </div>
 
-
-      <div className="bg-[#f9f9f9] dark:bg-gray-800 rounded-md p-6 mt-6">
-        <h2 className="text-xl font-bold">بلاگ های اضافه شده</h2>
+      <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-md p-6 mt-6 shadow-lg">
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">بلاگ های اضافه شده</h2>
         <div className="mt-4 space-y-4">
           {data?.length > 0 ? (
             data?.map((blog, index) => {
-              return (<div key={blog.id} className="bg-white dark:bg-gray-800 p-6 border  rounded flex justify-between items-center shadow-md dark:shadow-gray-700">
-                <div className="flex flex-1 flex-col md:flex-row items-center justify-between">
-                  <div className='flex items-center'>
-                    {blog.previewImage && <img src={blog.previewImage} alt="preview" className='rounded mb-5 md:mb-0 w-full md:w-30 h-64 md:h-30' />}
-                    <div className='mx-3'>
-                      <h3 className="text-lg font-semibold my-1">{blog.title}</h3>
-                      <p className='text-sm text-gray-400'>
-                        {blog?.plainText.split(' ').length > 20
-                          ? blog?.plainText.split(' ').slice(0, 20).join(' ') + '...'
-                          : blog.plainText}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">تاریخ انتشار:{blog.issuedDate} | نویسنده: {blog.author}</p>
+              return (
+                <motion.div
+                  key={blog.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                  className="bg-white dark:bg-gray-800 p-6 border rounded-lg flex justify-between items-center shadow-md dark:shadow-gray-700"
+                >
+                  <div className="flex flex-1 flex-col md:flex-row items-center justify-between">
+                    <div className='flex items-center'>
+                      {blog.previewImage && (
+                        <motion.img
+                          src={blog.previewImage}
+                          alt="preview"
+                          className='rounded mb-5 md:mb-0 w-full md:w-30 h-64 md:h-30'
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.3 }}
+                        />
+                      )}
+                      <div className='mx-3'>
+                        <h3 className="text-lg font-semibold my-1">{blog.title}</h3>
+                        <p className='text-sm text-gray-400'>
+                          {blog?.plainText.split(' ').length > 20
+                            ? blog?.plainText.split(' ').slice(0, 20).join(' ') + '...'
+                            : blog.plainText}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">تاریخ انتشار:{blog.issuedDate} | نویسنده: {blog.author}</p>
+                      </div>
+                    </div>
+                    <div className='flex mt-3 sm:mt-0'>
+                      <button
+                        onClick={() => handleEdit(index)}
+                        className="mt-2 text-white py-1.5 px-2 mx-1 rounded bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600"
+                      >
+                        <FiEdit className='w-4 h-4' />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(blog.id)}
+                        className="mt-2 text-white p-1.5 rounded bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700"
+                      >
+                        <FiX className='w-4 h-4' />
+                      </button>
                     </div>
                   </div>
-                  <div className='flex mt-3 sm:mt-0'>
-                    <button
-                      onClick={() => handleEdit(index)}
-                      className="mt-2 text-white py-1.5 px-2 mx-1 rounded bg-orange-400 hover:bg-orange-500"
-                    >
-                      <FiEdit className='w-4 h-4' />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(course.id)}
-                      className="mt-2 text-white p-1.5 rounded bg-red-500 hover:bg-red-600"
-                    >
-                      <FiX className='w-4 h-4' />
-                    </button>
-                  </div>
-                </div>
-              </div>)
+                </motion.div>
+              )
             })
           ) : (
-            <p className="text-center text-[#0e0e0e] dark:text-gray-200">هیچ بلاگی اضافه نشده است.</p>
+            <p className="text-center text-gray-700 dark:text-gray-200">هیچ بلاگی اضافه نشده است.</p>
           )}
         </div>
       </div>

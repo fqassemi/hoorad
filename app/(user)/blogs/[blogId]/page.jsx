@@ -50,7 +50,7 @@ export default function BlogPost() {
 
     return (
         <div>
-            <div className="max-w-2xl mx-auto">
+            <div className="max-w-2xl mx-auto mt-8">
                 <div className="flex items-center mb-6">
                     <button
                         onClick={goToNextBlog}

@@ -8,18 +8,16 @@ export default function Blog({ blogsDetail }) {
 
   useEffect(() => {
     if (blogsDetail) {
-      console.log(blogsDetail);
-      
-      const reversedBlogs = [...blogsDetail].reverse(); // Reverse the blogs array
+    const reversedBlogs = [...blogsDetail].reverse(); 
       setBlogs(reversedBlogs);
     }
   }, [blogsDetail]);
 
   const loadMoreBlogs = () => {
-    setVisibleBlogs(blogs.length); // Show all blogs
+    setVisibleBlogs(blogs.length); 
   };
 
-  // If blogsDetail is not provided, show a loading state or a message
+  
   if (!blogsDetail) {
     return (
       <div className="flex justify-center items-center h-screen">

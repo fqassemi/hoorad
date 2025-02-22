@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 // Icons
-import { FiMenu, FiX, Fix } from 'react-icons/fi';
+import { FiBook, FiMenu, FiX, Fix } from 'react-icons/fi';
 import { LuUserCircle2 } from 'react-icons/lu';
 import { MdOutlineKeyboardArrowDown } from 'react-icons/md';
 
@@ -64,36 +64,47 @@ function Header({ userData }) {
    return (
       <header className="sticky top-0 z-10 w-full bg-[#F5F5F5] shadow-md max-sm:pb-6 max-sm:pt-8 sm:h-[72px]">
          <div className="mx-auto flex h-full max-w-1440 items-start justify-between px-4 sm:items-center lg:px-[78px]">
-            <div className="flex gap-5 max-sm:max-w-[250px] max-sm:grow max-sm:flex-col sm:items-center sm:gap-32">
-               <div className="flex items-center">
-                  
+            <div className="flex gap-5 max-sm:max-w-[250px] max-sm:grow max-sm:flex-col sm:items-center sm:gap-16">
+               <div className="flex items-center gap-3">
+
                   <button
                      className="sm:hidden flex flex-col gap-1.5"
                      onClick={() => setIsMenuOpen(!isMenuOpen)}
                      aria-label="Toggle menu"
                   >
                      <span>
-                        {isMenuOpen ? <FiX className='w-6 h-6 hover:text-orange-500 cursor-pointer transition-all'/> : <FiMenu className='w-6 h-6 hover:text-orange-500 cursor-pointer transition-all'/>}
+                        {isMenuOpen ? <FiX className='w-6 h-6 hover:text-orange-500 cursor-pointer transition-all' /> : <FiMenu className='w-6 h-6 hover:text-orange-500 cursor-pointer transition-all' />}
                      </span>
                   </button>
 
-                  
-                  <div className="hidden sm:flex gap-4">
-                     <Link href="/" className="hover:text-orange-500 cursor-pointer">
-                        دروس
-                     </Link>
-                     <Link href="/" className="hover:text-orange-500 cursor-pointer">
-                        بلاگ
-                     </Link>
-                     <Link href="/" className="hover:text-orange-500 cursor-pointer">
-                        رویداد
-                     </Link>
-                     <Link href="/" className="hover:text-orange-500 cursor-pointer">
-                        درباره من
+                  <div>
+                     <Link href='/'>
+                        <div className="text-center flex items-center">
+                           <FiBook size={20} className='text-orange-500' />
+                           <h3 className='text-2xl font-semibold text-gray-900 tracking-wider leading-tight'>
+                              هوراد
+                           </h3>
+                        </div>
+
                      </Link>
                   </div>
 
-                 
+                  <div className="hidden sm:flex gap-4">
+                     <Link href="/course-detail" className="hover:text-orange-500 cursor-pointer">
+                        دروس
+                     </Link>
+                     <Link href="/blogs" className="hover:text-orange-500 cursor-pointer">
+                        بلاگ
+                     </Link>
+                     <Link href="/news" className="hover:text-orange-500 cursor-pointer">
+                        رویداد
+                     </Link>
+                     <Link href="/about-us" className="hover:text-orange-500 cursor-pointer">
+                        درباره ما
+                     </Link>
+                  </div>
+
+
                   <AnimatePresence>
                      {isMenuOpen && (
                         <motion.div
@@ -104,17 +115,17 @@ function Header({ userData }) {
                            className="absolute left-0 top-full w-full bg-[#F5F5F5] shadow-md sm:hidden"
                         >
                            <div className="flex flex-col gap-y-5 p-4">
-                              <Link href="/" className="hover:text-orange-500 cursor-pointer">
+                              <Link href="/courses" className="hover:text-orange-500 cursor-pointer">
                                  دروس
                               </Link>
-                              <Link href="/" className="hover:text-orange-500 cursor-pointer">
+                              <Link href="/blogs" className="hover:text-orange-500 cursor-pointer">
                                  بلاگ
                               </Link>
-                              <Link href="/" className="hover:text-orange-500">
+                              <Link href="/news" className="hover:text-orange-500">
                                  رویداد
                               </Link>
-                              <Link href="/" className="hover:text-orange-500">
-                                 درباره من
+                              <Link href="/about-us" className="hover:text-orange-500">
+                                 درباره ما
                               </Link>
                            </div>
                         </motion.div>
