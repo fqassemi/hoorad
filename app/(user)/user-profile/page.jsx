@@ -43,6 +43,7 @@ function UserProfile() {
       if (userData) {
          setValue('firstName', userData?.user_info?.first_name);
          setValue('lastName', userData?.user_info?.last_name);
+         setValue('phoneNumber', userData?.user_info?.phone_number);
       }
    }, [userData]);
 
@@ -71,7 +72,7 @@ function UserProfile() {
                <CircularLoader className="mt-14 !text-customOrange lg:mt-20" />
             ) : (
                <form
-                  className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-7.5"
+                  className="mt-10 grid grid-cols-1 px-8 gap-5 lg:px-72 sm:px-52 lg:gap-7.5"
                   onSubmit={handleSubmit(formSubmit)}
                >
                   <Input
@@ -97,6 +98,18 @@ function UserProfile() {
                      errorMessage={errors?.lastName?.message}
                      error={!!errors?.lastName}
                      disabled={editIsMutating}
+                  />
+                  <Input
+                     inputClassName="h-12 rounded-lg border focus:border-2 border-[#9D9D9D] px-4 focus:border-customOrange placeholder:text-[13px] placeholder:sm:text-sm"
+                     placeholder="شماره تلفن خود را وارد کنید"
+                     {...register('phoneNumber', {
+                        required: { value: true, message: 'این فیلد اجباری است' },
+                     })}
+                     labelText="شماره تلفن"
+                     labelClassName="mb-2 font-bold"
+                     errorMessage={errors?.lastName?.message}
+                     error={!!errors?.lastName}
+                     disabled
                   />
 
                   <div className="sm:hidden lg:block" />
