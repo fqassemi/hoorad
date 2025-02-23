@@ -27,12 +27,14 @@ import { Button } from '../ui/button';
 
 // libs
 import logoutHandler from '@/lib/logoutHandler';
+import useGetAdmin from '@/hooks/api/isAdmin';
 
 function Header({ userData }) {
    const [logoutModalIsOpen, setLogoutModalIsOpen] = useState(false);
    const [isLogingOut, setIsLogingOut] = useState(false);
-   const [isMenuOpen, setIsMenuOpen] = useState(false); // State for burger menu
+   const [isMenuOpen, setIsMenuOpen] = useState(false); 
    const { setIsLogin } = useAuth();
+   const { data:isAdmin } = useGetAdmin();
 
    const updateQueryParams = useUpdateQueryParams(
       'logout-modal',
@@ -115,16 +117,16 @@ function Header({ userData }) {
                            className="absolute left-0 top-full w-full bg-[#F5F5F5] shadow-md sm:hidden"
                         >
                            <div className="flex flex-col gap-y-5 p-4">
-                              <Link href="/courses" className="hover:text-orange-500 cursor-pointer">
+                              <Link href="/course-detail" onClick={()=>setIsMenuOpen(false)} className="hover:text-orange-500 cursor-pointer">
                                  دروس
                               </Link>
-                              <Link href="/blogs" className="hover:text-orange-500 cursor-pointer">
+                              <Link href="/blogs" onClick={()=>setIsMenuOpen(false)} className="hover:text-orange-500 cursor-pointer">
                                  بلاگ
                               </Link>
-                              <Link href="/news" className="hover:text-orange-500">
+                              <Link href="/news" onClick={()=>setIsMenuOpen(false)} className="hover:text-orange-500">
                                  رویداد
                               </Link>
-                              <Link href="/about-us" className="hover:text-orange-500">
+                              <Link href="/about-us" onClick={()=>setIsMenuOpen(false)} className="hover:text-orange-500">
                                  درباره ما
                               </Link>
                            </div>
@@ -141,7 +143,7 @@ function Header({ userData }) {
                   confirmIsLoading={isLogingOut}
                />
 
-               <HeaderSearch />
+               {/* {<HeaderSearch />} */}
             </div>
             {userData ? (
                <div className="group relative">
@@ -167,6 +169,7 @@ function Header({ userData }) {
                      >
                         <Link href="/user-profile">پروفایل من</Link>
                         <Link href="/user-courses">دوره های من</Link>
+                        {isAdmin &&<Link href="/admin">پنل ادمین</Link>}
                         <Button className="justify-start" onClick={openLogoutModalHandler}>
                            خروج از حساب
                         </Button>

@@ -7,6 +7,7 @@ import useGetBlogs from '@/hooks/api/blog/useGetBlog';
 import usePostBlog from '@/hooks/api/blog/usePostBlog';
 import usePatchBlog from '@/hooks/api/blog/usePatchBlog';
 import useDeleteBlog from '@/hooks/api/blog/useDeleteBlog';
+import usePostImage from '@/hooks/api/image/usePostImg';
 //components
 import CircularLoader from '@/components/ui/circular-loader';
 import ConfirmModal from "@/components/templates/confirm-modal";
@@ -37,6 +38,7 @@ export default function Blogs() {
   const { trigger: createBlogTrigger, isLoading: isCreating } = usePostBlog();
   const { trigger: updateBlogTrigger, isLoading: isUpdating } = usePatchBlog();
   const { trigger: deleteBlogTrigger, isLoading: isDeleting } = useDeleteBlog();
+  const { trigger: postImageTrigger } = usePostImage();
 
   useEffect(() => {
     const updateDateTime = () => {
@@ -86,7 +88,7 @@ export default function Blogs() {
       reader.onloadend = () => {
         setFormData({
           ...formData,
-          previewImage: reader.result,
+          previewImage: file, // Store the file object for 
         });
       };
     }
@@ -94,9 +96,35 @@ export default function Blogs() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newBlog = { ...formData, issuedDate: dateTime };
-    const action = editIndex !== null ? 'edit' : 'add';
-    openConfirmModal(action, newBlog);
+  
+    try {
+      let imageUrl = null;
+      if (formData.previewImage && typeof formData.previewImage !== 'string') {
+        const formDataImage = new FormData();
+        formDataImage.append('image', formData.previewImage);
+        const imageResponse = await postImageTrigger({
+          imageId : `blog-preview-${formData.id}`, 
+          newImage: formDataImage,
+        });
+  
+        if (imageResponse && imageResponse.url) {
+          imageUrl = imageResponse.url; 
+        } else {
+          throw new Error('Image upload failed: No URL returned');
+        }
+      }
+      const newBlog = {
+        ...formData,
+        issuedDate: dateTime,
+        previewImage: imageUrl || formData.previewImage, 
+      };
+  
+      const action = editIndex !== null ? 'edit' : 'add';
+      openConfirmModal(action, newBlog);
+      resetForm();
+    } catch (error) {
+      console.error('Failed to upload image or submit form:', error);
+    }
   };
 
   const openConfirmModal = (action, blog) => {
@@ -150,7 +178,7 @@ export default function Blogs() {
     const blogToEdit = data[index];
     setFormData({
       ...blogToEdit,
-      previewImage: null,
+      previewImage: blogToEdit.previewImage, 
     });
     setEditIndex(index);
     setShowForm(true);
@@ -273,7 +301,11 @@ export default function Blogs() {
                 >
                   <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">پیش نمایش:</p>
                   <img
-                    src={formData.previewImage}
+                    src={
+                      typeof formData.previewImage === 'string'
+                        ? formData.previewImage // If it's a URL
+                        : URL.createObjectURL(formData.previewImage) // If it's a file object
+                    }
                     alt="preview"
                     className="w-32 h-32 rounded-lg shadow-lg object-cover border border-gray-200 dark:border-gray-600"
                   />
