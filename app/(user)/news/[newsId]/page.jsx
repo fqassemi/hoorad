@@ -69,7 +69,7 @@ export default function Event() {
         <div className="bg-gray-100 min-h-screen flex">
             
             <div
-                className={`fixed h-screen overflow-y-auto bg-white shadow-lg z-20 left-0 transition-transform duration-300 ${
+                className={`fixed h-screen overflow-y-auto bg-white shadow-lg left-0 transition-transform duration-300 ${
                     isMenuOpen ? 'translate-x-0 w-full' : '-translate-x-full w-64'
                 } sm:translate-x-0 sm:w-64`}
             >
@@ -81,10 +81,11 @@ export default function Event() {
                 
                 <button
                     onClick={toggleMenu}
-                    className="fixed left-4 z-[10] p-2 bg-white text-orange-500 rounded-lg shadow-md sm:hidden top-20"
+                    className="fixed left-4 z-20 p-2 bg-white text-orange-500 rounded-lg shadow-md sm:hidden top-20"
                 >
                     {isMenuOpen ? <FiChevronLeft size={20} /> : <FiChevronRight size={20} />}
                 </button>
+
                 <main>
                     <div className="bg-white rounded-lg shadow-sm max-w-3xl mx-auto mt-4 px-6 py-8">
                         <div className="px-6">
