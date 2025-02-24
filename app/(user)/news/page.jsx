@@ -42,7 +42,7 @@ export default function Page() {
   return (
     <div className="bg-gray-100 min-h-screen flex">
       <div
-        className={`fixed h-screen overflow-y-auto bg-white shadow-lg z-20 left-0 transition-transform duration-300 ${
+        className={`fixed h-screen overflow-y-auto bg-white shadow-lg left-0 transition-transform duration-300 ${
           isMenuOpen ? 'translate-x-0 w-full' : '-translate-x-full w-64'
         } sm:translate-x-0 sm:w-64`}
       >
@@ -53,7 +53,7 @@ export default function Page() {
         
         <button
           onClick={toggleMenu}
-          className="fixed left-4 z-30 p-2 bg-white rounded-lg shadow-md sm:hidden top-20 text-orange-500"
+          className="fixed left-4 p-2 bg-white z-20 rounded-lg shadow-md sm:hidden top-20 text-orange-500"
         >
           {isMenuOpen ? <FiChevronLeft size={24} /> : <FiChevronRight size={24} />}
         </button>
