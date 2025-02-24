@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 //Icons
 import { FiEdit, FiX } from 'react-icons/fi';
+import { FaSpinner } from 'react-icons/fa';
 //Apis
 import useGetNews from '@/hooks/api/news/useGetNews';
 import usePostNews from '@/hooks/api/news/usePostNews';
@@ -40,7 +41,7 @@ export default function News() {
   const { trigger: createNewsTrigger, isLoading: isCreating } = usePostNews();
   const { trigger: updateNewsTrigger, isLoading: isUpdating } = usePatchNews();
   const { trigger: deleteNewsTrigger, isLoading: isDeleting } = useDeleteNews();
-  const { trigger: postImageTrigger } = usePostImage();
+  const { trigger: postImageTrigger, isMutating: uploading } = usePostImage();
 
   useEffect(() => {
     const updateDateTime = () => {
@@ -73,51 +74,38 @@ export default function News() {
     });
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onloadend = () => {
-        setFormData({
-          ...formData,
-          previewImage: file, 
-        });
-      };
+  const handleImageUpload = async () => {
+    if (!formData.previewImage || typeof formData.previewImage === 'string') {
+      return;
+    }
+
+    try {
+      const formDataImage = new FormData();
+      formDataImage.append('image', formData.previewImage);
+      const imageResponse = await postImageTrigger({
+        imageId: `course-preview-${formData.id}`,
+        newImage: formDataImage,
+      });
+
+      if (imageResponse && imageResponse.url) {
+        setFormData((prevData) => ({
+          ...prevData,
+          previewImage: imageResponse.url,
+        }));
+        alert('عکس با موفقیت آپلود شد.');
+      } else {
+        throw new Error('Image upload failed: No URL returned');
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    try {
-      let imageUrl = null;
-      if (formData.previewImage && typeof formData.previewImage !== 'string') {
-        const formDataImage = new FormData();
-        formDataImage.append('image', formData.previewImage);
-        const imageResponse = await postImageTrigger({
-          imageId : `news-preview-${formData.id}`, 
-          newImage: formDataImage,
-        });
-  
-        if (imageResponse && imageResponse.url) {
-          imageUrl = imageResponse.url; 
-        } else {
-          throw new Error('Image upload failed: No URL returned');
-        }
-      }
-      const newNews= {
-        ...formData,
-        issuedDate: dateTime,
-        previewImage: imageUrl || formData.previewImage, 
-      };
-  
-      const action = editIndex !== null ? 'edit' : 'add';
-      openConfirmModal(action, newNews);
-      resetForm();
-    } catch (error) {
-      console.error('Failed to upload image or submit form:', error);
-    }
+    const newNews = { ...formData, issuedDate: dateTime };
+    const action = editIndex !== null ? 'edit' : 'add';
+    openConfirmModal(action, newNews);
   };
 
   const openConfirmModal = (action, news) => {
@@ -137,7 +125,7 @@ export default function News() {
         const updatedNews = data.map((n) => (n.id === news.id ? news : n));
         mutate(updatedNews, false);
       } else if (action === 'add') {
-        await createNewsTrigger({ id:news.id,newNews: news });
+        await createNewsTrigger({ id: news.id, newNews: news });
         const updatedNews = [...data, news];
         mutate(updatedNews, false);
       } else if (action === 'delete') {
@@ -180,6 +168,13 @@ export default function News() {
   const handleDelete = (newsId) => {
     openConfirmModal('delete', { id: newsId });
   };
+
+  const UploadingSpinner = () => (
+    <div className="flex items-center justify-center">
+      <FaSpinner className="animate-spin h-5 w-5 text-orange-500" />
+      <span className="ml-2 text-sm text-gray-600 dark:text-gray-300">در حال آپلود...</span>
+    </div>
+  );
 
   if (error) {
     return (
@@ -291,9 +286,16 @@ export default function News() {
               <input
                 type="file"
                 accept="image/*"
-                onChange={handleImageChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 dark:bg-gray-700 dark:border-gray-600"
+                onChange={(e) => setFormData({ ...formData, previewImage: e.target.files[0] })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
               />
+              <button
+                type="button"
+                onClick={handleImageUpload}
+                className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              >
+                {uploading ? <UploadingSpinner /> : 'آپلود عکس'}
+              </button>
               {formData.previewImage && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
@@ -305,11 +307,16 @@ export default function News() {
                   <img
                     src={
                       typeof formData.previewImage === 'string'
-                        ? formData.previewImage 
-                        : URL.createObjectURL(formData.previewImage) 
+                        ? formData.previewImage
+                        : formData.previewImage instanceof File || formData.previewImage instanceof Blob
+                          ? URL.createObjectURL(formData.previewImage)
+                          : null
                     }
                     alt="preview"
                     className="w-32 h-32 rounded-lg shadow-lg object-cover border border-gray-200 dark:border-gray-600"
+                    onError={(e) => {
+                      e.target.src = '';
+                    }}
                   />
                 </motion.div>
               )}
