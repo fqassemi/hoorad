@@ -22,7 +22,7 @@ const Courses = () => {
   const { trigger: createCourseTrigger, isLoading: isCreating } = usePostCourse();
   const { trigger: updateCourseTrigger, isLoading: isUpdating } = usePatchCourse();
   const { trigger: deleteCourseTrigger, isLoading: isDeleting } = useDeleteCourse();
-  const { trigger: postImageTrigger, isLoading: isPostingImage } = usePostImage();
+  const { trigger: postImageTrigger, isMutating: uploading } = usePostImage();
 
   const [showForm, setShowForm] = useState(false);
   const [dateTime, setDateTime] = useState('');
@@ -101,20 +101,32 @@ const Courses = () => {
     }
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onloadend = () => {
-        setFormData({
-          ...formData,
-          previewImage: file, // Store the file object
-        });
-      };
+  const handleImageUpload = async () => {
+    if (!formData.previewImage || typeof formData.previewImage === 'string') {
+      return;
+    }
+
+    try {
+      const formDataImage = new FormData();
+      formDataImage.append('image', formData.previewImage);
+      const imageResponse = await postImageTrigger({
+        imageId: `course-preview-${formData.id}`,
+        newImage: formDataImage,
+      });
+
+      if (imageResponse && imageResponse.url) {
+        setFormData((prevData) => ({
+          ...prevData,
+          previewImage: imageResponse.url,
+        }));
+        alert('عکس با موفقیت آپلود شد.');
+      } else {
+        throw new Error('Image upload failed: No URL returned');
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
     }
   };
-
 
   const handleAction = async (action, course = null, sessionIndex = null) => {
     setModalState({ isOpen: true, action, course, sessionIndex });
@@ -167,36 +179,10 @@ const Courses = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    try {
-      let imageUrl = null;
-      if (formData.previewImage && typeof formData.previewImage !== 'string') {
-        const formDataImage = new FormData();
-        formDataImage.append('image', formData.previewImage);
-        const imageResponse = await postImageTrigger({
-          imageId: `course-preview-${formData.id}`,
-          newImage: formDataImage,
-        });
-
-        if (imageResponse && imageResponse.url) {
-          imageUrl = imageResponse.url; // Use the uploaded image URL
-        } else {
-          throw new Error('Image upload failed: No URL returned');
-        }
-      }
-
-      const courseData = {
-        ...formData,
-        issuedDate: dateTime,
-        previewImage: imageUrl || formData.previewImage, // Use the uploaded image URL or existing URL
-      };
-
-      const action = editIndex !== null ? 'edit' : 'add';
-      openConfirmModal(action, courseData);
-      resetForm();
-    } catch (error) {
-      console.error('Failed to upload image or submit form:', error);
-    }
+    const actionType = editIndex !== null ? 'edit' : 'add';
+    const { issuedDate, ...courseData } = formData;
+    await handleAction(actionType, courseData);
+    resetForm();
   };
 
   const handleEdit = (index) => {
@@ -209,7 +195,7 @@ const Courses = () => {
       sessions: courseToEdit.sessions || [],
       issuedDate: courseToEdit.issuedDate || dateTime,
       is_enrolled: courseToEdit.is_enrolled || false,
-      previewImage: courseToEdit.previewImage || null, // Preserve the existing image
+      previewImage: courseToEdit.previewImage || null,
     });
     setEditIndex(index);
     setShowForm(true);
@@ -223,6 +209,13 @@ const Courses = () => {
       sessionIndex: null,
     });
   };
+
+  const UploadingSpinner = () => (
+    <div className="flex items-center justify-center">
+      <FaSpinner className="animate-spin h-5 w-5 text-orange-500" />
+      <span className="ml-2 text-sm text-gray-600 dark:text-gray-300">در حال آپلود...</span>
+    </div>
+  );
 
   if (isLoading) {
     return (
@@ -326,9 +319,16 @@ const Courses = () => {
                       <input
                         type="file"
                         accept="image/*"
-                        onChange={handleImageChange}
+                        onChange={(e) => setFormData({ ...formData, previewImage: e.target.files[0] })}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
                       />
+                      <button
+                        type="button"
+                        onClick={handleImageUpload}
+                        className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                      >
+                        {uploading ? <UploadingSpinner /> : 'آپلود عکس'}
+                      </button>
                       {formData.previewImage && (
                         <motion.div
                           initial={{ opacity: 0, scale: 0.9 }}
@@ -340,11 +340,16 @@ const Courses = () => {
                           <img
                             src={
                               typeof formData.previewImage === 'string'
-                                ? formData.previewImage // If it's a URL
-                                : URL.createObjectURL(formData.previewImage) // If it's a file object
+                                ? formData.previewImage 
+                                : formData.previewImage instanceof File || formData.previewImage instanceof Blob
+                                  ? URL.createObjectURL(formData.previewImage) 
+                                  : null 
                             }
                             alt="preview"
                             className="w-32 h-32 rounded-lg shadow-lg object-cover border border-gray-200 dark:border-gray-600"
+                            onError={(e) => {
+                              e.target.src = ''; 
+                            }}
                           />
                         </motion.div>
                       )}

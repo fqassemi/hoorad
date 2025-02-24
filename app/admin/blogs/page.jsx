@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 //Icons
 import { FiEdit, FiX } from 'react-icons/fi';
+import { FaSpinner } from 'react-icons/fa';
 //Apis
 import useGetBlogs from '@/hooks/api/blog/useGetBlog';
 import usePostBlog from '@/hooks/api/blog/usePostBlog';
@@ -33,12 +34,12 @@ export default function Blogs() {
     blog: null,
   });
 
-  const { data, error, isLoading, mutate } = useGetBlogs();
+  const { data, isLoading, mutate } = useGetBlogs();
 
-  const { trigger: createBlogTrigger, isLoading: isCreating } = usePostBlog();
-  const { trigger: updateBlogTrigger, isLoading: isUpdating } = usePatchBlog();
-  const { trigger: deleteBlogTrigger, isLoading: isDeleting } = useDeleteBlog();
-  const { trigger: postImageTrigger } = usePostImage();
+  const { trigger: createBlogTrigger } = usePostBlog();
+  const { trigger: updateBlogTrigger } = usePatchBlog();
+  const { trigger: deleteBlogTrigger } = useDeleteBlog();
+  const { trigger: postImageTrigger, isMutating: uploading } = usePostImage();
 
   useEffect(() => {
     const updateDateTime = () => {
@@ -80,51 +81,38 @@ export default function Blogs() {
     }
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onloadend = () => {
-        setFormData({
-          ...formData,
-          previewImage: file, 
-        });
-      };
+  const handleImageUpload = async () => {
+    if (!formData.previewImage || typeof formData.previewImage === 'string') {
+      return;
+    }
+
+    try {
+      const formDataImage = new FormData();
+      formDataImage.append('image', formData.previewImage);
+      const imageResponse = await postImageTrigger({
+        imageId: `course-preview-${formData.id}`,
+        newImage: formDataImage,
+      });
+
+      if (imageResponse && imageResponse.url) {
+        setFormData((prevData) => ({
+          ...prevData,
+          previewImage: imageResponse.url,
+        }));
+        alert('عکس با موفقیت آپلود شد.');
+      } else {
+        throw new Error('Image upload failed: No URL returned');
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    try {
-      let imageUrl = null;
-      if (formData.previewImage && typeof formData.previewImage !== 'string') {
-        const formDataImage = new FormData();
-        formDataImage.append('image', formData.previewImage);
-        const imageResponse = await postImageTrigger({
-          imageId : `blog-preview-${formData.id}`, 
-          newImage: formDataImage,
-        });
-  
-        if (imageResponse && imageResponse.url) {
-          imageUrl = imageResponse.url; 
-        } else {
-          throw new Error('Image upload failed: No URL returned');
-        }
-      }
-      const newBlog = {
-        ...formData,
-        issuedDate: dateTime,
-        previewImage: imageUrl || formData.previewImage, 
-      };
-  
-      const action = editIndex !== null ? 'edit' : 'add';
-      openConfirmModal(action, newBlog);
-      resetForm();
-    } catch (error) {
-      console.error('Failed to upload image or submit form:', error);
-    }
+    const newBlog = { ...formData, issuedDate: dateTime };
+    const action = editIndex !== null ? 'edit' : 'add';
+    openConfirmModal(action, newBlog);
   };
 
   const openConfirmModal = (action, blog) => {
@@ -178,7 +166,7 @@ export default function Blogs() {
     const blogToEdit = data[index];
     setFormData({
       ...blogToEdit,
-      previewImage: blogToEdit.previewImage, 
+      previewImage: blogToEdit.previewImage,
     });
     setEditIndex(index);
     setShowForm(true);
@@ -188,6 +176,12 @@ export default function Blogs() {
     openConfirmModal('delete', { id: blogId });
   };
 
+  const UploadingSpinner = () => (
+    <div className="flex items-center justify-center">
+      <FaSpinner className="animate-spin h-5 w-5 text-orange-500" />
+      <span className="ml-2 text-sm text-gray-600 dark:text-gray-300">در حال آپلود...</span>
+    </div>
+  );
 
   if (isLoading) {
     return (
@@ -289,9 +283,17 @@ export default function Blogs() {
               <input
                 type="file"
                 accept="image/*"
-                onChange={handleImageChange}
+                onChange={(e) => setFormData({ ...formData, previewImage: e.target.files[0] })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
               />
+              <button
+                type="button"
+                onClick={handleImageUpload}
+                className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              >
+
+                {uploading ? <UploadingSpinner /> : 'آپلود عکس'}
+              </button>
               {formData.previewImage && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
@@ -303,11 +305,16 @@ export default function Blogs() {
                   <img
                     src={
                       typeof formData.previewImage === 'string'
-                        ? formData.previewImage // If it's a URL
-                        : URL.createObjectURL(formData.previewImage) // If it's a file object
+                        ? formData.previewImage
+                        : formData.previewImage instanceof File || formData.previewImage instanceof Blob
+                          ? URL.createObjectURL(formData.previewImage)
+                          : null
                     }
                     alt="preview"
                     className="w-32 h-32 rounded-lg shadow-lg object-cover border border-gray-200 dark:border-gray-600"
+                    onError={(e) => {
+                      e.target.src = '';
+                    }}
                   />
                 </motion.div>
               )}
