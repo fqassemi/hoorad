@@ -161,7 +161,7 @@ function Header({ userData }) {
 
                   <div
                      className="invisible absolute end-0 top-full w-full min-w-fit -translate-y-2 pt-1 opacity-0 transition-all 
-                     duration-400 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100"
+                     duration-400 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 z-50"
                   >
                      <div
                         className="flex flex-col rounded-sm border border-customOrange bg-white text-[13px] child:px-1

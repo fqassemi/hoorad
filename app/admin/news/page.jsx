@@ -7,6 +7,7 @@ import useGetNews from '@/hooks/api/news/useGetNews';
 import usePostNews from '@/hooks/api/news/usePostNews';
 import usePatchNews from '@/hooks/api/news/usePatchNews';
 import useDeleteNews from '@/hooks/api/news/useDeleteNews';
+import usePostImage from '@/hooks/api/image/usePostImg';
 //components
 import CircularLoader from '@/components/ui/circular-loader';
 import ConfirmModal from "@/components/templates/confirm-modal";
@@ -39,6 +40,7 @@ export default function News() {
   const { trigger: createNewsTrigger, isLoading: isCreating } = usePostNews();
   const { trigger: updateNewsTrigger, isLoading: isUpdating } = usePatchNews();
   const { trigger: deleteNewsTrigger, isLoading: isDeleting } = useDeleteNews();
+  const { trigger: postImageTrigger } = usePostImage();
 
   useEffect(() => {
     const updateDateTime = () => {
@@ -79,7 +81,7 @@ export default function News() {
       reader.onloadend = () => {
         setFormData({
           ...formData,
-          previewImage: reader.result,
+          previewImage: file, 
         });
       };
     }
@@ -87,9 +89,35 @@ export default function News() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newNews = { ...formData, issuedDate: dateTime };
-    const action = editIndex !== null ? 'edit' : 'add';
-    openConfirmModal(action, newNews);
+  
+    try {
+      let imageUrl = null;
+      if (formData.previewImage && typeof formData.previewImage !== 'string') {
+        const formDataImage = new FormData();
+        formDataImage.append('image', formData.previewImage);
+        const imageResponse = await postImageTrigger({
+          imageId : `news-preview-${formData.id}`, 
+          newImage: formDataImage,
+        });
+  
+        if (imageResponse && imageResponse.url) {
+          imageUrl = imageResponse.url; 
+        } else {
+          throw new Error('Image upload failed: No URL returned');
+        }
+      }
+      const newNews= {
+        ...formData,
+        issuedDate: dateTime,
+        previewImage: imageUrl || formData.previewImage, 
+      };
+  
+      const action = editIndex !== null ? 'edit' : 'add';
+      openConfirmModal(action, newNews);
+      resetForm();
+    } catch (error) {
+      console.error('Failed to upload image or submit form:', error);
+    }
   };
 
   const openConfirmModal = (action, news) => {
@@ -143,7 +171,7 @@ export default function News() {
     const newsToEdit = data[index];
     setFormData({
       ...newsToEdit,
-      previewImage: null,
+      previewImage: newsToEdit.previewImage,
     });
     setEditIndex(index);
     setShowForm(true);
@@ -267,14 +295,23 @@ export default function News() {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 dark:bg-gray-700 dark:border-gray-600"
               />
               {formData.previewImage && (
-                <div className="mt-4">
-                  <p className="text-gray-700 dark:text-gray-200">پیش نمایش:</p>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3 }}
+                  className="mt-4"
+                >
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">پیش نمایش:</p>
                   <img
-                    src={formData.previewImage}
+                    src={
+                      typeof formData.previewImage === 'string'
+                        ? formData.previewImage 
+                        : URL.createObjectURL(formData.previewImage) 
+                    }
                     alt="preview"
-                    className="w-32 h-32 rounded-lg shadow-lg object-cover mt-2"
+                    className="w-32 h-32 rounded-lg shadow-lg object-cover border border-gray-200 dark:border-gray-600"
                   />
-                </div>
+                </motion.div>
               )}
             </div>
             <motion.button

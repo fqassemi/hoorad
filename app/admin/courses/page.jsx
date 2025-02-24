@@ -8,12 +8,13 @@ import useGetCourses from '@/hooks/api/course/useGetCourse';
 import usePostCourse from '@/hooks/api/course/usePostCourse';
 import usePatchCourse from '@/hooks/api/course/usePatchCourse';
 import useDeleteCourse from '@/hooks/api/course/useDeleteCourse';
+import usePostImage from '@/hooks/api/image/usePostImg';
 
 //Components Accordin & Loader
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 import CircularLoader from '@/components/ui/circular-loader';
 import ConfirmModal from "@/components/templates/confirm-modal";
-import ConnectionStatus from '@/components/ui/connectionStatus';
+import { motion } from 'framer-motion';
 
 
 const Courses = () => {
@@ -21,6 +22,7 @@ const Courses = () => {
   const { trigger: createCourseTrigger, isLoading: isCreating } = usePostCourse();
   const { trigger: updateCourseTrigger, isLoading: isUpdating } = usePatchCourse();
   const { trigger: deleteCourseTrigger, isLoading: isDeleting } = useDeleteCourse();
+  const { trigger: postImageTrigger, isLoading: isPostingImage } = usePostImage();
 
   const [showForm, setShowForm] = useState(false);
   const [dateTime, setDateTime] = useState('');
@@ -32,6 +34,7 @@ const Courses = () => {
     sessions: [],
     is_enrolled: false,
     issuedDate: dateTime,
+    previewImage: null,
   });
   const [editIndex, setEditIndex] = useState(null);
   const [modalState, setModalState] = useState({
@@ -98,6 +101,21 @@ const Courses = () => {
     }
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = () => {
+        setFormData({
+          ...formData,
+          previewImage: file, // Store the file object
+        });
+      };
+    }
+  };
+
+
   const handleAction = async (action, course = null, sessionIndex = null) => {
     setModalState({ isOpen: true, action, course, sessionIndex });
   };
@@ -111,6 +129,7 @@ const Courses = () => {
       sessions: [],
       is_enrolled: false,
       issuedDate: dateTime,
+      previewImage: null,
     });
     setEditIndex(null);
     setShowForm(false);
@@ -148,10 +167,36 @@ const Courses = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const actionType = editIndex !== null ? 'edit' : 'add';
-    const { issuedDate, ...courseData } = formData;
-    await handleAction(actionType, courseData);
-    resetForm();
+
+    try {
+      let imageUrl = null;
+      if (formData.previewImage && typeof formData.previewImage !== 'string') {
+        const formDataImage = new FormData();
+        formDataImage.append('image', formData.previewImage);
+        const imageResponse = await postImageTrigger({
+          imageId: `course-preview-${formData.id}`,
+          newImage: formDataImage,
+        });
+
+        if (imageResponse && imageResponse.url) {
+          imageUrl = imageResponse.url; // Use the uploaded image URL
+        } else {
+          throw new Error('Image upload failed: No URL returned');
+        }
+      }
+
+      const courseData = {
+        ...formData,
+        issuedDate: dateTime,
+        previewImage: imageUrl || formData.previewImage, // Use the uploaded image URL or existing URL
+      };
+
+      const action = editIndex !== null ? 'edit' : 'add';
+      openConfirmModal(action, courseData);
+      resetForm();
+    } catch (error) {
+      console.error('Failed to upload image or submit form:', error);
+    }
   };
 
   const handleEdit = (index) => {
@@ -164,6 +209,7 @@ const Courses = () => {
       sessions: courseToEdit.sessions || [],
       issuedDate: courseToEdit.issuedDate || dateTime,
       is_enrolled: courseToEdit.is_enrolled || false,
+      previewImage: courseToEdit.previewImage || null, // Preserve the existing image
     });
     setEditIndex(index);
     setShowForm(true);
@@ -272,6 +318,36 @@ const Courses = () => {
                         className="text-gray-800 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
                         required
                       ></textarea>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-200">
+                        عکس پیش نمایش
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
+                      />
+                      {formData.previewImage && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.3 }}
+                          className="mt-4"
+                        >
+                          <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">پیش نمایش:</p>
+                          <img
+                            src={
+                              typeof formData.previewImage === 'string'
+                                ? formData.previewImage // If it's a URL
+                                : URL.createObjectURL(formData.previewImage) // If it's a file object
+                            }
+                            alt="preview"
+                            className="w-32 h-32 rounded-lg shadow-lg object-cover border border-gray-200 dark:border-gray-600"
+                          />
+                        </motion.div>
+                      )}
                     </div>
                   </div>
                 </AccordionContent>

@@ -88,7 +88,7 @@ export default function Blogs() {
       reader.onloadend = () => {
         setFormData({
           ...formData,
-          previewImage: file, // Store the file object for 
+          previewImage: file, 
         });
       };
     }
