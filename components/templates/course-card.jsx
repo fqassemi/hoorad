@@ -19,7 +19,7 @@ function CourseCard({ detail, isUserCard = false }) {
          >
 
          <ImageComponent
-          imageId={detail?.image_id}
+          imageId={detail?.imageId}
           className="rounded-t-2xl object-cover max-sm:object-top"
          />
             {/*
