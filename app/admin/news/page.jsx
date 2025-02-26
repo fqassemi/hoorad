@@ -103,7 +103,11 @@ export default function News() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newNews = { ...formData, issuedDate: dateTime };
+    const newNews = {
+      ...formData,
+      issuedDate: dateTime,
+      createdAt: new Date().toISOString(), 
+    };
     const action = editIndex !== null ? 'edit' : 'add';
     openConfirmModal(action, newNews);
   };
