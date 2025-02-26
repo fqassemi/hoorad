@@ -89,7 +89,7 @@ export default function Event() {
                 <main>
                     <div className="bg-white rounded-lg shadow-sm max-w-3xl mx-auto mt-4 px-6 py-8">
                         <div className="px-6">
-                            <img src="/images/coursePic.jpg" alt="" className="rounded-lg w-full h-64 object-cover" />
+                            <img src={newsItem?.previewImage} alt="" className="rounded-lg w-full h-64 object-cover" />
                         </div>
                         <h1 className="text-3xl font-bold mt-8 text-gray-900">{newsItem ? newsItem.title : currentTitle}</h1>
                         {newsItem && (

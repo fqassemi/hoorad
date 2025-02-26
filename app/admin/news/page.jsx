@@ -9,6 +9,7 @@ import usePostNews from '@/hooks/api/news/usePostNews';
 import usePatchNews from '@/hooks/api/news/usePatchNews';
 import useDeleteNews from '@/hooks/api/news/useDeleteNews';
 import usePostImage from '@/hooks/api/image/usePostImg';
+import useGetImage from '@/hooks/api/image/useGetImg';
 //components
 import CircularLoader from '@/components/ui/circular-loader';
 import ConfirmModal from "@/components/templates/confirm-modal";
@@ -30,6 +31,7 @@ export default function News() {
     author: ''
   });
   const [editIndex, setEditIndex] = useState(null);
+  const [imageId, setImageId] = useState(null);
   const [modalState, setModalState] = useState({
     isOpen: false,
     action: '',
@@ -42,6 +44,9 @@ export default function News() {
   const { trigger: updateNewsTrigger, isLoading: isUpdating } = usePatchNews();
   const { trigger: deleteNewsTrigger, isLoading: isDeleting } = useDeleteNews();
   const { trigger: postImageTrigger, isMutating: uploading } = usePostImage();
+  const { data: img } = useGetImage(imageId);
+
+  const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   useEffect(() => {
     const updateDateTime = () => {
@@ -83,16 +88,16 @@ export default function News() {
       const formDataImage = new FormData();
       formDataImage.append('image', formData.previewImage);
       const imageResponse = await postImageTrigger({
-        imageId: `course-preview-${formData.id}`,
+        imageId: `news-preview-${formData.id}`,
         newImage: formDataImage,
       });
 
-      if (imageResponse && imageResponse.url) {
+      if (imageResponse && imageResponse.image_url) {
         setFormData((prevData) => ({
           ...prevData,
-          previewImage: imageResponse.url,
+          previewImage: baseURL + imageResponse.image_url,
         }));
-        alert('عکس با موفقیت آپلود شد.');
+        setImageId(imageResponse.image_id);
       } else {
         throw new Error('Image upload failed: No URL returned');
       }
@@ -152,7 +157,7 @@ export default function News() {
       title: '',
       plainText: '',
       html: '',
-      previewImage: null,
+      previewImage: formData.previewImage,
       issuedDate: '',
       author: '',
     });
@@ -352,7 +357,7 @@ export default function News() {
                 transition={{ duration: 0.3 }}
               >
                 <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
-                  <div className="flex items-start space-x-4">
+                  <div className="flex flex-col md:flex-row items-start space-x-4 gap-x-2">
                     {news.previewImage && (
                       <img
                         src={news.previewImage}

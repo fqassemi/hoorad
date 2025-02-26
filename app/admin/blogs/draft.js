@@ -132,8 +132,7 @@ const DraftEditor = ({ onContentChange, initialHtml }) => {
             const contentState = editorState.getCurrentContent();
             const htmlContent = draftToHtml(convertToRaw(contentState));
             const plainText = contentState.getPlainText();
-            const encodedHtmlContent = encodeURIComponent(htmlContent);
-            onContentChange(encodedHtmlContent, plainText); 
+            onContentChange(htmlContent, plainText); 
             setEditorState(editorState);
           }}
           dir="rtl"

@@ -5,15 +5,14 @@ import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import useGetNews from "@/hooks/api/news/useGetNews";
 import CircularLoader from "@/components/ui/circular-loader";
 import Sidebar from "@/components/layout/news-sidebar";
-import Image from 'next/image';
+
 
 export default function Page() {
   const { data, isLoading, err } = useGetNews();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [latestNewsItem, setLatestNewsItem] = useState(null);
   const [titles, setTitles] = useState([]);
-
-
+  
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -22,13 +21,11 @@ export default function Page() {
     if (data) {
       const titlesFromData = data.map(item => item.title);
       setTitles(titlesFromData);
-
-      const latestItem = data[data.length - 1];
+      const latestItem = data[0];      
       setLatestNewsItem(latestItem);
     }
   }, [data]);
 
-  
 
   if (isLoading) {
     return (
@@ -56,13 +53,12 @@ export default function Page() {
         >
           {isMenuOpen ? <FiChevronLeft size={24} /> : <FiChevronRight size={24} />}
         </button>
-
         
         <main>
           <div className="bg-white rounded-lg shadow-sm max-w-3xl mx-auto mt-4 px-6 py-8">
             <div className="px-6">
-              <Image
-                src="/images/coursePic.jpg"
+              <img
+                src={latestNewsItem?.previewImage}
                 alt="News Image"
                 width={800}
                 height={400}
