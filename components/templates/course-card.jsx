@@ -1,7 +1,7 @@
 // Next
 import Image from 'next/image';
 import Link from 'next/link';
-import ImageComponent from '@/components/templates/image';
+import ImageComponent from './image';
 
 // Icons
 import { PiCurrencyDollarBold } from 'react-icons/pi';
