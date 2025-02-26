@@ -11,13 +11,14 @@ import CourseCardEnrollButton from './course-card-enroll-button';
 import CourseCardUnEnrollButton from './course-card-unEnroll-button';
 
 function CourseCard({ detail, isUserCard = false }) {
+   console.log('imageId:', {detail?.imageId});
    return (
       <div className="group rounded-2xl border border-[#EAEAEA] transition-all duration-150 hover:shadow-md">
          <Link
             href={`/course-detail/${detail?.id}`}
             className="relative block aspect-[1.8/1] w-full sm:aspect-[1.64/1]"
          >
-
+         
          <ImageComponent
           imageId={detail?.imageId}
           className="rounded-t-2xl object-cover max-sm:object-top"
