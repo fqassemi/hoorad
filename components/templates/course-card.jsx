@@ -11,7 +11,7 @@ import CourseCardEnrollButton from './course-card-enroll-button';
 import CourseCardUnEnrollButton from './course-card-unEnroll-button';
 
 function CourseCard({ detail, isUserCard = false }) {
-   console.log('imageId:', {detail?.imageId});
+   console.log('imageId:', detail?.imageId);
    return (
       <div className="group rounded-2xl border border-[#EAEAEA] transition-all duration-150 hover:shadow-md">
          <Link
