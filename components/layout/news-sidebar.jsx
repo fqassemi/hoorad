@@ -1,32 +1,53 @@
 'use client'
-import useState from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation'; 
+import { usePathname } from 'next/navigation'; 
 
-const Sidebar = ({ titles, ids }) => {
-    const router = useRouter(); 
-    const revTitle = [...titles].reverse();
-    const revID = [...ids].reverse();
-    
+import { FaSortAmountUp, FaSortAmountDown } from "react-icons/fa";
+
+const Sidebar = ({ titles = [], ids = [], date = [] }) => {
+    const pathname = usePathname(); 
+    const [isReversed, setIsReversed] = useState(false);
+
+    const orderedTitles = isReversed ? [...titles].reverse() : titles;
+    const orderedIDs = isReversed ? [...ids].reverse() : ids;
+    const orderedDates = isReversed ? [...date].reverse() : date;
+
+    const toggleSortOrder = () => {
+        setIsReversed(!isReversed);
+    };
+
     return (
-        <div
-            className='py-6 bg-gray-50 shadow-lg h-screen left-0 z-10'>
+        <div className='py-4 bg-gray-50 shadow-lg h-screen left-0 z-10'>
+            <button
+                onClick={toggleSortOrder}
+                className='flex px-4 py-1.5 text-sm hover:text-orange-500 font-medium text-gray-700 hover:bg-gray-200 rounded-lg mx-2'
+            >
+                {isReversed ? <FaSortAmountUp size={20} /> : <FaSortAmountDown size={20} />} 
+            </button>
             <ul>
-                {revTitle.map((title, index) => {
-                    const isActive = router.asPath === `/${revID[index]}`; 
+                {orderedTitles.map((title, index) => {
+                    const id = orderedIDs[index];
+                    if (!id) return null;
+                    const currentId = pathname.split('/').pop() || '';
+                    const isActive = currentId === id; 
+
                     return (
-                        <li key={revID[index]}>
+                        <li key={id}>
                             <Link
-                                href={`${revID[index]}`}
+                                href={`${id}`} 
                                 className={`block px-4 py-2.5 text-base font-medium transition-all duration-200
-                  ${isActive
-                                        ? 'bg-blue-600 text-white'
+                                    ${isActive
+                                        ? ''
                                         : 'text-gray-700 hover:bg-gray-200'
                                     }
-                  rounded-lg mx-2`}
+                                    rounded-lg mx-2`}
                             >
-                                <div className='flex gap-1 items-center'>
-                                     <span className='text-gray-700'>{title}</span>
+                                <div className='flex gap-1 flex-col'>
+                                    <p className={`${isActive ? 'text-orange-500' : 'text-gray-700'}`}>{title}</p>
+                                    <span className={'text-gray-400 text-xs'}>
+                                        {orderedDates[index]}
+                                    </span>
                                 </div>
                             </Link>
                             <div className='w-full bg-gray-200 h-[0.5px] my-1.5 px-2'></div>

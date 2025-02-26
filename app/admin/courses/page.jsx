@@ -3,12 +3,14 @@ import { useState, useEffect } from 'react';
 //Icons
 import { FiEdit, FiX, FiPlus } from 'react-icons/fi';
 import { MdOutlineKeyboardArrowDown } from 'react-icons/md';
+import { FaSpinner } from 'react-icons/fa';
 //APIs
 import useGetCourses from '@/hooks/api/course/useGetCourse';
 import usePostCourse from '@/hooks/api/course/usePostCourse';
 import usePatchCourse from '@/hooks/api/course/usePatchCourse';
 import useDeleteCourse from '@/hooks/api/course/useDeleteCourse';
 import usePostImage from '@/hooks/api/image/usePostImg';
+import useGetImage from '@/hooks/api/image/useGetImg';
 
 //Components Accordin & Loader
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
@@ -17,12 +19,18 @@ import ConfirmModal from "@/components/templates/confirm-modal";
 import { motion } from 'framer-motion';
 
 
+
 const Courses = () => {
   const { data, isLoading, mutate } = useGetCourses();
+  // const { data:img } = useGetImage();
   const { trigger: createCourseTrigger, isLoading: isCreating } = usePostCourse();
   const { trigger: updateCourseTrigger, isLoading: isUpdating } = usePatchCourse();
   const { trigger: deleteCourseTrigger, isLoading: isDeleting } = useDeleteCourse();
   const { trigger: postImageTrigger, isMutating: uploading } = usePostImage();
+  const [imageId, setImageId] = useState(null);
+  const { data: imageBlob, error: imageError } = useGetImage(imageId);
+
+
 
   const [showForm, setShowForm] = useState(false);
   const [dateTime, setDateTime] = useState('');
@@ -114,12 +122,8 @@ const Courses = () => {
         newImage: formDataImage,
       });
 
-      if (imageResponse && imageResponse.url) {
-        setFormData((prevData) => ({
-          ...prevData,
-          previewImage: imageResponse.url,
-        }));
-        alert('عکس با موفقیت آپلود شد.');
+      if (imageResponse && imageResponse.image_url) {
+        setImageId(imageResponse.image_id);
       } else {
         throw new Error('Image upload failed: No URL returned');
       }
@@ -127,6 +131,17 @@ const Courses = () => {
       console.error('Error uploading image:', error);
     }
   };
+
+  useEffect(() => {
+    if (imageBlob) {
+      const blobUrl = URL.createObjectURL(imageBlob);
+      setFormData((prevData) => ({
+        ...prevData,
+        previewImage: blobUrl,
+      }));
+      alert('عکس با موفقیت آپلود شد.');
+    }
+  }, [imageBlob]);
 
   const handleAction = async (action, course = null, sessionIndex = null) => {
     setModalState({ isOpen: true, action, course, sessionIndex });
@@ -227,7 +242,7 @@ const Courses = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">مدیریت درس ها</h1>
+      <h1 className="text-3xl font-bold mb-4">مدیریت درس ها</h1>
 
       <button
         onClick={() => setShowForm(!showForm)}
@@ -339,20 +354,21 @@ const Courses = () => {
                           <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">پیش نمایش:</p>
                           <img
                             src={
-                              typeof formData.previewImage === 'string'
-                                ? formData.previewImage 
+                              typeof formData.previewImage === 'string' && formData.previewImage.startsWith('http')
+                                ? formData.previewImage
                                 : formData.previewImage instanceof File || formData.previewImage instanceof Blob
-                                  ? URL.createObjectURL(formData.previewImage) 
-                                  : null 
+                                  ? URL.createObjectURL(formData.previewImage)
+                                  : null
                             }
                             alt="preview"
                             className="w-32 h-32 rounded-lg shadow-lg object-cover border border-gray-200 dark:border-gray-600"
                             onError={(e) => {
-                              e.target.src = ''; 
+                              e.target.src = '';
                             }}
                           />
                         </motion.div>
                       )}
+
                     </div>
                   </div>
                 </AccordionContent>

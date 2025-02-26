@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from "react";
-import { FiChevronLeft, FiChevronRight, FiMenu, FiX } from "react-icons/fi";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import useGetNews from "@/hooks/api/news/useGetNews";
 import CircularLoader from "@/components/ui/circular-loader";
 import Sidebar from "@/components/layout/news-sidebar";
@@ -23,7 +23,6 @@ export default function Page() {
       const titlesFromData = data.map(item => item.title);
       setTitles(titlesFromData);
 
-      
       const latestItem = data[data.length - 1];
       setLatestNewsItem(latestItem);
     }
@@ -46,7 +45,7 @@ export default function Page() {
           isMenuOpen ? 'translate-x-0 w-full' : '-translate-x-full w-64'
         } sm:translate-x-0 sm:w-64`}
       >
-        <Sidebar titles={titles} ids={data.map(item => `news/${item.id}`)} />
+        <Sidebar titles={titles} ids={data.map(item => `news/${item.id}`)} date={data.map(item => item.issuedDate )} />
       </div>
 
       <div className="flex-1 sm:ml-64 ml-0 w-full">

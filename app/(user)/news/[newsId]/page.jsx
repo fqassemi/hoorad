@@ -73,7 +73,7 @@ export default function Event() {
                     isMenuOpen ? 'translate-x-0 w-full' : '-translate-x-full w-64'
                 } sm:translate-x-0 sm:w-64`}
             >
-                <Sidebar titles={titles} ids={data.map(item => item.id)} />
+                <Sidebar titles={titles} ids={data.map(item => `${item.id}`)} date={data.map(item => item.issuedDate)} />
             </div>
 
            
