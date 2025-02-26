@@ -1,6 +1,7 @@
 // Next
 import Image from 'next/image';
 import Link from 'next/link';
+import ImageComponent from '@/components/templates/image';
 
 // Icons
 import { PiCurrencyDollarBold } from 'react-icons/pi';
@@ -16,7 +17,13 @@ function CourseCard({ detail, isUserCard = false }) {
             href={`/course-detail/${detail?.id}`}
             className="relative block aspect-[1.8/1] w-full sm:aspect-[1.64/1]"
          >
-            <Image
+
+         <ImageComponent
+          imageId={detail?.image_id}
+          className="rounded-t-2xl object-cover max-sm:object-top"
+         />
+            {/*
+          <Image
                fill
                src="/images/coursePic.jpg"
                alt="course"
@@ -24,6 +31,7 @@ function CourseCard({ detail, isUserCard = false }) {
                priority
                sizes="408px"
             />
+         */}
          </Link>
          <div className="p-4 transition-all duration-150 group-hover:bg-[#fafafa] sm:p-5">
             <Link
