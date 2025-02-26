@@ -17,20 +17,22 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/
 import CircularLoader from '@/components/ui/circular-loader';
 import ConfirmModal from "@/components/templates/confirm-modal";
 import { motion } from 'framer-motion';
+import useDeleteImage from '@/hooks/api/image/useDeleteImg';
 
 
 
 const Courses = () => {
   const { data, isLoading, mutate } = useGetCourses();
-  // const { data:img } = useGetImage();
+  
   const { trigger: createCourseTrigger, isLoading: isCreating } = usePostCourse();
   const { trigger: updateCourseTrigger, isLoading: isUpdating } = usePatchCourse();
   const { trigger: deleteCourseTrigger, isLoading: isDeleting } = useDeleteCourse();
   const { trigger: postImageTrigger, isMutating: uploading } = usePostImage();
   const [imageId, setImageId] = useState(null);
-  const { data: imageBlob, error: imageError } = useGetImage(imageId);
+  const { data: imageBlob } = useGetImage(imageId);
+  const { trigger: deleteImageTrigger } = useDeleteImage();
 
-
+  const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   const [showForm, setShowForm] = useState(false);
   const [dateTime, setDateTime] = useState('');
@@ -123,6 +125,10 @@ const Courses = () => {
       });
 
       if (imageResponse && imageResponse.image_url) {
+        setFormData((prevData) => ({
+          ...prevData,
+          previewImage: baseURL + imageResponse.image_url,
+        }));
         setImageId(imageResponse.image_id);
       } else {
         throw new Error('Image upload failed: No URL returned');
@@ -131,17 +137,6 @@ const Courses = () => {
       console.error('Error uploading image:', error);
     }
   };
-
-  useEffect(() => {
-    if (imageBlob) {
-      const blobUrl = URL.createObjectURL(imageBlob);
-      setFormData((prevData) => ({
-        ...prevData,
-        previewImage: blobUrl,
-      }));
-      alert('عکس با موفقیت آپلود شد.');
-    }
-  }, [imageBlob]);
 
   const handleAction = async (action, course = null, sessionIndex = null) => {
     setModalState({ isOpen: true, action, course, sessionIndex });
@@ -156,12 +151,11 @@ const Courses = () => {
       sessions: [],
       is_enrolled: false,
       issuedDate: dateTime,
-      previewImage: null,
+      previewImage: formData.previewImage,
     });
     setEditIndex(null);
     setShowForm(false);
   };
-
   const handleModalConfirm = async () => {
     if (modalState.action === 'removeSession' && modalState.sessionIndex !== null) {
       const updatedSessions = formData.sessions.filter((_, i) => i !== modalState.sessionIndex);
@@ -224,6 +218,10 @@ const Courses = () => {
       sessionIndex: null,
     });
   };
+
+  const deleteImgHandler = async (imgId) => {
+    console.log("will be deleted");
+  }
 
   const UploadingSpinner = () => (
     <div className="flex items-center justify-center">
@@ -337,13 +335,18 @@ const Courses = () => {
                         onChange={(e) => setFormData({ ...formData, previewImage: e.target.files[0] })}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
                       />
-                      <button
-                        type="button"
-                        onClick={handleImageUpload}
-                        className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                      >
-                        {uploading ? <UploadingSpinner /> : 'آپلود عکس'}
-                      </button>
+                      <div className="flex gap-x-2 mt-4">
+                        <button
+                          type="button"
+                          onClick={handleImageUpload}
+                          className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                        >
+                          {uploading ? <UploadingSpinner /> : 'آپلود عکس'}
+                        </button>
+                        {formData.previewImage && (
+                          <button className='mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600' onClick={deleteImgHandler}>حذف عکس</button>
+                        )}
+                      </div>
                       {formData.previewImage && (
                         <motion.div
                           initial={{ opacity: 0, scale: 0.9 }}
