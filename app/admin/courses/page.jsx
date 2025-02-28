@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, cache } from 'react';
 //Icons
 import { FiEdit, FiX, FiPlus } from 'react-icons/fi';
 import { MdOutlineKeyboardArrowDown } from 'react-icons/md';
@@ -23,7 +23,7 @@ import useDeleteImage from '@/hooks/api/image/useDeleteImg';
 
 const Courses = () => {
   const { data, isLoading, mutate } = useGetCourses();
-  
+
   const { trigger: createCourseTrigger, isLoading: isCreating } = usePostCourse();
   const { trigger: updateCourseTrigger, isLoading: isUpdating } = usePatchCourse();
   const { trigger: deleteCourseTrigger, isLoading: isDeleting } = useDeleteCourse();
@@ -42,9 +42,9 @@ const Courses = () => {
     description: '',
     price: '',
     sessions: [],
-    is_enrolled: false,
     issuedDate: dateTime,
     previewImage: null,
+    imageId: null,
   });
   const [editIndex, setEditIndex] = useState(null);
   const [modalState, setModalState] = useState({
@@ -127,7 +127,7 @@ const Courses = () => {
       if (imageResponse && imageResponse.image_url) {
         setFormData((prevData) => ({
           ...prevData,
-          previewImage: baseURL + imageResponse.image_url,
+          imageId: imageResponse.image_url,
         }));
         setImageId(imageResponse.image_id);
       } else {
@@ -149,9 +149,9 @@ const Courses = () => {
       description: '',
       price: '',
       sessions: [],
-      is_enrolled: false,
       issuedDate: dateTime,
       previewImage: formData.previewImage,
+      imageId: formData.imageId,
     });
     setEditIndex(null);
     setShowForm(false);
@@ -174,7 +174,7 @@ const Courses = () => {
         let response;
         if (modalState.action === 'add') {
           response = await createCourseTrigger({ courseId: modalState.course.id, newCourse: modalState.course });
-        } else {
+        } else if(modalState.action === 'edit') {
           response = await updateCourseTrigger({ courseId: modalState.course.id, updatedCourse: modalState.course });
         }
         await mutate();
@@ -203,8 +203,8 @@ const Courses = () => {
       price: courseToEdit.price || '',
       sessions: courseToEdit.sessions || [],
       issuedDate: courseToEdit.issuedDate || dateTime,
-      is_enrolled: courseToEdit.is_enrolled || false,
       previewImage: courseToEdit.previewImage || null,
+      imageId: courseToEdit.imageId || null,
     });
     setEditIndex(index);
     setShowForm(true);
@@ -220,8 +220,20 @@ const Courses = () => {
   };
 
   const deleteImgHandler = async (imgId) => {
-    console.log("will be deleted");
-  }
+    console.log(imgId);
+  
+    try {
+      const response = await deleteImageTrigger({ id: imgId });
+      await mutate(); 
+      setFormData((prevData) => ({
+        ...prevData,
+        previewImage: null,
+        imageId: null,
+      })); 
+    } catch (error) {
+      console.error(`Error deleting image:`, error);
+    }
+  };
 
   const UploadingSpinner = () => (
     <div className="flex items-center justify-center">
@@ -343,9 +355,13 @@ const Courses = () => {
                         >
                           {uploading ? <UploadingSpinner /> : 'آپلود عکس'}
                         </button>
-                        {formData.previewImage && (
-                          <button className='mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600' onClick={deleteImgHandler}>حذف عکس</button>
-                        )}
+
+                        <button
+                          className='mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600'
+                          onClick={() => deleteImgHandler(formData.imageId)} 
+                        >
+                          حذف عکس
+                        </button>
                       </div>
                       {formData.previewImage && (
                         <motion.div
@@ -357,11 +373,9 @@ const Courses = () => {
                           <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">پیش نمایش:</p>
                           <img
                             src={
-                              typeof formData.previewImage === 'string' && formData.previewImage.startsWith('http')
-                                ? formData.previewImage
-                                : formData.previewImage instanceof File || formData.previewImage instanceof Blob
-                                  ? URL.createObjectURL(formData.previewImage)
-                                  : null
+                              formData.imageId
+                                ? `${baseURL}${formData.imageId}` // Use the uploaded image URL
+                                : URL.createObjectURL(formData.previewImage) // Create a temporary blob URL for the selected file
                             }
                             alt="preview"
                             className="w-32 h-32 rounded-lg shadow-lg object-cover border border-gray-200 dark:border-gray-600"
@@ -475,7 +489,7 @@ const Courses = () => {
                   {course.previewImage && (
                     <div className="mt-2 w-full h-64 md:h-30 md:w-30">
                       <img
-                        src={course.previewImage}
+                        src={baseURL + course.imageId}
                         alt="preview"
                         className="rounded w-full h-full"
                       />

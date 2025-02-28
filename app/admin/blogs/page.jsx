@@ -10,6 +10,7 @@ import usePatchBlog from '@/hooks/api/blog/usePatchBlog';
 import useDeleteBlog from '@/hooks/api/blog/useDeleteBlog';
 import usePostImage from '@/hooks/api/image/usePostImg';
 import useGetImage from '@/hooks/api/image/useGetImg';
+import useDeleteImage from '@/hooks/api/image/useDeleteImg';
 //components
 import CircularLoader from '@/components/ui/circular-loader';
 import ConfirmModal from "@/components/templates/confirm-modal";
@@ -43,6 +44,7 @@ export default function Blogs() {
   const { trigger: deleteBlogTrigger } = useDeleteBlog();
   const { trigger: postImageTrigger, isMutating: uploading } = usePostImage();
   const { data: img } = useGetImage(imageId);
+  const { trigger: deleteImageTrigger } = useDeleteImage();
 
   const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -181,6 +183,27 @@ export default function Blogs() {
     openConfirmModal('delete', { id: blogId });
   };
 
+  const handleDeleteImage = async (image) => {
+    if (!image) return;
+
+    try {
+      
+      if (typeof image === 'string') {
+        const imageId = image.split('/').pop(); 
+        console.log(imageId);
+        
+        await deleteImageTrigger({ id: imageId });
+      }
+      setFormData((prevData) => ({
+        ...prevData,
+        previewImage: null,
+      }));
+
+    } catch (error) {
+      console.error('Error deleting image:', error);
+    }
+  };
+
   const UploadingSpinner = () => (
     <div className="flex items-center justify-center">
       <FaSpinner className="animate-spin h-5 w-5 text-orange-500" />
@@ -298,6 +321,13 @@ export default function Blogs() {
               >
 
                 {uploading ? <UploadingSpinner /> : 'آپلود عکس'}
+              </button>
+              <button
+                type="button"
+                onClick={() => handleDeleteImage(formData.previewImage)}
+                className="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+              >
+                حذف عکس
               </button>
               {formData.previewImage && (
                 <motion.div

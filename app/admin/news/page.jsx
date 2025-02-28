@@ -10,6 +10,7 @@ import usePatchNews from '@/hooks/api/news/usePatchNews';
 import useDeleteNews from '@/hooks/api/news/useDeleteNews';
 import usePostImage from '@/hooks/api/image/usePostImg';
 import useGetImage from '@/hooks/api/image/useGetImg';
+import useDeleteImage from '@/hooks/api/image/useDeleteImg';
 //components
 import CircularLoader from '@/components/ui/circular-loader';
 import ConfirmModal from "@/components/templates/confirm-modal";
@@ -45,6 +46,7 @@ export default function News() {
   const { trigger: deleteNewsTrigger, isLoading: isDeleting } = useDeleteNews();
   const { trigger: postImageTrigger, isMutating: uploading } = usePostImage();
   const { data: img } = useGetImage(imageId);
+  const { trigger: deleteImageTrigger } = useDeleteImage();
 
   const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -95,7 +97,7 @@ export default function News() {
       if (imageResponse && imageResponse.image_url) {
         setFormData((prevData) => ({
           ...prevData,
-          previewImage: baseURL + imageResponse.image_url,
+          previewImage: baseURL + imageResponse.image_url.replace(/^\//, ''),
         }));
         setImageId(imageResponse.image_id);
       } else {
@@ -176,6 +178,28 @@ export default function News() {
 
   const handleDelete = (newsId) => {
     openConfirmModal('delete', { id: newsId });
+  };
+
+  
+  const handleDeleteImage = async (image) => {
+    if (!image) return;
+
+    try {
+      
+      if (typeof image === 'string') {
+        const imageId = image.split('/').pop(); 
+        console.log(imageId);
+        
+        await deleteImageTrigger({ id: imageId });
+      }
+      setFormData((prevData) => ({
+        ...prevData,
+        previewImage: null,
+      }));
+
+    } catch (error) {
+      console.error('Error deleting image:', error);
+    }
   };
 
   const UploadingSpinner = () => (
@@ -304,6 +328,13 @@ export default function News() {
                 className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
               >
                 {uploading ? <UploadingSpinner /> : 'آپلود عکس'}
+              </button>
+              <button
+                type="button"
+                onClick={() => handleDeleteImage(formData.previewImage)}
+                className="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+              >
+                حذف عکس
               </button>
               {formData.previewImage && (
                 <motion.div

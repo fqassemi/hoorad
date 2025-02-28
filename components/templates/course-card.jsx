@@ -10,7 +10,9 @@ import CourseCardEnrollButton from './course-card-enroll-button';
 import CourseCardUnEnrollButton from './course-card-unEnroll-button';
 
 function CourseCard({ detail, isUserCard = false }) {
-   console.log('imageId:', detail?.imageId);
+   console.log(detail);
+   
+   const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
    return (
       <div className="group rounded-2xl border border-[#EAEAEA] transition-all duration-150 hover:shadow-md">
          <Link
@@ -18,9 +20,9 @@ function CourseCard({ detail, isUserCard = false }) {
             className="relative block aspect-[1.8/1] w-full sm:aspect-[1.64/1]"
          >
 
-          <Image
+          <img
                fill
-               src="/images/coursePic.jpg"
+               src={baseURL+detail?.imageId}
                alt="course"
                className="rounded-t-2xl object-cover max-sm:object-top"
                priority

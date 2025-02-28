@@ -174,6 +174,8 @@ const DraftEditor = ({ onContentChange, initialHtml }) => {
           ref={editor}
           placeholder="محتوای خبر را اینجا بنویسید..."
           handleKeyCommand={handleKeyCommand}
+          customStyleMap={styleMap}
+          blockStyleFn={myBlockStyleFn}
           editorState={editorState}
           onChange={(editorState) => {
             const contentState = editorState.getCurrentContent();
