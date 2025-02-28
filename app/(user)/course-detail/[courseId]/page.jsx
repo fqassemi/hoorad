@@ -18,7 +18,7 @@ export const revalidate = 60;
 
 async function CourseDetail({ params }) {
    const { courseId } = params;
-   console.log(params)
+   console.log("Params:", params);
    let courseData;
    try {
       courseData = await fetchDataHandler(`courses/${courseId}`, {}, true);
