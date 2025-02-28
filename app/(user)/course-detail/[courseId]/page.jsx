@@ -17,8 +17,16 @@ import fetchDataHandler from '@/lib/fetchDataHandler';
 export const revalidate = 60;
 
 async function CourseDetail({ params }) {
-   const { courseId } = await params;
-   const courseData = await fetchDataHandler(`courses/${courseId}`, {}, true);
+   const { courseId } = params;
+   console.log(params)
+   let courseData;
+   try {
+      courseData = await fetchDataHandler(`courses/${courseId}`, {}, true);
+   } catch (error) {
+      console.error("Failed to fetch course data:", error);
+      courseData = null; // or set a fallback object
+   }
+   console.log(courseData)
    const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
    return (
