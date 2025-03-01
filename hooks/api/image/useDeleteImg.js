@@ -5,7 +5,7 @@ const deleteImage = async (url, { arg }) => {
   const { id } = arg;
 
   console.log(url, {id});
-  const cleanedId = id.replace('/images/', '');
+  const cleanedId = id.replace('images/', '');
 
   console.log('Cleaned ID:', cleanedId)
   
