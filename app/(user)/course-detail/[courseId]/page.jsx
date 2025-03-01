@@ -30,9 +30,19 @@ async function CourseDetail({ params }) {
    return (
       <section className="mx-auto max-w-1440 px-4 lg:px-[78px] mb-20 mt-10 sm:mb-30 sm:mt-15">
          <div className="flex gap-5 rounded-3xl bg-[#F5F5F5] p-5 max-lg:flex-col lg:gap-6 lg:p-7.5">
-            <div className="relative aspect-video shrink-0 lg:h-60 xl:h-72">
+            <div className="relative aspect-video shrink-0 lg:h-60 xl:h-72 overflow-hidden rounded-xl">
+              <Image 
+                src={baseURL+courseData?.imageId}
+                fill
+                alt="course"
+                className="object-cover rounded-xl"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              />
+            </div>
+            {/* <div className="relative aspect-video shrink-0 lg:h-60 xl:h-72">
                <img src={baseURL+courseData?.imageId} fill alt="course" className="rounded-xl" sizes="531px" />
             </div>
+           */}
             <div>
                <p className="text-xl font-bold lg:text-3xl">{courseData?.name}</p>
                <p className="mt-5 text-sm font-light leading-[26px] lg:mt-10 lg:text-[15px] lg:leading-8">
