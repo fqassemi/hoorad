@@ -9,8 +9,8 @@ import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
 
 export const metadata = {
-   title: 'courses',
-   description: 'courses',
+   title: 'HOORAD',
+   description: 'AI Academy',
    // icons: {
    //    icon: '/icon.png',
    // },
