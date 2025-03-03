@@ -88,7 +88,7 @@ export default function BlogPost() {
                                 <img
                                     src={randomBlog.previewImage}
                                     alt={randomBlog.title}
-                                    className="w-full h-40 object-cover""
+                                    className="w-full h-40 object-cover"
                                 />
                                 <div className="p-4 flex flex-col flex-grow">
                                     <h2 className="text-lg font-semibold truncate hover:text-orange-500">{randomBlog.title}</h2>
