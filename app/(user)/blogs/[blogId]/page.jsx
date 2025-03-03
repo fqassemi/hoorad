@@ -70,7 +70,7 @@ export default function BlogPost() {
                 </div>
 
                 <h1 className="text-2xl font-bold">{blog?.title}</h1>
-                <img src={blog?.previewImage} alt="" className="rounded my-4" />
+                <img src={blog?.previewImage} alt="" className="rounded my-4 w-full h-64 object-contain" />
                 
                 <div dangerouslySetInnerHTML={{ __html: decodeHtml }} className="custom-html-content" />
                 <div className="w-full h-[1px] bg-neutral-300 mt-6 mb-3"></div>
@@ -88,7 +88,7 @@ export default function BlogPost() {
                                 <img
                                     src={randomBlog.previewImage}
                                     alt={randomBlog.title}
-                                    className="w-full h-40"
+                                    className="w-full h-40 object-cover""
                                 />
                                 <div className="p-4 flex flex-col flex-grow">
                                     <h2 className="text-lg font-semibold truncate hover:text-orange-500">{randomBlog.title}</h2>
