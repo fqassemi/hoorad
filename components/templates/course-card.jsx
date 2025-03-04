@@ -119,5 +119,5 @@ function CourseCard({ detail, isUserCard = false }) {
       </div>
    );
 }
-/*}
+*/}
 
