@@ -10,6 +10,8 @@ import CourseCardEnrollButton from './course-card-enroll-button';
 import CourseCardUnEnrollButton from './course-card-unEnroll-button';
 
 function CourseCard({ detail, isUserCard = false }) {
+   console.log(detail);
+   const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
   return (
     <div className="group h-full rounded-2xl border border-[#EAEAEA] transition-all duration-150 hover:shadow-md">
       {/* Image Section */}
