@@ -5,6 +5,9 @@ import fetchDataHandler from '@/lib/fetchDataHandler';
 export const revalidate = 60;
 
 export default async function Home() {
+
+  const coursesData = await fetchDataHandler('courses', {}, true);
+  const blogsData = await fetchDataHandler('blogs', {}, true);
   return (
     <section className="mx-auto max-w-1440 px-4 lg:px-[78px]">
 
