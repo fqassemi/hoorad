@@ -56,9 +56,8 @@ export default async function Home() {
     </section>
   );
 }
-*/}
 
-{/*
+
 // Components
 import CourseCard from '@/components/templates/course-card';
 
