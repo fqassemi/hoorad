@@ -24,7 +24,7 @@ export default async function Home() {
 
       {/* Blogs Section */}
       <div className="mb-20 mt-20">
-        <p className="text-xl font-bold sm:text-3xl">وبلاگ</p>
+        <p className="text-xl font-bold sm:text-3xl"></p>
         <div className="mt-10">
           <Blog blogsDetail={blogsData} />
         </div>
