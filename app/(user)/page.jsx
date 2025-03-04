@@ -54,7 +54,7 @@ export default async function Home() {
             <p className="text-xl font-bold sm:text-3xl">همه ی دوره ها</p>
             <div className="mt-10 grid grid-cols-1 gap-7.5 sm:grid-cols-2 lg:grid-cols-3">
               {coursesData?.map(item => (
-                <div key={item?.id} className="h-[400px]"> {/* Add fixed height container */}
+                <div key={item?.id} className="h-[400px]"> 
                   <CourseCard detail={item} />
                 </div>
               ))}
