@@ -64,7 +64,8 @@ function CourseCard({ detail, isUserCard = false }) {
 }
 export default CourseCard;
 
-{/*function CourseCard({ detail, isUserCard = false }) {
+{/*
+function CourseCard({ detail, isUserCard = false }) {
    console.log(detail);
    
    const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
