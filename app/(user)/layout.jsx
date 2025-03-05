@@ -18,11 +18,12 @@ async function layout({ children }) {
    if (accessToken) {
       userData = await fetchDataHandler('user', { cache: 'no-store' }, true);
    }
-
+   let isAdmin = await fetchDataHandler('isAdmin', { cache: 'no-store' }, true);
+   
    return (
       <div>
          <Suspense>
-            <Header userData={userData} />
+            <Header userData={userData} isAdmin={isAdmin} />
          </Suspense>
 
          <div className="mt-0 mb-0">{children}</div>

@@ -9,9 +9,7 @@ import { PiCurrencyDollarBold } from 'react-icons/pi';
 import CourseCardEnrollButton from './course-card-enroll-button';
 import CourseCardUnEnrollButton from './course-card-unEnroll-button';
 
-function CourseCard({ detail, isUserCard = false }) {
-   console.log(detail);
-   
+function CourseCard({ detail, isUserCard = false }) {   
    const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
    return (
       <div className="group rounded-2xl border border-[#EAEAEA] transition-all duration-150 hover:shadow-md">

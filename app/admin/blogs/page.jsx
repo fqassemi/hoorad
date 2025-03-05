@@ -88,6 +88,7 @@ export default function Blogs() {
     }
   };
 
+
   const handleImageUpload = async () => {
     if (!formData.previewImage || typeof formData.previewImage === 'string') {
       return;
@@ -189,9 +190,7 @@ export default function Blogs() {
     try {
       
       if (typeof image === 'string') {
-        const imageId = image.split('/').pop(); 
-        console.log(imageId);
-        
+        const imageId = image.split('/').pop();         
         await deleteImageTrigger({ id: imageId });
       }
       setFormData((prevData) => ({

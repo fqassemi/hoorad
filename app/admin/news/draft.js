@@ -153,7 +153,6 @@ const DraftEditor = ({ onContentChange, initialHtml }) => {
           url: url,
         });
         const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-        console.log("Entity Key:", entityKey); // Log entity key
         const newEditorState = EditorState.set(editorState, {
           currentContent: contentStateWithEntity,
         });

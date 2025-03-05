@@ -64,14 +64,14 @@ export default function News() {
     updateDateTime();
   }, []);
 
-  useEffect(() => {
-    if (dateTime) {
-      setFormData((prevState) => ({
-        ...prevState,
-        issuedDate: dateTime,
-      }));
-    }
-  }, [dateTime]);
+  // useEffect(() => {
+  //   if (dateTime) {
+  //     setFormData((prevState) => ({
+  //       ...prevState,
+  //       issuedDate: dateTime,
+  //     }));
+  //   }
+  // }, [dateTime]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -112,7 +112,7 @@ export default function News() {
     e.preventDefault();
     const newNews = {
       ...formData,
-      issuedDate: dateTime,
+      issuedDate: editIndex !== null ? formData.issuedDate : dateTime,
       createdAt: new Date().toISOString(), 
     };
     const action = editIndex !== null ? 'edit' : 'add';
@@ -160,7 +160,7 @@ export default function News() {
       plainText: '',
       html: '',
       previewImage: formData.previewImage,
-      issuedDate: '',
+      issuedDate: dateTime,
       author: '',
     });
     setEditIndex(null);
@@ -170,6 +170,7 @@ export default function News() {
     const newsToEdit = data[index];
     setFormData({
       ...newsToEdit,
+      issuedDate: newsToEdit.issuedDate,
       previewImage: newsToEdit.previewImage,
     });
     setEditIndex(index);
@@ -188,8 +189,6 @@ export default function News() {
       
       if (typeof image === 'string') {
         const imageId = image.split('/').pop(); 
-        console.log(imageId);
-        
         await deleteImageTrigger({ id: imageId });
       }
       setFormData((prevData) => ({
@@ -325,14 +324,14 @@ export default function News() {
               <button
                 type="button"
                 onClick={handleImageUpload}
-                className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                className="mt-2 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
               >
                 {uploading ? <UploadingSpinner /> : 'آپلود عکس'}
               </button>
               <button
                 type="button"
                 onClick={() => handleDeleteImage(formData.previewImage)}
-                className="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                className="mt-2 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 mx-1.5"
               >
                 حذف عکس
               </button>

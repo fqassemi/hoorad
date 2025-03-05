@@ -220,8 +220,7 @@ const Courses = () => {
   };
 
   const deleteImgHandler = async (imgId) => {
-    console.log(imgId);
-  
+    
     try {
       const response = await deleteImageTrigger({ id: imgId });
       await mutate(); 
