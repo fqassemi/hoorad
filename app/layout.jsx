@@ -1,6 +1,8 @@
 // Components
 import ToastComponent from '@/components/layout/toast-component';
 import LoadingProgressBar from '@/components/layout/loading-progress-bar';
+import NuwayLoader from "@/components/nuway-loader";
+
 
 // Styles
 import './globals.css';
@@ -29,23 +31,8 @@ export default function RootLayout({ children }) {
                <main>{children}</main>
             </AuthProvider>
             
-            {/* Chatbot script */}
-            <Script
-               strategy="afterInteractive"
-               dangerouslySetInnerHTML={{
-                  __html: `
-                     (function(){
-                        var s = document.createElement("script");
-                        s.src = "https://staging.nuway.co/js/chatbot-loader.js";
-                        s.defer = true;
-                        s.id = "nuway-chatbot-script-js";
-                        s.setAttribute("nuway-company-id", "5668737373962240");
-                        s.setAttribute("nuway-url", "https://staging.nuway.co");
-                        document.body.appendChild(s);
-                     })();
-                  `,
-               }}
-            />
+           {/* client-side loader */}
+           <NuwayLoader />
          </body>
       </html>
    );
