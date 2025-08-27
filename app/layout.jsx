@@ -37,11 +37,11 @@ export default function RootLayout({ children }) {
                   __html: `
                      (function(){
                         var s = document.createElement("script");
-                        s.src = "https://staging.sdfs.co/js/chatbot-loader.js";
+                        s.src = "https://staging.nuway.co/js/chatbot-loader.js";
                         s.defer = true;
                         s.id = "nuway-chatbot-script-js";
-                        s.setAttribute("nusdsd-company-id", "sdfsd");
-                        s.setAttribute("dsds-url", "https://dfsfs.sdfsf.co");
+                        s.setAttribute("nuway-company-id", "5668737373962240");
+                        s.setAttribute("nuway-url", "https://staging.nuway.co");
                         document.body.appendChild(s);
                      })();
                   `,
