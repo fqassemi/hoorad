@@ -31,7 +31,6 @@ export default function RootLayout({ children }) {
             
             {/* Chatbot script */}
             <Script
-               id="nuway-chatbot-script-js"
                strategy="afterInteractive"
                dangerouslySetInnerHTML={{
                   __html: `
