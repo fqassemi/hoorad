@@ -8,6 +8,9 @@ import './globals.css';
 // context
 import { AuthProvider } from '@/context/AuthContext';
 
+// Next.js Script
+import Script from "next/script";
+
 export const metadata = {
    title: 'HOORAD',
    description: 'AI Academy',
@@ -25,6 +28,25 @@ export default function RootLayout({ children }) {
                <LoadingProgressBar />
                <main>{children}</main>
             </AuthProvider>
+            
+            {/* Chatbot script */}
+            <Script
+               id="nuway-chatbot-script-js"
+               strategy="afterInteractive"
+               dangerouslySetInnerHTML={{
+                  __html: `
+                     (function(){
+                        var s = document.createElement("script");
+                        s.src = "https://staging.sdfs.co/js/chatbot-loader.js";
+                        s.defer = true;
+                        s.id = "nuway-chatbot-script-js";
+                        s.setAttribute("nusdsd-company-id", "sdfsd");
+                        s.setAttribute("dsds-url", "https://dfsfs.sdfsf.co");
+                        document.body.appendChild(s);
+                     })();
+                  `,
+               }}
+            />
          </body>
       </html>
    );
