@@ -1,7 +1,7 @@
 // Components
 import ToastComponent from '@/components/layout/toast-component';
 import LoadingProgressBar from '@/components/layout/loading-progress-bar';
-import NuwayLoader from "@/components/nuway-loader";
+import NuwayLoader from "@/components/layout/nuway-loader";
 
 
 // Styles
